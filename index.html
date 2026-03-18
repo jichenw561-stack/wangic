@@ -562,6 +562,24 @@
     }
     .demo-back:hover { color: var(--accent); }
 
+    /* Play all button */
+    .play-all-btn {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      width: 100%; margin-top: 12px; padding: 9px 0;
+      border: 1.5px solid var(--accent); border-radius: 8px;
+      background: transparent; color: var(--accent);
+      font-size: 12.5px; font-weight: 500; font-family: inherit;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .play-all-btn:hover { background: var(--accent); color: #fff; }
+    .play-all-btn:active { opacity: 0.85; }
+
+    /* Tour indicator */
+    .demo-tour-indicator {
+      font-size: 11.5px; color: var(--text3); margin-left: 10px;
+      white-space: nowrap;
+    }
+
     /* Speed control */
     .demo-speed { display: flex; align-items: center; gap: 3px; margin-left: auto; }
     .demo-speed-label { font-size: 11px; color: var(--text3); margin-right: 4px; }
@@ -974,7 +992,6 @@
               </div>
               <div class="uc-title">债券利率走势研判</div>
             </div>
-            <div class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</div>
           </button>
 
           <!-- Card 2: 创建技能 -->
@@ -1000,7 +1017,6 @@
               </div>
               <div class="uc-title">光伏行业周报生成</div>
             </div>
-            <div class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</div>
           </button>
 
           <!-- Card 3: @专家 -->
@@ -1025,7 +1041,6 @@
               </div>
               <div class="uc-title">向宏观专家提问</div>
             </div>
-            <div class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</div>
           </button>
 
           <!-- Card 4: 因子技能 (nev-inventory) -->
@@ -1055,10 +1070,16 @@
               </div>
               <div class="uc-title">新能源渠道库存压力</div>
             </div>
-            <div class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</div>
           </button>
 
         </div>
+
+        <!-- 一键播放全部演示 -->
+        <button class="play-all-btn" id="play-all-btn" onclick="playAllDemos()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          一键播放全部演示
+        </button>
+
       </div>
     </div>
 
@@ -1072,6 +1093,7 @@
           </svg>
           返回
         </button>
+        <span class="demo-tour-indicator" id="demo-tour-indicator"></span>
         <button class="demo-replay" id="demo-replay-btn" onclick="replayCurrentDemo()">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.6"/>
@@ -2037,6 +2059,35 @@
 
   let currentDemoType = null;
   let playbackSpeed = 1;
+  let tourActive = false;
+
+  function playAllDemos() {
+    const types = ['use-skill', 'create-skill', 'ask-expert', 'nev-inventory'];
+    const labels = ['使用技能', '创建技能', '@专家', '因子技能'];
+    tourActive = true;
+    let idx = 0;
+    function playNext() {
+      if (!tourActive || idx >= types.length) {
+        tourActive = false;
+        const ind = document.getElementById('demo-tour-indicator');
+        if (ind) ind.textContent = '';
+        return;
+      }
+      const ind = document.getElementById('demo-tour-indicator');
+      if (ind) ind.textContent = labels[idx] + ' · ' + (idx + 1) + ' / ' + types.length;
+      showDemo(types[idx], () => {
+        idx++;
+        if (!tourActive) return;
+        if (idx < types.length) {
+          setTimeout(playNext, 2000 / playbackSpeed);
+        } else {
+          tourActive = false;
+          if (ind) ind.textContent = '已全部播放完毕';
+        }
+      });
+    }
+    playNext();
+  }
 
   function setPlaybackSpeed(spd) {
     playbackSpeed = spd;
@@ -2053,7 +2104,7 @@
     if (currentDemoType) showDemo(currentDemoType);
   }
 
-  function showDemo(type) {
+  function showDemo(type, onComplete) {
     currentDemoType = type;
     const demo = demoData[type];
     document.getElementById('chat-welcome').style.display = 'none';
@@ -2209,11 +2260,15 @@
       setTimeout(() => {
         const rb = document.getElementById('demo-replay-btn');
         if (rb) rb.style.display = 'flex';
+        if (typeof onComplete === 'function') onComplete();
       }, 600);
     }, collapseAt + 650);
   }
 
   function hideDemo() {
+    tourActive = false;
+    const ind = document.getElementById('demo-tour-indicator');
+    if (ind) ind.textContent = '';
     document.getElementById('chat-welcome').style.display = '';
     document.getElementById('view-chat').classList.remove('demo-mode');
     document.getElementById('demo-panel').classList.remove('active');
