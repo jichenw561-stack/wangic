@@ -195,9 +195,23 @@
 
     /* ─── INPUT AREA ─── */
     #input-area {
-      padding: 12px 24px 16px; background: transparent;
+      padding: 0 24px 16px; background: transparent;
       flex-shrink: 0;
     }
+    .suggested-qs {
+      display: flex; gap: 8px; padding: 12px 0 10px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .suggested-qs::-webkit-scrollbar { display: none; }
+    .sq-chip {
+      display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+      padding: 5px 12px; border-radius: 14px;
+      border: 1px solid var(--border); background: var(--card-bg);
+      font-size: 11.5px; color: var(--text2); cursor: pointer;
+      white-space: nowrap; transition: all 0.15s; font-family: inherit;
+    }
+    .sq-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .sq-chip svg { flex-shrink: 0; opacity: 0.55; }
     .input-box {
       background: var(--card-bg); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 12px 14px;
@@ -912,33 +926,6 @@
             <div class="uc-title">@专家<br>向宏观专家提问</div>
             <div class="uc-desc">召唤领域专家，获取宏观、固收、产业等专业视角的深度解读</div>
           </button>
-          <button class="use-case-card" onclick="showDemo('nev-inventory')">
-            <div class="uc-icon" style="background:#fff7ed;color:#ea580c">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h5l2 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-              </svg>
-            </div>
-            <div class="uc-title">因子技能<br>新能源渠道库存压力</div>
-            <div class="uc-desc">调用因子技能，通过产量−出口量−上险量构建累库指标，量化渠道库存压力趋势</div>
-          </button>
-          <button class="use-case-card" onclick="showDemo('northbound-fund')">
-            <div class="uc-icon" style="background:#eff6ff;color:#1d4ed8">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-              </svg>
-            </div>
-            <div class="uc-title">因子技能<br>北向资金持仓异动</div>
-            <div class="uc-desc">扫描陆股通持仓变化，识别近期行业与个股层面的显著增减持异动信号</div>
-          </button>
-          <button class="use-case-card" onclick="showDemo('earnings-revision')">
-            <div class="uc-icon" style="background:#f0fdfa;color:#0d9488">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
-              </svg>
-            </div>
-            <div class="uc-title">因子技能<br>消费板块盈利预期修订</div>
-            <div class="uc-desc">追踪卖方分析师 EPS 预期修订动向，识别消费子板块上修扩散信号与业绩催化节点</div>
-          </button>
         </div>
       </div>
     </div>
@@ -1082,6 +1069,21 @@
         </svg>
         添加更多技能
       </div>
+    </div>
+
+    <div class="suggested-qs">
+      <button class="sq-chip" onclick="showDemo('nev-inventory')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="13" height="11" rx="1.5"/><path d="M14 7h4l2 5v2h-6V7z"/><circle cx="4.5" cy="16.5" r="2"/><circle cx="16.5" cy="16.5" r="2"/></svg>
+        新能源车企目前上险量维度的渠道库存压力趋势是怎么样的？
+      </button>
+      <button class="sq-chip" onclick="showDemo('northbound-fund')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        北向资金近期持仓变化有哪些值得关注的板块和个股异动？
+      </button>
+      <button class="sq-chip" onclick="showDemo('earnings-revision')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        消费行业卖方分析师盈利预期近期是否出现明显上修趋势？
+      </button>
     </div>
 
     <div class="input-box">
