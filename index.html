@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI 金融助手</title>
+  <title>AI RIS · 华泰证券</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -64,8 +64,21 @@
       width: 28px; height: 28px;
       background: var(--accent); border-radius: 7px;
       display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
     .logo-icon svg { width: 18px; height: 18px; color: #fff; }
+
+    /* RIS brand logo (sidebar) */
+    .sidebar-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .ris-badge {
+      width: 30px; height: 30px; background: #2563eb; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 9px; font-weight: 800; color: #fff;
+      letter-spacing: 0.3px;
+    }
+    .ris-text { min-width: 0; }
+    .ris-name { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .ris-sub { font-size: 10px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 
     .sidebar-actions { display: flex; gap: 4px; }
     .icon-btn {
@@ -151,6 +164,18 @@
     }
     .chat-logo svg { width: 30px; height: 30px; color: #fff; }
     .chat-welcome h2 { font-size: 20px; font-weight: 600; margin-bottom: 32px; color: var(--text); }
+
+    /* RIS center welcome logo */
+    .chat-ris-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 32px; gap: 14px; }
+    .chat-ris-badge {
+      width: 64px; height: 64px; background: #2563eb; border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 0.5px;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.25);
+    }
+    .chat-ris-text { text-align: center; }
+    .chat-ris-name { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .chat-ris-sub { font-size: 12.5px; color: var(--text3); margin-top: 5px; }
 
     .suggestions {
       display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
@@ -516,11 +541,12 @@
 <!-- SIDEBAR -->
 <aside id="sidebar">
   <div class="sidebar-top">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2C9.5 2 7 4 7 7c0 2 1 3.5 2.5 4.5C7.5 12.5 6 14.5 6 17c0 3 2.5 5 6 5s6-2 6-5c0-2.5-1.5-4.5-3.5-5.5C16 10.5 17 9 17 7c0-3-2.5-5-5-5z"/>
-        <path d="M12 2 L13.5 0" stroke-width="1.5"/>
-      </svg>
+    <div class="sidebar-brand">
+      <div class="ris-badge">RIS</div>
+      <div class="ris-text">
+        <div class="ris-name">AI RIS</div>
+        <div class="ris-sub">Research Intelligence System</div>
+      </div>
     </div>
     <div class="sidebar-actions">
       <button class="icon-btn" onclick="newChat()" title="新建对话">
@@ -595,11 +621,12 @@
   <div id="view-chat" class="view active">
     <!-- Welcome screen -->
     <div class="chat-welcome" id="chat-welcome">
-      <div class="chat-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2C9.5 2 7 4 7 7c0 2 1 3.5 2.5 4.5C7.5 12.5 6 14.5 6 17c0 3 2.5 5 6 5s6-2 6-5c0-2.5-1.5-4.5-3.5-5.5C16 10.5 17 9 17 7c0-3-2.5-5-5-5z"/>
-          <path d="M12 2 L13.5 0" stroke-width="1.5"/>
-        </svg>
+      <div class="chat-ris-wrap">
+        <div class="chat-ris-badge">RIS</div>
+        <div class="chat-ris-text">
+          <div class="chat-ris-name">AI RIS</div>
+          <div class="chat-ris-sub">Research Intelligence System · 华泰证券</div>
+        </div>
       </div>
       <h2>有什么可以帮你？</h2>
 
@@ -909,12 +936,8 @@
     const aiEl = document.createElement('div');
     aiEl.className = 'demo-ai';
     aiEl.innerHTML = `<div class="demo-ai-head">
-      <div class="demo-ai-ava">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-          <path d="M12 2C9.5 2 7 4 7 7c0 2 1 3.5 2.5 4.5C7.5 12.5 6 14.5 6 17c0 3 2.5 5 6 5s6-2 6-5c0-2.5-1.5-4.5-3.5-5.5C16 10.5 17 9 17 7c0-3-2.5-5-5-5z"/>
-        </svg>
-      </div>
-      <div class="demo-ai-name">AI 投研助手</div>
+      <div class="demo-ai-ava" style="background:#2563eb;border-radius:6px;font-size:8px;font-weight:800;letter-spacing:0.2px">RIS</div>
+      <div class="demo-ai-name">AI RIS</div>
     </div>`;
 
     const stepsEl = document.createElement('div');
