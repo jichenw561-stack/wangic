@@ -616,6 +616,68 @@
     .demo-skill-preview-title { font-size: 10.5px; font-weight: 600; color: #2e7d32; margin-bottom: 5px; letter-spacing: 0.2px; }
     .demo-skill-preview pre { font-size: 10.5px; color: #444; font-family: 'SF Mono','Menlo',monospace; line-height: 1.6; white-space: pre-wrap; }
 
+    /* ─── RESULT TWO-COLUMN LAYOUT ─── */
+    .demo-result-layout { display: flex; min-height: 260px; }
+    .demo-result-main {
+      flex: 1; min-width: 0; padding: 14px 16px;
+      font-size: 12.5px; color: var(--text2); line-height: 1.7;
+      display: flex; flex-direction: column; gap: 0; overflow-y: auto;
+    }
+    .demo-result-sidebar {
+      width: 210px; flex-shrink: 0; border-left: 1px solid var(--border);
+      background: #fafafa; display: flex; flex-direction: column; overflow-y: auto; max-height: 520px;
+    }
+    .demo-sidebar-hd {
+      padding: 9px 12px; font-size: 11.5px; font-weight: 600; color: var(--text);
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; background: #fafafa; z-index: 1; flex-shrink: 0;
+    }
+    .demo-ref-item {
+      padding: 8px 10px; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background 0.15s;
+    }
+    .demo-ref-item:hover { background: #eef2fb; }
+    .demo-ref-meta { display: flex; align-items: center; gap: 4px; margin-bottom: 3px; }
+    .demo-ref-num {
+      font-size: 9.5px; font-weight: 700; color: white; background: var(--accent);
+      border-radius: 3px; padding: 0 4px; height: 14px; display: inline-flex;
+      align-items: center; justify-content: center; flex-shrink: 0; min-width: 16px;
+    }
+    .demo-ref-tag {
+      font-size: 9.5px; padding: 1px 5px; border-radius: 2px; font-weight: 500; flex-shrink: 0;
+    }
+    .demo-ref-tag.gong { background: #fff3cd; color: #7d6608; }
+    .demo-ref-tag.yan  { background: #d1f0f8; color: #0c5460; }
+    .demo-ref-tag.ji   { background: #ffe4e1; color: #9b1c1c; }
+    .demo-ref-tag.she  { background: #d4edda; color: #155724; }
+    .demo-ref-src { font-size: 9.5px; color: var(--text3); margin-left: auto; white-space: nowrap; }
+    .demo-ref-title {
+      font-size: 10.5px; color: var(--text2); line-height: 1.45;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    /* Blue section header */
+    .r-hd { font-size: 12.5px; font-weight: 700; color: var(--accent); margin: 12px 0 5px; }
+    .r-hd:first-child { margin-top: 0; }
+    /* Inline citation badge */
+    .cn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; border-radius: 50%; background: #dce6f5;
+      color: var(--accent); font-size: 9px; font-weight: 700; cursor: pointer;
+      margin: 0 1px; vertical-align: middle; flex-shrink: 0; transition: background 0.15s;
+    }
+    .cn:hover { background: var(--accent); color: white; }
+    /* Source footer under table */
+    .r-sources { font-size: 11px; color: var(--text3); margin: 6px 0 10px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    /* Risk bullet list */
+    .r-risks { list-style: none; display: flex; flex-direction: column; gap: 5px; margin: 0; }
+    .r-risk { display: flex; align-items: flex-start; gap: 6px; font-size: 12.5px; }
+    .r-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 7px; }
+    /* Disclaimer */
+    .r-disclaimer {
+      font-size: 10.5px; color: var(--text3); text-align: center;
+      margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border);
+    }
+
     /* ─── EXPERTS VIEW ─── */
     #view-experts { flex-direction: column; }
     .experts-header {
@@ -1165,82 +1227,109 @@
     }
   };
 
+  function refItem(num, tag, tagCls, src, date, title) {
+    return `<div class="demo-ref-item">
+      <div class="demo-ref-meta">
+        <span class="demo-ref-num">${num}</span>
+        <span class="demo-ref-tag ${tagCls}">${tag}</span>
+        <span class="demo-ref-src">${src} ${date}</span>
+      </div>
+      <div class="demo-ref-title">${title}</div>
+    </div>`;
+  }
+
   function buildResultHTML(type) {
     if (type === 'use-skill') {
+      const refs = [
+        refItem(1,'研报','yan','华泰固收','03-14','利率策略周报：10Y国债收益率再创新低，中期下行趋势延续'),
+        refItem(2,'研报','yan','中金固收','03-12','月度利率展望：温和去通胀环境下债市配置策略'),
+        refItem(3,'公告','gong','国家统计局','03-12','2025年2月份居民消费价格同比上涨0.1%'),
+        refItem(4,'公告','gong','国家统计局','03-12','2025年2月份工业生产者出厂价格同比下降2.2%'),
+        refItem(5,'公告','gong','人民银行','03-10','公开市场业务交易公告（2025年第47号）'),
+        refItem(6,'研报','yan','申万宏源','03-08','债市周报：资金面宽松延续，短端利率中枢下移'),
+        refItem(7,'公告','gong','财政部','01-15','关于2025年地方政府债务限额与发行安排的通知'),
+        refItem(8,'纪要','ji','债券投研圆桌','03-05','宏观环境下的久期配置策略研讨纪要'),
+      ].join('');
       return `
       <div class="demo-result-hd">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         <span class="demo-result-hd-title">债券利率走势研判报告</span>
         <span class="demo-tag neutral">温和去通胀</span>
       </div>
-      <div class="demo-result-body">
-        <div class="demo-chart-wrap">
-          <div class="demo-chart-label">10Y 国债收益率走势（%）· 2024-08 → 2025-02</div>
-          <svg viewBox="0 0 280 52" width="100%" height="52" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="yld-fill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#2e4a7a" stop-opacity="0.15"/>
-                <stop offset="100%" stop-color="#2e4a7a" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <!-- grid lines -->
-            <line x1="0" y1="26" x2="280" y2="26" stroke="#e5e5ea" stroke-width="0.5" stroke-dasharray="3,3"/>
-            <line x1="0" y1="4"  x2="280" y2="4"  stroke="#e5e5ea" stroke-width="0.5" stroke-dasharray="3,3"/>
-            <line x1="0" y1="48" x2="280" y2="48" stroke="#e5e5ea" stroke-width="0.5" stroke-dasharray="3,3"/>
-            <!-- y-axis labels -->
-            <text x="0" y="7"  font-size="8" fill="#aeaeb2">2.35</text>
-            <text x="0" y="29" font-size="8" fill="#aeaeb2">2.18</text>
-            <text x="0" y="50" font-size="8" fill="#aeaeb2">2.00</text>
-            <!-- fill area -->
-            <path d="M30,11 L70,17 L110,23 L150,27 L190,31 L230,35 L270,39 L270,48 L30,48 Z" fill="url(#yld-fill)"/>
-            <!-- line -->
-            <polyline points="30,11 70,17 110,23 150,27 190,31 230,35 270,39"
-              fill="none" stroke="#2e4a7a" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-            <!-- current dot -->
-            <circle cx="270" cy="39" r="3" fill="#2e4a7a"/>
-            <text x="255" y="36" font-size="8" fill="#2e4a7a" font-weight="600">1.98%</text>
-          </svg>
-          <div class="demo-chart-xaxis">
-            <span>8月</span><span>9月</span><span>10月</span><span>11月</span><span>12月</span><span>1月</span><span>2月</span>
+      <div class="demo-result-layout">
+        <div class="demo-result-main">
+          <div class="r-hd">利率走势追踪</div>
+          <div class="demo-chart-wrap" style="margin-bottom:10px">
+            <div class="demo-chart-label">10Y 国债收益率走势（%）· 2024-08 → 2025-02</div>
+            <svg viewBox="0 0 260 46" width="100%" height="46" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="yld-fill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#2e4a7a" stop-opacity="0.14"/>
+                  <stop offset="100%" stop-color="#2e4a7a" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="24" y1="6"  x2="260" y2="6"  stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="24" y1="22" x2="260" y2="22" stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="24" y1="38" x2="260" y2="38" stroke="#f2f2f7" stroke-width="1"/>
+              <text x="0" y="9"  font-size="7.5" fill="#c7c7cc">2.35</text>
+              <text x="0" y="25" font-size="7.5" fill="#c7c7cc">2.15</text>
+              <text x="0" y="41" font-size="7.5" fill="#c7c7cc">1.95</text>
+              <path d="M24,9 L62,14 L100,20 L138,24 L176,28 L214,32 L252,36 L252,38 L24,38 Z" fill="url(#yld-fill)"/>
+              <polyline points="24,9 62,14 100,20 138,24 176,28 214,32 252,36" fill="none" stroke="#2e4a7a" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="252" cy="36" r="3" fill="#2e4a7a"/>
+              <text x="200" y="33" font-size="8" fill="#2e4a7a" font-weight="700">1.98%</text>
+            </svg>
+            <div class="demo-chart-xaxis" style="padding-left:24px">
+              <span>8月</span><span>9月</span><span>10月</span><span>11月</span><span>12月</span><span>1月</span><span>2月</span>
+            </div>
           </div>
+
+          <div class="r-hd">关键指标数据</div>
+          <table class="demo-table">
+            <thead><tr><th>指标</th><th>2024-11</th><th>2024-12</th><th>2025-01</th><th>2025-02</th></tr></thead>
+            <tbody>
+              <tr><td>CPI同比</td><td>+0.4%</td><td>+0.1%</td><td class="down">−0.7%</td><td class="flat"><strong>+0.1%</strong></td></tr>
+              <tr><td>PPI同比</td><td class="down">−2.5%</td><td class="down">−2.7%</td><td class="down">−2.3%</td><td class="flat"><strong>−2.2%</strong></td></tr>
+              <tr><td>10Y国债（%）</td><td>2.28</td><td>2.20</td><td>2.08</td><td><strong>1.98</strong></td></tr>
+              <tr><td>DR007（%）</td><td>1.82</td><td>1.78</td><td>1.75</td><td><strong>1.72</strong></td></tr>
+              <tr><td>MLF（%）</td><td>2.00</td><td>2.00</td><td>2.00</td><td><strong>2.00</strong></td></tr>
+            </tbody>
+          </table>
+          <div class="r-sources">数据来源：<span class="cn">3</span><span class="cn">4</span><span class="cn">5</span></div>
+
+          <div class="r-hd">核心判断</div>
+          <p style="font-size:12.5px;color:var(--text2);line-height:1.75;margin:0 0 8px">当前通胀处于温和去通胀区间（CPI +0.1%、PPI −2.2%<span class="cn">3</span><span class="cn">4</span>），叠加资金面宽松，基本面支撑债市偏多。短端受 OMO 利率锚定，下行空间有限；中长端仍有 <strong>10−15bp</strong> 的下行空间<span class="cn">1</span>。</p>
+
+          <div class="r-hd">配置建议</div>
+          <p style="font-size:12.5px;color:var(--text2);line-height:1.75;margin:0 0 8px">超配 5−7 年期利率债，标配高评级短久期信用债（AA+/AAA，1−3Y），适当降低货基比例。哑铃型结构兼顾流动性与收益<span class="cn">2</span>。10Y 国债止盈参考位 <strong>1.88%</strong>，止损参考位 <strong>2.10%</strong><span class="cn">6</span>。</p>
+
+          <div class="r-hd">风险提示</div>
+          <ul class="r-risks" style="margin:0 0 8px">
+            <li class="r-risk"><div class="r-dot"></div><span>政府债供给放量（Q2 预计 <strong>2.5 万亿</strong>），可能阶段性冲击长端利率<span class="cn">7</span></span></li>
+            <li class="r-risk"><div class="r-dot"></div><span>海外通胀超预期回升，传导人民币汇率贬值压力</span></li>
+            <li class="r-risk"><div class="r-dot"></div><span>信贷数据超预期放量，引发宽信用预期切换，债市承压<span class="cn">8</span></span></li>
+          </ul>
+          <div class="r-disclaimer">回答由 AI 生成，仅供研究参考，不构成任何投资建议</div>
         </div>
-        <div>
-          <div class="demo-section-title">关键数据</div>
-          <div class="demo-table-wrap">
-            <table class="demo-table">
-              <thead><tr><th>指标</th><th>最新值</th><th>环比</th><th>同比</th><th>来源</th></tr></thead>
-              <tbody>
-                <tr><td>CPI</td><td><strong>+0.1%</strong></td><td class="flat">持平</td><td class="flat">−0.3pct</td><td>国家统计局<sup class="cite">[1]</sup></td></tr>
-                <tr><td>PPI</td><td><strong>−2.2%</strong></td><td class="up">+0.1pct</td><td class="up">收窄</td><td>国家统计局<sup class="cite">[1]</sup></td></tr>
-                <tr><td>DR007（5日均）</td><td><strong>1.72%</strong></td><td class="up">↓3bp</td><td>—</td><td>中国人民银行<sup class="cite">[2]</sup></td></tr>
-                <tr><td>MLF 利率</td><td><strong>2.00%</strong></td><td class="flat">持平</td><td>—</td><td>中国人民银行<sup class="cite">[2]</sup></td></tr>
-                <tr><td>10Y国债收益率</td><td><strong>1.98%</strong></td><td class="up">↓2bp</td><td class="up">−37bp</td><td>Wind<sup class="cite">[3]</sup></td></tr>
-              </tbody>
-            </table>
+        <div class="demo-result-sidebar">
+          <div class="demo-sidebar-hd">
+            <span>参考资料</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </div>
+          ${refs}
         </div>
-        <div>
-          <div class="demo-section-title">核心判断</div>
-          当前通胀处于温和去通胀区间（CPI +0.1%、PPI −2.2%<sup class="cite">[1]</sup>），叠加资金面宽松，基本面支撑债市偏多。短端受 OMO 利率锚定，下行空间有限；中长端仍有 10−15bp 空间。
-        </div>
-        <div>
-          <div class="demo-section-title">配置建议</div>
-          超配 5−7 年期利率债，标配高评级短久期信用债（AA+/AAA，1−3Y），适当降低货基比例。哑铃型结构兼顾流动性与收益。10Y 国债止盈参考位 <strong>1.88%</strong>，止损参考位 <strong>2.10%</strong><sup class="cite">[3]</sup>。
-        </div>
-        <div>
-          <div class="demo-section-title">主要风险</div>
-          ① 政府债供给放量（Q2 预计 2.5 万亿）冲击长端<sup class="cite">[4]</sup>；② 海外通胀超预期传导人民币汇率；③ 信贷超预期放量引发宽信用预期切换。
-        </div>
-      </div>
-      <div class="demo-sources">
-        <div class="demo-sources-title">数据来源</div>
-        <div class="demo-source-item"><span class="demo-source-num">[1]</span><span>国家统计局 · 2025年2月CPI、PPI数据，2025-03-12</span></div>
-        <div class="demo-source-item"><span class="demo-source-num">[2]</span><span>中国人民银行 · 公开市场操作 & 货币政策工具利率，2025-03</span></div>
-        <div class="demo-source-item"><span class="demo-source-num">[3]</span><span>Wind · 中债国债收益率曲线，截至 2025-03-17</span></div>
-        <div class="demo-source-item"><span class="demo-source-num">[4]</span><span>财政部 · 2025年地方政府债券发行计划，2025-01</span></div>
       </div>`;
 
     } else if (type === 'create-skill') {
+      const refs = [
+        refItem(1,'研报','yan','国金证券','03-14','光伏行业周报：装机预期上调，组件价格企稳回升'),
+        refItem(2,'公告','gong','国家能源局','03-08','2025年1-2月全国电力工业统计数据发布'),
+        refItem(3,'研报','yan','中信建投','03-11','2025年光伏行业投资策略：出海与分布式双轮驱动'),
+        refItem(4,'社媒','she','中国光伏行业协会','03-10','3月光伏产业链价格跟踪：组件0.72元/W，硅料39元/kg'),
+        refItem(5,'公告','gong','发改委','02-28','关于推进分布式光伏发电项目管理办法（征求意见稿）'),
+        refItem(6,'研报','yan','华泰研究','03-05','光伏供应链月报：硅料价格底部确认信号渐现'),
+        refItem(7,'纪要','ji','新能源产业圆桌','03-03','2025年光伏装机预测与供需平衡研讨纪要'),
+      ].join('');
       return `
       <div class="demo-result-hd">
         <div style="width:22px;height:22px;border-radius:6px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -1249,55 +1338,73 @@
         <span class="demo-result-hd-title">技能已创建</span>
         <span class="demo-tag bullish">光伏 · 周报</span>
       </div>
-      <div class="demo-result-body">
-        <div class="demo-skill-card">
-          <div class="demo-skill-ava">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-          </div>
-          <div class="demo-skill-info">
-            <div class="demo-skill-name">光伏行业周报生成</div>
-            <div class="demo-skill-meta">技能 ID: skill_pv_weekly_001 · 已保存至「我创建的」</div>
-            <div class="demo-skill-btns">
-              <button class="ds-btn ds-btn-p" onclick="useSkillFrom('光伏行业周报生成')">立即使用</button>
-              <button class="ds-btn ds-btn-s" onclick="showSkillsView()">查看详情</button>
+      <div class="demo-result-layout">
+        <div class="demo-result-main">
+          <div class="demo-skill-card" style="margin-bottom:12px">
+            <div class="demo-skill-ava">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            </div>
+            <div class="demo-skill-info">
+              <div class="demo-skill-name">光伏行业周报生成</div>
+              <div class="demo-skill-meta">ID: skill_pv_weekly_001 · 已保存至「我创建的」</div>
+              <div class="demo-skill-btns">
+                <button class="ds-btn ds-btn-p" onclick="useSkillFrom('光伏行业周报生成')">立即使用</button>
+                <button class="ds-btn ds-btn-s" onclick="showSkillsView()">查看详情</button>
+              </div>
             </div>
           </div>
-        </div>
-        <div>
-          <div class="demo-section-title">技能能力配置</div>
-          <div class="demo-table-wrap">
-            <table class="demo-table">
-              <thead><tr><th>模块</th><th>数据源</th><th>更新频率</th></tr></thead>
-              <tbody>
-                <tr><td>行情数据</td><td>Wind 光伏指数 & 个股</td><td class="flat">周度</td></tr>
-                <tr><td>政策动态</td><td>国家能源局 / 发改委公告</td><td class="flat">实时</td></tr>
-                <tr><td>供需指标</td><td>硅料 / 组件价格（CPIA）</td><td class="flat">月度</td></tr>
-                <tr><td>估值对比</td><td>PE/PB 历史分位数</td><td class="flat">日度</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div>
-          <div class="demo-skill-preview">
-            <div class="demo-skill-preview-title">输出模板预览</div>
-            <pre># 光伏行业周报 · 第12周（2025-03-17）
 
-## 一、行情概览
+          <div class="r-hd">数据源配置</div>
+          <table class="demo-table" style="margin-bottom:4px">
+            <thead><tr><th>模块</th><th>数据源</th><th>频率</th></tr></thead>
+            <tbody>
+              <tr><td>行情数据</td><td>Wind 光伏指数 & 个股<span class="cn">1</span></td><td class="flat">周度</td></tr>
+              <tr><td>政策动态</td><td>国家能源局 / 发改委公告<span class="cn">2</span><span class="cn">5</span></td><td class="flat">实时</td></tr>
+              <tr><td>供需指标</td><td>CPIA 硅料 / 组件价格<span class="cn">4</span></td><td class="flat">月度</td></tr>
+              <tr><td>估值对比</td><td>Wind PE/PB 历史分位</td><td class="flat">日度</td></tr>
+            </tbody>
+          </table>
+          <div class="r-sources">数据来源：<span class="cn">1</span><span class="cn">2</span><span class="cn">4</span><span class="cn">5</span></div>
+
+          <div class="r-hd">输出预览</div>
+          <div class="demo-skill-preview">
+            <div class="demo-skill-preview-title">光伏行业周报 · 第12周（2025-03-17）</div>
+            <pre>## 一、行情概览
 光伏指数本周 +2.3%，跑赢沪深300 +1.1pct …
 
 ## 二、政策动态
-3月14日，国家能源局发布《分布式光伏管理办法（征求意见稿）》…
+3月14日，国家能源局发布《分布式光伏管理办法
+（征求意见稿）》，重点规范10kW以上项目备案 …
 
 ## 三、供需跟踪
-硅料价格本周持稳 39元/kg，组件价格 0.72元/W …
+硅料持稳 39元/kg，组件 0.72元/W，
+排产环比 +5%，库存去化加速 …
 
 ## 四、下周展望
-关注 3月18日 CPIA 月度数据更新 …</pre>
+关注 3月18日 CPIA 月度数据发布 …</pre>
           </div>
+          <div class="r-disclaimer">回答由 AI 生成，仅供研究参考，不构成任何投资建议</div>
+        </div>
+        <div class="demo-result-sidebar">
+          <div class="demo-sidebar-hd">
+            <span>参考资料</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </div>
+          ${refs}
         </div>
       </div>`;
 
     } else {
+      const refs = [
+        refItem(1,'研报','yan','中信宏观','03-16','货币政策观察：降准落地后的流动性展望与债市影响'),
+        refItem(2,'纪要','ji','宏观圆桌','03-12','货币政策宽松预期下资产配置策略研讨纪要'),
+        refItem(3,'公告','gong','人民银行','03-10','公开市场业务操作公告（2025年第51号）'),
+        refItem(4,'研报','yan','海通宏观','03-09','利率走廊机制解读：OMO与DR007背离信号分析'),
+        refItem(5,'研报','yan','申万宏源','03-06','2025年货币政策展望：降息窗口或在Q2打开'),
+        refItem(6,'公告','gong','财政部','01-20','2025年政府债券发行总体安排说明'),
+        refItem(7,'社媒','she','债市观察','03-15','宽松预期升温，长端利率还有多少下行空间？'),
+        refItem(8,'纪要','ji','固收策略圆桌','03-08','期限利差与曲线形态：哑铃策略适用性探讨'),
+      ].join('');
       return `
       <div class="demo-result-hd">
         <div style="width:22px;height:22px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -1306,81 +1413,77 @@
         <span class="demo-result-hd-title">宏观专家回复</span>
         <span class="demo-tag bullish">偏多债市</span>
       </div>
-      <div class="demo-result-body">
-        <div class="demo-chart-wrap">
-          <div class="demo-chart-label">关键利率走廊（%）· 2024-09 → 2025-02</div>
-          <svg viewBox="0 0 280 56" width="100%" height="56" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="dr007-fill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#2e4a7a" stop-opacity="0.12"/>
-                <stop offset="100%" stop-color="#2e4a7a" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <!-- grid -->
-            <line x1="30" y1="12" x2="280" y2="12" stroke="#e5e5ea" stroke-width="0.5" stroke-dasharray="3,3"/>
-            <line x1="30" y1="30" x2="280" y2="30" stroke="#e5e5ea" stroke-width="0.5" stroke-dasharray="3,3"/>
-            <line x1="30" y1="48" x2="280" y2="48" stroke="#e5e5ea" stroke-width="0.5" stroke-dasharray="3,3"/>
-            <!-- y-axis -->
-            <text x="0" y="15"  font-size="8" fill="#aeaeb2">2.00</text>
-            <text x="0" y="33"  font-size="8" fill="#aeaeb2">1.80</text>
-            <text x="0" y="51"  font-size="8" fill="#aeaeb2">1.60</text>
-            <!-- MLF horizontal -->
-            <line x1="30" y1="12" x2="280" y2="12" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3"/>
-            <!-- DR007 fill -->
-            <path d="M30,31 L86,32 L142,35 L198,37 L254,38 L280,39 L280,48 L30,48 Z" fill="url(#dr007-fill)"/>
-            <!-- DR007 line -->
-            <polyline points="30,31 86,32 142,35 198,37 254,38 280,39"
-              fill="none" stroke="#2e4a7a" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-            <!-- OMO line -->
-            <line x1="30" y1="42" x2="280" y2="42" stroke="#10b981" stroke-width="1.2" stroke-dasharray="4,2"/>
-            <!-- labels -->
-            <circle cx="280" cy="39" r="2.5" fill="#2e4a7a"/>
-            <text x="235" y="37" font-size="8" fill="#2e4a7a" font-weight="600">DR007 1.72%</text>
-            <text x="235" y="11" font-size="8" fill="#f59e0b" font-weight="600">MLF 2.00%</text>
-            <text x="235" y="54" font-size="8" fill="#10b981" font-weight="600">OMO 1.50%</text>
-          </svg>
-          <div class="demo-chart-xaxis">
-            <span style="margin-left:30px">9月</span><span>10月</span><span>11月</span><span>12月</span><span>1月</span><span>2月</span>
+      <div class="demo-result-layout">
+        <div class="demo-result-main">
+          <div class="r-hd">关键利率走廊</div>
+          <div class="demo-chart-wrap" style="margin-bottom:10px">
+            <div class="demo-chart-label">DR007 / MLF / OMO（%）· 2024-09 → 2025-02</div>
+            <svg viewBox="0 0 260 50" width="100%" height="50" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="dr007-fill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#2e4a7a" stop-opacity="0.1"/>
+                  <stop offset="100%" stop-color="#2e4a7a" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="24" y1="10" x2="260" y2="10" stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="24" y1="25" x2="260" y2="25" stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="24" y1="40" x2="260" y2="40" stroke="#f2f2f7" stroke-width="1"/>
+              <text x="0" y="13" font-size="7.5" fill="#c7c7cc">2.00</text>
+              <text x="0" y="28" font-size="7.5" fill="#c7c7cc">1.80</text>
+              <text x="0" y="43" font-size="7.5" fill="#c7c7cc">1.60</text>
+              <!-- MLF -->
+              <line x1="24" y1="10" x2="260" y2="10" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3"/>
+              <!-- OMO -->
+              <line x1="24" y1="33" x2="260" y2="33" stroke="#10b981" stroke-width="1.2" stroke-dasharray="4,2"/>
+              <!-- DR007 fill + line -->
+              <path d="M24,27 L72,28 L120,29 L168,30 L216,31 L260,31 L260,40 L24,40 Z" fill="url(#dr007-fill)"/>
+              <polyline points="24,27 72,28 120,29 168,30 216,31 260,31" fill="none" stroke="#2e4a7a" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="260" cy="31" r="2.5" fill="#2e4a7a"/>
+            </svg>
+            <div class="demo-chart-xaxis" style="padding-left:24px">
+              <span>9月</span><span>10月</span><span>11月</span><span>12月</span><span>1月</span><span>2月</span>
+            </div>
+            <div class="demo-chart-legend">
+              <div class="demo-chart-legend-item"><div class="demo-chart-legend-line" style="background:#2e4a7a"></div>DR007</div>
+              <div class="demo-chart-legend-item"><div class="demo-chart-legend-line" style="background:#f59e0b"></div>MLF</div>
+              <div class="demo-chart-legend-item"><div class="demo-chart-legend-line" style="background:#10b981"></div>OMO 7D</div>
+            </div>
           </div>
-          <div class="demo-chart-legend">
-            <div class="demo-chart-legend-item"><div class="demo-chart-legend-line" style="background:#2e4a7a"></div>DR007</div>
-            <div class="demo-chart-legend-item"><div class="demo-chart-legend-line" style="background:#f59e0b"></div>MLF</div>
-            <div class="demo-chart-legend-item"><div class="demo-chart-legend-line" style="background:#10b981"></div>OMO 7D</div>
+
+          <div class="r-hd">关键利率数据</div>
+          <table class="demo-table">
+            <thead><tr><th>利率指标</th><th>最新值</th><th>变动</th></tr></thead>
+            <tbody>
+              <tr><td>DR007（5日均）</td><td><strong>1.72%</strong></td><td class="up">↓8bp（近月）</td></tr>
+              <tr><td>OMO 7天逆回购</td><td><strong>1.50%</strong></td><td class="flat">持平</td></tr>
+              <tr><td>MLF 1年期</td><td><strong>2.00%</strong></td><td class="flat">持平</td></tr>
+              <tr><td>10Y国债收益率</td><td><strong>1.98%</strong></td><td class="up">年初↓37bp</td></tr>
+              <tr><td>期限利差（10Y−1Y）</td><td><strong>56bp</strong></td><td class="flat">曲线偏平</td></tr>
+            </tbody>
+          </table>
+          <div class="r-sources">数据来源：<span class="cn">3</span><span class="cn">4</span></div>
+
+          <div class="r-hd">政策判断</div>
+          <p style="font-size:12.5px;color:var(--text2);line-height:1.75;margin:0 0 8px">央行通过降准（−0.5pct）与 OMO 利率低于 DR007 中枢释放宽松信号<span class="cn">3</span><span class="cn">1</span>，宽货币意图明确。宽信用传导（信贷→实体）仍需时间，债市短期持续受益充裕流动性。</p>
+
+          <div class="r-hd">走势与配置建议</div>
+          <p style="font-size:12.5px;color:var(--text2);line-height:1.75;margin:0 0 8px">利率债仍有下行空间，10Y 国债目标区间 <strong>1.88%–1.95%</strong>。曲线偏平（56bp）背景下，哑铃型组合（短端流动性 + 长端博弈降息）优于子弹型<span class="cn">8</span><span class="cn">2</span>。中高等级信用债（AA+/AAA，1−3Y）信用利差收窄趋势可把握<span class="cn">5</span>。</p>
+
+          <div class="r-hd">风险提示</div>
+          <ul class="r-risks" style="margin:0 0 8px">
+            <li class="r-risk"><div class="r-dot"></div><span>Q2 政府债净供给约 <strong>2.5 万亿</strong>，可能阶段性扰动长端<span class="cn">6</span></span></li>
+            <li class="r-risk"><div class="r-dot"></div><span>出口数据若超预期强劲，宽信用叙事或提前切换，债市承压<span class="cn">7</span></span></li>
+            <li class="r-risk"><div class="r-dot"></div><span>止损参考：10Y 国债收益率回升突破 <strong>2.10%</strong> 即减仓</span></li>
+          </ul>
+          <div class="r-disclaimer">回答由 AI 生成，仅供研究参考，不构成任何投资建议</div>
+        </div>
+        <div class="demo-result-sidebar">
+          <div class="demo-sidebar-hd">
+            <span>参考资料</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </div>
+          ${refs}
         </div>
-        <div>
-          <div class="demo-section-title">关键利率数据一览</div>
-          <div class="demo-table-wrap">
-            <table class="demo-table">
-              <thead><tr><th>利率指标</th><th>最新值</th><th>变动</th><th>来源</th></tr></thead>
-              <tbody>
-                <tr><td>DR007（银行间）</td><td><strong>1.72%</strong></td><td class="up">↓8bp（近月）</td><td>中国人民银行<sup class="cite">[1]</sup></td></tr>
-                <tr><td>OMO 7天逆回购</td><td><strong>1.50%</strong></td><td class="flat">持平</td><td>中国人民银行<sup class="cite">[1]</sup></td></tr>
-                <tr><td>MLF 1年期</td><td><strong>2.00%</strong></td><td class="flat">持平</td><td>中国人民银行<sup class="cite">[1]</sup></td></tr>
-                <tr><td>10Y国债收益率</td><td><strong>1.98%</strong></td><td class="up">年初↓37bp</td><td>Wind<sup class="cite">[2]</sup></td></tr>
-                <tr><td>期限利差（10Y−1Y）</td><td><strong>56bp</strong></td><td class="flat">偏平坦</td><td>Wind<sup class="cite">[2]</sup></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div>
-          <div class="demo-section-title">政策判断</div>
-          央行通过降准（−0.5pct）、OMO 利率低于 DR007 中枢等方式释放宽松信号<sup class="cite">[1]</sup>。宽货币已较明确，但宽信用传导（信贷 → 实体）尚需时间，债市短期仍受益于充裕流动性。
-        </div>
-        <div>
-          <div class="demo-section-title">走势与配置建议</div>
-          利率债仍有下行空间，10Y 国债目标区间 <strong>1.88%–1.95%</strong>。曲线偏平（56bp）背景下，哑铃型组合（短端流动性 + 长端博弈降息）优于梭型<sup class="cite">[2]</sup>。中高等级信用债（AA+ / AAA，1−3Y）信用利差收窄趋势仍可把握。
-        </div>
-        <div>
-          <div class="demo-section-title">核心风险提示</div>
-          ① Q2 政府债净供给约 <strong>2.5 万亿</strong>，可能阶段性扰动长端<sup class="cite">[3]</sup>；② 若出口数据超预期，宽信用叙事或提前切换；③ 止损参考：10Y 国债收益率回升突破 <strong>2.10%</strong> 即减仓。
-        </div>
-      </div>
-      <div class="demo-sources">
-        <div class="demo-sources-title">数据来源</div>
-        <div class="demo-source-item"><span class="demo-source-num">[1]</span><span>中国人民银行 · 公开市场操作公告 & 货币政策工具，2025-03</span></div>
-        <div class="demo-source-item"><span class="demo-source-num">[2]</span><span>Wind · 中债国债收益率曲线，截至 2025-03-17</span></div>
-        <div class="demo-source-item"><span class="demo-source-num">[3]</span><span>财政部 · 2025年一季度地方政府债券发行计划，2025-01</span></div>
       </div>`;
     }
   }
