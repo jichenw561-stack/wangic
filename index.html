@@ -410,6 +410,105 @@
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+    /* ─── USE CASE CARDS ─── */
+    .use-case-section { width: 100%; max-width: 580px; margin-bottom: 20px; }
+    .use-case-label { font-size: 11px; color: var(--text3); font-weight: 500; letter-spacing: 0.3px; margin-bottom: 8px; }
+    .use-cases { display: flex; flex-direction: column; gap: 8px; }
+    .use-case-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--card-bg);
+      cursor: pointer; transition: all 0.15s; text-align: left; width: 100%;
+    }
+    .use-case-card:hover { border-color: var(--accent); background: var(--accent-light); }
+    .use-case-card:hover .uc-arrow { color: var(--accent); }
+    .uc-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .uc-icon.blue { background: #dce8f8; color: var(--accent); }
+    .uc-icon.green { background: #dcf0e5; color: var(--green); }
+    .uc-body { flex: 1; }
+    .uc-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .uc-desc { font-size: 11.5px; color: var(--text2); margin-top: 3px; }
+    .uc-arrow { color: var(--text3); font-size: 16px; line-height: 1; transition: color 0.15s; }
+
+    /* ─── DEMO PANEL ─── */
+    #view-chat.demo-mode { justify-content: flex-start; padding-top: 32px; }
+    .demo-panel { display: none; flex-direction: column; width: 100%; max-width: 680px; padding-bottom: 24px; }
+    .demo-panel.active { display: flex; }
+    .demo-back {
+      display: flex; align-items: center; gap: 5px; background: none; border: none;
+      cursor: pointer; color: var(--text2); font-size: 12.5px; padding: 0 0 20px;
+      font-family: inherit; transition: color 0.1s;
+    }
+    .demo-back:hover { color: var(--accent); }
+    .demo-messages { display: flex; flex-direction: column; gap: 16px; }
+
+    .demo-user {
+      align-self: flex-end; max-width: 75%;
+      background: var(--accent); color: #fff;
+      padding: 10px 14px; border-radius: 12px 12px 2px 12px;
+      font-size: 13px; line-height: 1.5;
+    }
+    .demo-ai { align-self: flex-start; width: 100%; }
+    .demo-ai-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .demo-ai-ava {
+      width: 24px; height: 24px; background: var(--accent); border-radius: 5px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .demo-ai-name { font-size: 12px; font-weight: 600; color: var(--text); }
+
+    .demo-steps {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+      display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;
+    }
+    .demo-step {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12.5px; color: var(--text3);
+      opacity: 0; transform: translateY(4px); transition: opacity 0.35s, transform 0.35s;
+    }
+    .demo-step.show { opacity: 1; transform: none; }
+    .demo-step-dot {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #ddd;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; background: white; transition: all 0.25s;
+    }
+    .demo-step.running .demo-step-dot { border-color: var(--accent); }
+    .demo-step.running { color: var(--accent); }
+    .demo-step.done .demo-step-dot { background: var(--green); border-color: var(--green); }
+    .demo-step.done { color: var(--text2); }
+
+    .demo-result {
+      border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+      opacity: 0; transform: translateY(6px); transition: opacity 0.4s, transform 0.4s;
+    }
+    .demo-result.show { opacity: 1; transform: none; }
+    .demo-result-hd {
+      padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .demo-result-hd-title { font-size: 13px; font-weight: 600; flex: 1; }
+    .demo-tag { font-size: 10.5px; padding: 2px 8px; border-radius: 3px; font-weight: 500; }
+    .demo-tag.bullish { background: #f0fdf4; color: var(--green); }
+    .demo-tag.neutral { background: #fffbeb; color: var(--orange); }
+    .demo-result-body { padding: 14px; font-size: 12.5px; color: var(--text2); line-height: 1.7; display: flex; flex-direction: column; gap: 10px; }
+    .demo-section-title { font-size: 11.5px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+
+    .demo-skill-card {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 16px; border: 1px solid #c3e6cb; border-radius: var(--radius); background: #f6fdf7;
+    }
+    .demo-skill-ava {
+      width: 40px; height: 40px; background: var(--green);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .demo-skill-info { flex: 1; }
+    .demo-skill-name { font-size: 13.5px; font-weight: 600; }
+    .demo-skill-meta { font-size: 11.5px; color: var(--text2); margin-top: 3px; }
+    .demo-skill-btns { display: flex; gap: 8px; margin-top: 10px; }
+    .ds-btn { padding: 5px 12px; border-radius: 5px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500; }
+    .ds-btn-p { background: var(--accent); color: white; border: none; }
+    .ds-btn-s { background: white; color: var(--text2); border: 1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -494,19 +593,64 @@
 
   <!-- CHAT VIEW -->
   <div id="view-chat" class="view active">
-    <div class="chat-welcome">
+    <!-- Welcome screen -->
+    <div class="chat-welcome" id="chat-welcome">
       <div class="chat-logo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2C9.5 2 7 4 7 7c0 2 1 3.5 2.5 4.5C7.5 12.5 6 14.5 6 17c0 3 2.5 5 6 5s6-2 6-5c0-2.5-1.5-4.5-3.5-5.5C16 10.5 17 9 17 7c0-3-2.5-5-5-5z"/>
           <path d="M12 2 L13.5 0" stroke-width="1.5"/>
         </svg>
       </div>
+      <h2>有什么可以帮你？</h2>
 
+      <!-- Use case cards -->
+      <div class="use-case-section">
+        <div class="use-case-label">使用案例</div>
+        <div class="use-cases">
+          <button class="use-case-card" onclick="showDemo('use-skill')">
+            <div class="uc-icon blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div class="uc-body">
+              <div class="uc-title">使用技能：债券利率走势研判</div>
+              <div class="uc-desc">调用官方技能，分析通胀信号，自动输出利率走势研判与久期配置建议</div>
+            </div>
+            <div class="uc-arrow">›</div>
+          </button>
+          <button class="use-case-card" onclick="showDemo('create-skill')">
+            <div class="uc-icon green">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </div>
+            <div class="uc-body">
+              <div class="uc-title">创建技能：光伏行业周报生成</div>
+              <div class="uc-desc">描述分析需求，AI 自动设计技能框架，一键生成可复用的专属研究技能</div>
+            </div>
+            <div class="uc-arrow">›</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick chips -->
       <div class="suggestions">
         <div class="suggestion-chip" onclick="useChip(this)">使用「债券利率走势研判」技能：...</div>
         <div class="suggestion-chip" onclick="useChip(this)">使用「基金对比分析」技能：采用...</div>
         <div class="suggestion-chip" onclick="useChip(this)">使用「宏观数据解读」技能：分析...</div>
       </div>
+    </div>
+
+    <!-- Demo panel (shown after clicking a use-case card) -->
+    <div class="demo-panel" id="demo-panel">
+      <button class="demo-back" onclick="hideDemo()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        返回
+      </button>
+      <div class="demo-messages" id="demo-messages"></div>
     </div>
   </div>
 
@@ -681,6 +825,141 @@
 <div id="toast"></div>
 
 <script>
+  // ── DEMO DATA ──
+  const demoData = {
+    'use-skill': {
+      userMsg: '使用「债券利率走势研判」技能：分析当前市场环境下的利率走势，给出久期配置建议',
+      steps: [
+        '调取最新 CPI / PPI 宏观数据（CPI +0.1%，PPI -2.2%）',
+        '识别通胀拐点信号 → 温和去通胀区间，债市偏多',
+        '评估资金面松紧与央行政策导向',
+        '生成利率走势研判与配置建议报告',
+      ],
+      result: 'use-skill'
+    },
+    'create-skill': {
+      userMsg: '帮我创建一个「光伏行业周报生成」技能，每周自动汇总行业新闻、政策变化和重点个股表现',
+      steps: [
+        '理解需求场景与目标输出格式（周报 · Markdown）',
+        '设计数据采集逻辑：行业新闻、政策动态、个股行情',
+        '配置分析框架：供需结构、装机数据、估值对比',
+        '技能配置完成，保存至「我创建的」技能广场',
+      ],
+      result: 'create-skill'
+    }
+  };
+
+  function buildResultHTML(type) {
+    if (type === 'use-skill') {
+      return `<div class="demo-result-hd">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span class="demo-result-hd-title">债券利率走势研判报告</span>
+        <span class="demo-tag neutral">温和去通胀</span>
+      </div>
+      <div class="demo-result-body">
+        <div>
+          <div class="demo-section-title">核心判断</div>
+          当前通胀处于温和去通胀区间（CPI +0.1%，PPI -2.2%），基本面支撑债市偏多。短端利率下行空间有限，建议关注中长端。
+        </div>
+        <div>
+          <div class="demo-section-title">配置建议</div>
+          超配 5-7 年期利率债，标配信用债，适当降低货基比例。关注季末资金面扰动，10Y 国债止盈参考位 2.05%。
+        </div>
+        <div>
+          <div class="demo-section-title">主要风险</div>
+          警惕政府债供给放量冲击，及海外通胀超预期传导压力。
+        </div>
+      </div>`;
+    } else {
+      return `<div style="padding:14px">
+        <div class="demo-skill-card">
+          <div class="demo-skill-ava">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="demo-skill-info">
+            <div class="demo-skill-name">光伏行业周报生成</div>
+            <div class="demo-skill-meta">技能已创建 · 已保存至「我创建的」</div>
+            <div class="demo-skill-btns">
+              <button class="ds-btn ds-btn-p" onclick="useSkillFrom('光伏行业周报生成')">立即使用</button>
+              <button class="ds-btn ds-btn-s" onclick="showSkillsView()">查看详情</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+  }
+
+  function showDemo(type) {
+    const demo = demoData[type];
+    document.getElementById('chat-welcome').style.display = 'none';
+    document.getElementById('view-chat').classList.add('demo-mode');
+    const panel = document.getElementById('demo-panel');
+    panel.classList.add('active');
+
+    const container = document.getElementById('demo-messages');
+    container.innerHTML = '';
+
+    // User bubble
+    const userEl = document.createElement('div');
+    userEl.className = 'demo-user';
+    userEl.textContent = demo.userMsg;
+    container.appendChild(userEl);
+
+    // AI message
+    const aiEl = document.createElement('div');
+    aiEl.className = 'demo-ai';
+    aiEl.innerHTML = `<div class="demo-ai-head">
+      <div class="demo-ai-ava">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M12 2C9.5 2 7 4 7 7c0 2 1 3.5 2.5 4.5C7.5 12.5 6 14.5 6 17c0 3 2.5 5 6 5s6-2 6-5c0-2.5-1.5-4.5-3.5-5.5C16 10.5 17 9 17 7c0-3-2.5-5-5-5z"/>
+        </svg>
+      </div>
+      <div class="demo-ai-name">AI 投研助手</div>
+    </div>`;
+
+    const stepsEl = document.createElement('div');
+    stepsEl.className = 'demo-steps';
+    demo.steps.forEach((text, i) => {
+      const s = document.createElement('div');
+      s.className = 'demo-step';
+      s.id = `ds-${i}`;
+      s.innerHTML = `<div class="demo-step-dot">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div><span>${text}</span>`;
+      stepsEl.appendChild(s);
+    });
+    aiEl.appendChild(stepsEl);
+
+    const resultEl = document.createElement('div');
+    resultEl.className = 'demo-result';
+    resultEl.id = 'demo-result-block';
+    resultEl.innerHTML = buildResultHTML(demo.result);
+    aiEl.appendChild(resultEl);
+    container.appendChild(aiEl);
+
+    // Animate steps
+    demo.steps.forEach((_, i) => {
+      setTimeout(() => {
+        const el = document.getElementById(`ds-${i}`);
+        if (!el) return;
+        el.classList.add('show', 'running');
+        setTimeout(() => { el.classList.remove('running'); el.classList.add('done'); }, 500);
+      }, 300 + i * 650);
+    });
+
+    // Show result
+    setTimeout(() => {
+      const r = document.getElementById('demo-result-block');
+      if (r) r.classList.add('show');
+    }, 300 + demo.steps.length * 650 + 400);
+  }
+
+  function hideDemo() {
+    document.getElementById('chat-welcome').style.display = '';
+    document.getElementById('view-chat').classList.remove('demo-mode');
+    document.getElementById('demo-panel').classList.remove('active');
+  }
+
   // ── DATA ──
   const skillsData = {
     my: [
@@ -793,6 +1072,7 @@
   }
 
   function newChat() {
+    hideDemo();
     showChatView();
     document.getElementById('chat-input').value = '';
     document.querySelectorAll('.nav-item').forEach((n,i) => n.classList.toggle('active', i===0));
