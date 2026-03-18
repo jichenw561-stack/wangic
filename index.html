@@ -462,7 +462,7 @@
       text-align: left; overflow: hidden;
     }
     .use-case-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(37,99,235,0.08); }
-    .use-case-card:hover .uc-play { opacity: 1; }
+    .use-case-card:hover .uc-play { background: var(--accent-light); color: var(--accent); }
     /* Card preview area */
     .uc-preview {
       height: 74px; padding: 10px 14px; display: flex; align-items: center;
@@ -474,15 +474,17 @@
     .uc-prev-orange { background: linear-gradient(135deg, #fff7ed 0%, #fef0e0 100%); }
     .uc-preview svg { width: 100%; }
     /* Card body */
-    .uc-body { padding: 10px 13px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .uc-body { padding: 10px 13px 8px; display: flex; flex-direction: column; gap: 3px; }
+    .uc-meta { display: flex; align-items: center; justify-content: space-between; }
     .uc-label { font-size: 10px; color: var(--text3); font-weight: 500; letter-spacing: 0.3px; }
-    .uc-title { font-size: 12.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
-    .uc-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; }
-    .uc-dur { font-size: 10.5px; color: var(--text3); display: flex; align-items: center; gap: 3px; }
+    .uc-dur { font-size: 10px; color: var(--text3); display: flex; align-items: center; gap: 2px; }
+    .uc-title { font-size: 12.5px; font-weight: 600; color: var(--text); line-height: 1.35; }
+    /* Play button — full-width footer bar */
     .uc-play {
-      display: flex; align-items: center; gap: 4px; padding: 4px 10px;
-      border-radius: 10px; background: var(--accent); color: white;
-      font-size: 11px; font-weight: 500; opacity: 0.88; transition: opacity 0.15s;
+      border-top: 1px solid var(--border); padding: 8px 13px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-size: 12px; font-weight: 500; color: var(--accent);
+      background: transparent; transition: background 0.15s;
     }
     /* Demo panel progress bar + replay */
     .demo-progress-bar {
@@ -559,6 +561,18 @@
       font-family: inherit; transition: color 0.1s;
     }
     .demo-back:hover { color: var(--accent); }
+
+    /* Speed control */
+    .demo-speed { display: flex; align-items: center; gap: 3px; margin-left: auto; }
+    .demo-speed-label { font-size: 11px; color: var(--text3); margin-right: 4px; }
+    .speed-btn {
+      background: none; border: 1px solid var(--border); cursor: pointer;
+      padding: 3px 8px; border-radius: 10px; font-size: 11px; color: var(--text2);
+      font-family: inherit; transition: all 0.12s;
+    }
+    .speed-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .speed-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
     .demo-messages { display: flex; flex-direction: column; gap: 16px; }
     .demo-user {
       align-self: flex-end; max-width: 75%; background: var(--accent); color: #fff;
@@ -954,13 +968,13 @@
               </svg>
             </div>
             <div class="uc-body">
-              <div class="uc-label">使用技能</div>
-              <div class="uc-title">债券利率走势研判</div>
-              <div class="uc-foot">
+              <div class="uc-meta">
+                <span class="uc-label">使用技能</span>
                 <span class="uc-dur"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>约 6 秒</span>
-                <span class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</span>
               </div>
+              <div class="uc-title">债券利率走势研判</div>
             </div>
+            <div class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</div>
           </button>
 
           <!-- Card 2: 创建技能 -->
@@ -980,13 +994,13 @@
               </svg>
             </div>
             <div class="uc-body">
-              <div class="uc-label">创建技能</div>
-              <div class="uc-title">光伏行业周报生成</div>
-              <div class="uc-foot">
+              <div class="uc-meta">
+                <span class="uc-label">创建技能</span>
                 <span class="uc-dur"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>约 5 秒</span>
-                <span class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</span>
               </div>
+              <div class="uc-title">光伏行业周报生成</div>
             </div>
+            <div class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</div>
           </button>
 
           <!-- Card 3: @专家 -->
@@ -1005,13 +1019,13 @@
               </svg>
             </div>
             <div class="uc-body">
-              <div class="uc-label">@专家</div>
-              <div class="uc-title">向宏观专家提问</div>
-              <div class="uc-foot">
+              <div class="uc-meta">
+                <span class="uc-label">@专家</span>
                 <span class="uc-dur"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>约 5 秒</span>
-                <span class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</span>
               </div>
+              <div class="uc-title">向宏观专家提问</div>
             </div>
+            <div class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</div>
           </button>
 
           <!-- Card 4: 因子技能 (nev-inventory) -->
@@ -1035,13 +1049,13 @@
               </svg>
             </div>
             <div class="uc-body">
-              <div class="uc-label">因子技能</div>
-              <div class="uc-title">新能源渠道库存压力</div>
-              <div class="uc-foot">
+              <div class="uc-meta">
+                <span class="uc-label">因子技能</span>
                 <span class="uc-dur"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>约 6 秒</span>
-                <span class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</span>
               </div>
+              <div class="uc-title">新能源渠道库存压力</div>
             </div>
+            <div class="uc-play"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>播放演示</div>
           </button>
 
         </div>
@@ -1064,6 +1078,12 @@
           </svg>
           重新播放
         </button>
+        <div class="demo-speed">
+          <span class="demo-speed-label">速度</span>
+          <button class="speed-btn active" id="speed-1x" onclick="setPlaybackSpeed(1)">1×</button>
+          <button class="speed-btn" id="speed-15x" onclick="setPlaybackSpeed(1.5)">1.5×</button>
+          <button class="speed-btn" id="speed-2x" onclick="setPlaybackSpeed(2)">2×</button>
+        </div>
       </div>
       <div class="demo-messages" id="demo-messages"></div>
     </div>
@@ -2016,6 +2036,18 @@
   }
 
   let currentDemoType = null;
+  let playbackSpeed = 1;
+
+  function setPlaybackSpeed(spd) {
+    playbackSpeed = spd;
+    ['1x','15x','2x'].forEach(id => {
+      const el = document.getElementById('speed-' + id);
+      if (el) el.classList.remove('active');
+    });
+    const map = { 1: '1x', 1.5: '15x', 2: '2x' };
+    const activeEl = document.getElementById('speed-' + map[spd]);
+    if (activeEl) activeEl.classList.add('active');
+  }
 
   function replayCurrentDemo() {
     if (currentDemoType) showDemo(currentDemoType);
@@ -2105,12 +2137,13 @@
 
     // ── Animation scheduling ──
     // Each step: show title → expand subs → sub items appear → mark done
-    const STEP_GAP   = 900;   // ms between steps
-    const SUB_DELAY  = 180;   // ms between sub items appearing
-    const SUB_START  = 280;   // ms after step appears before subs start
-    const DONE_DELAY = 300;   // ms after last sub before marking done
+    const spd = playbackSpeed;
+    const STEP_GAP   = 900  / spd;
+    const SUB_DELAY  = 180  / spd;
+    const SUB_START  = 280  / spd;
+    const DONE_DELAY = 300  / spd;
 
-    let cursor = 400; // initial delay
+    let cursor = 400 / spd; // initial delay
 
     demo.steps.forEach((step, i) => {
       const stepDelay = cursor;
