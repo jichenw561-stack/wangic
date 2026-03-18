@@ -440,7 +440,7 @@
     /* ─── USE CASE CARDS ─── */
     .use-case-section { width: 100%; margin-bottom: 0; }
     .use-case-label { font-size: 11px; color: var(--text3); font-weight: 500; letter-spacing: 0.3px; margin-bottom: 10px; }
-    .use-cases { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .use-cases { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     .use-case-card {
       display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
       padding: 14px 16px; border: 1px solid var(--border);
@@ -735,13 +735,16 @@
             <div class="uc-title">创建技能<br>光伏行业周报生成</div>
             <div class="uc-desc">描述需求，AI 自动设计技能框架，一键生成可复用的专属研究技能</div>
           </button>
+          <button class="use-case-card" onclick="showDemo('ask-expert')">
+            <div class="uc-icon" style="background:#f0f4ff;color:#4f46e5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div class="uc-title">@专家<br>向宏观专家提问</div>
+            <div class="uc-desc">召唤领域专家，获取宏观、固收、产业等专业视角的深度解读</div>
+          </button>
         </div>
-      </div>
-
-      <div class="suggestions">
-        <div class="suggestion-chip" onclick="useChip(this)">使用「债券利率走势研判」技能分析当前利率</div>
-        <div class="suggestion-chip" onclick="useChip(this)">使用「基金对比分析」技能对比主动基金</div>
-        <div class="suggestion-chip" onclick="useChip(this)">使用「宏观数据解读」技能解读最新PMI</div>
       </div>
     </div>
 
@@ -977,6 +980,16 @@
         '技能配置完成，保存至「我创建的」技能广场',
       ],
       result: 'create-skill'
+    },
+    'ask-expert': {
+      userMsg: '@宏观专家 当前货币政策宽松预期升温，如何看待债券市场的走势与配置机会？',
+      steps: [
+        '识别专家角色 → 宏观专家，加载宏观研究框架',
+        '解析问题维度：货币政策预期 × 债券市场传导',
+        '调取利率走廊、DR007、MLF等关键数据',
+        '结合专家视角生成深度研判回复',
+      ],
+      result: 'ask-expert'
     }
   };
 
@@ -1001,7 +1014,7 @@
           警惕政府债供给放量冲击，及海外通胀超预期传导压力。
         </div>
       </div>`;
-    } else {
+    } else if (type === 'create-skill') {
       return `<div style="padding:14px">
         <div class="demo-skill-card">
           <div class="demo-skill-ava">
@@ -1015,6 +1028,28 @@
               <button class="ds-btn ds-btn-s" onclick="showSkillsView()">查看详情</button>
             </div>
           </div>
+        </div>
+      </div>`;
+    } else {
+      return `<div class="demo-result-hd">
+        <div style="width:22px;height:22px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <span class="demo-result-hd-title">宏观专家回复</span>
+        <span class="demo-tag bullish">偏多债市</span>
+      </div>
+      <div class="demo-result-body">
+        <div>
+          <div class="demo-section-title">政策判断</div>
+          当前央行通过降准、MLF续作释放宽松信号，DR007 中枢已下移至 1.7% 附近，宽货币传导至宽信用仍需时间，债市短期受益于资金面宽松。
+        </div>
+        <div>
+          <div class="demo-section-title">走势研判</div>
+          利率债仍有下行空间，10Y 国债收益率目标区间 1.95%–2.05%。信用利差整体收窄，中高等级短久期信用债性价比较高，建议哑铃型组合。
+        </div>
+        <div>
+          <div class="demo-section-title">主要关注</div>
+          关注 4 月财政发力节奏及政府债放量压力，若供给超预期可能阶段性扰动长端利率。
         </div>
       </div>`;
     }
