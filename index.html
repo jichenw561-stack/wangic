@@ -562,14 +562,18 @@
     }
     .demo-back:hover { color: var(--accent); }
 
-    /* Play all button */
+    /* Section header with inline play button */
+    .use-case-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .use-case-hd .use-case-label { margin-bottom: 0; }
     .play-all-btn {
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-      width: 100%; margin-top: 12px; padding: 9px 0;
-      border: 1.5px solid var(--accent); border-radius: 8px;
-      background: transparent; color: var(--accent);
-      font-size: 12.5px; font-weight: 500; font-family: inherit;
-      cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 11px; border-radius: 12px;
+      border: 1px solid var(--accent); background: transparent;
+      color: var(--accent); font-size: 11.5px; font-weight: 500;
+      font-family: inherit; cursor: pointer; transition: all 0.15s;
     }
     .play-all-btn:hover { background: var(--accent); color: #fff; }
     .play-all-btn:active { opacity: 0.85; }
@@ -964,7 +968,13 @@
 
       <!-- Use case cards + quick chips -->
       <div class="use-case-section">
-        <div class="use-case-label">使用案例</div>
+        <div class="use-case-hd">
+          <div class="use-case-label">演示案例</div>
+          <button class="play-all-btn" id="play-all-btn" onclick="playAllDemos()">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            播放演示
+          </button>
+        </div>
         <div class="use-cases">
 
           <!-- Card 1: 使用技能 -->
@@ -1043,43 +1053,7 @@
             </div>
           </button>
 
-          <!-- Card 4: 因子技能 (nev-inventory) -->
-          <button class="use-case-card" onclick="showDemo('nev-inventory')">
-            <div class="uc-preview uc-prev-orange">
-              <svg viewBox="0 0 200 54" xmlns="http://www.w3.org/2000/svg">
-                <rect x="14" y="46" width="10" height="6"  fill="#fca5a5" rx="1"/>
-                <rect x="28" y="41" width="10" height="11" fill="#fca5a5" rx="1"/>
-                <rect x="42" y="35" width="10" height="17" fill="#fca5a5" rx="1"/>
-                <rect x="56" y="27" width="10" height="25" fill="#fca5a5" rx="1"/>
-                <rect x="70" y="19" width="10" height="33" fill="#fca5a5" rx="1"/>
-                <rect x="84" y="12" width="10" height="40" fill="#fca5a5" rx="1"/>
-                <rect x="98" y="7"  width="10" height="45" fill="#fca5a5" rx="1" opacity="0.8"/>
-                <rect x="112" y="16" width="10" height="36" fill="#bbf7d0" rx="1"/>
-                <rect x="126" y="28" width="10" height="24" fill="#86efac" rx="1"/>
-                <polyline points="19,44 33,39 47,33 61,25 75,18 89,11 103,7 117,14 131,25" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="131" cy="25" r="2.5" fill="#f59e0b"/>
-                <rect x="144" y="18" width="48" height="28" rx="5" fill="white" opacity="0.85"/>
-                <text x="168" y="31" font-size="9" fill="#ea580c" text-anchor="middle" font-weight="700">13.77万</text>
-                <text x="168" y="41" font-size="6.5" fill="#c2410c" text-anchor="middle">累库量↓30%</text>
-              </svg>
-            </div>
-            <div class="uc-body">
-              <div class="uc-meta">
-                <span class="uc-label">因子技能</span>
-                <span class="uc-dur"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>约 6 秒</span>
-              </div>
-              <div class="uc-title">新能源渠道库存压力</div>
-            </div>
-          </button>
-
         </div>
-
-        <!-- 一键播放全部演示 -->
-        <button class="play-all-btn" id="play-all-btn" onclick="playAllDemos()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          一键播放全部演示
-        </button>
-
       </div>
     </div>
 
@@ -1241,6 +1215,10 @@
     </div>
 
     <div class="suggested-qs">
+      <button class="sq-chip" onclick="showDemo('nev-inventory')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        新能源车企目前上险量维度的渠道库存压力趋势是怎么样的？
+      </button>
       <button class="sq-chip" onclick="showDemo('northbound-fund')">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
         北向资金近期持仓变化有哪些值得关注的板块和个股异动？
@@ -2062,8 +2040,8 @@
   let tourActive = false;
 
   function playAllDemos() {
-    const types = ['use-skill', 'create-skill', 'ask-expert', 'nev-inventory'];
-    const labels = ['使用技能', '创建技能', '@专家', '因子技能'];
+    const types = ['use-skill', 'create-skill', 'ask-expert'];
+    const labels = ['使用技能', '创建技能', '@专家'];
     tourActive = true;
     let idx = 0;
     function playNext() {
