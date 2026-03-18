@@ -9,27 +9,35 @@
 
     :root {
       --sidebar-w: 220px;
-      --accent: #4f8ef7;
-      --accent-light: #e8f0fe;
-      --bg: #f7f8fa;
-      --card-bg: #fff;
-      --border: #e5e7eb;
-      --text: #1a1a2e;
-      --muted: #888;
-      --tag-new: #e53935;
-      --sidebar-bg: #f0f2f5;
-      --sidebar-active: #e2e8f8;
-      --radius: 12px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --accent: #2e4a7a;
+      --accent-light: #eef2f8;
+      --bg: #ffffff;
+      --bg2: #f9f9fb;
+      --card-bg: #ffffff;
+      --border: #e5e5ea;
+      --text: #1d1d1f;
+      --text2: #6e6e73;
+      --text3: #aeaeb2;
+      --muted: #6e6e73;
+      --tag-new: #c00;
+      --sidebar-bg: #f9f9fb;
+      --sidebar-active: #eef2f8;
+      --green: #006838;
+      --orange: #b45309;
+      --red: #c00;
+      --radius: 10px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
       background: var(--bg);
       color: var(--text);
       display: flex;
       height: 100vh;
       overflow: hidden;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ─── SIDEBAR ─── */
@@ -49,60 +57,63 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 14px 10px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
     }
     .logo-icon {
       width: 28px; height: 28px;
+      background: var(--accent); border-radius: 7px;
       display: flex; align-items: center; justify-content: center;
     }
-    .logo-icon svg { width: 24px; height: 24px; }
+    .logo-icon svg { width: 18px; height: 18px; color: #fff; }
 
-    .sidebar-actions { display: flex; gap: 6px; }
+    .sidebar-actions { display: flex; gap: 4px; }
     .icon-btn {
       background: none; border: none; cursor: pointer;
-      padding: 6px; border-radius: 8px; color: var(--muted);
+      padding: 6px; border-radius: 6px; color: var(--text2);
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
+      transition: background 0.1s;
     }
-    .icon-btn:hover { background: var(--border); color: var(--text); }
+    .icon-btn:hover { background: #ececee; color: var(--text); }
 
-    .sidebar-nav { padding: 0 8px; }
+    .sidebar-nav { padding: 8px; }
     .nav-item {
       display: flex; align-items: center; gap: 8px;
-      padding: 8px 10px; border-radius: 8px; cursor: pointer;
-      font-size: 13.5px; color: var(--text);
-      transition: background 0.15s; white-space: nowrap;
+      padding: 8px 10px; border-radius: 6px; cursor: pointer;
+      font-size: 13px; color: var(--text2);
+      transition: background 0.1s; white-space: nowrap; margin-bottom: 2px;
     }
-    .nav-item:hover, .nav-item.active { background: var(--sidebar-active); }
+    .nav-item:hover { background: #ececee; }
+    .nav-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
     .nav-item svg { flex-shrink: 0; }
     .badge-new {
-      font-size: 10px; font-weight: 700; color: var(--tag-new);
-      background: #fff0f0; padding: 1px 5px; border-radius: 4px;
+      font-size: 10px; font-weight: 700; color: var(--red);
+      background: #fff0f0; padding: 1px 5px; border-radius: 3px;
     }
 
     .history-section { flex: 1; overflow-y: auto; padding: 8px 8px 0; }
     .history-label {
-      font-size: 11px; color: var(--muted); padding: 8px 10px 4px;
+      font-size: 11px; color: var(--text3); padding: 8px 10px 4px;
       font-weight: 500; letter-spacing: 0.3px;
     }
     .history-item {
-      padding: 7px 10px; border-radius: 8px; cursor: pointer;
-      font-size: 13px; color: #444; white-space: nowrap;
+      padding: 7px 10px; border-radius: 6px; cursor: pointer;
+      font-size: 12.5px; color: var(--text2); white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
-      transition: background 0.15s;
+      transition: background 0.1s;
     }
-    .history-item:hover { background: var(--sidebar-active); }
+    .history-item:hover { background: #ececee; }
 
     .sidebar-footer {
       padding: 10px 8px 14px; border-top: 1px solid var(--border); margin-top: 8px;
     }
     .points-btn {
       display: flex; align-items: center; gap: 8px;
-      padding: 8px 10px; border-radius: 8px; cursor: pointer;
-      font-size: 13.5px; color: var(--text);
-      transition: background 0.15s;
+      padding: 8px 10px; border-radius: 6px; cursor: pointer;
+      font-size: 13px; color: var(--text2);
+      transition: background 0.1s;
     }
-    .points-btn:hover { background: var(--sidebar-active); }
+    .points-btn:hover { background: #ececee; }
 
     /* ─── MAIN ─── */
     #main {
@@ -114,11 +125,11 @@
     #toggle-sidebar {
       position: absolute; top: 14px; left: 14px; z-index: 20;
       background: none; border: none; cursor: pointer;
-      padding: 6px; border-radius: 8px; color: var(--muted);
+      padding: 6px; border-radius: 6px; color: var(--text2);
       display: none; align-items: center; justify-content: center;
-      transition: background 0.15s;
+      transition: background 0.1s;
     }
-    #toggle-sidebar:hover { background: var(--border); }
+    #toggle-sidebar:hover { background: #ececee; }
     #sidebar.collapsed ~ #main #toggle-sidebar { display: flex; }
 
     /* ─── VIEWS ─── */
@@ -134,21 +145,21 @@
       text-align: center; max-width: 680px; width: 100%;
     }
     .chat-logo {
-      width: 60px; height: 60px; background: var(--text);
-      border-radius: 18px; margin: 0 auto 28px;
+      width: 56px; height: 56px; background: var(--accent);
+      border-radius: 14px; margin: 0 auto 28px;
       display: flex; align-items: center; justify-content: center;
     }
-    .chat-logo svg { width: 36px; height: 36px; color: #fff; }
-    .chat-welcome h2 { font-size: 22px; font-weight: 600; margin-bottom: 32px; }
+    .chat-logo svg { width: 30px; height: 30px; color: #fff; }
+    .chat-welcome h2 { font-size: 20px; font-weight: 600; margin-bottom: 32px; color: var(--text); }
 
     .suggestions {
-      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
       margin-bottom: 40px;
     }
     .suggestion-chip {
       background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: 20px; padding: 8px 16px; font-size: 13px;
-      cursor: pointer; color: #444; transition: all 0.15s;
+      border-radius: 6px; padding: 8px 14px; font-size: 12.5px;
+      cursor: pointer; color: var(--text2); transition: all 0.1s;
       white-space: nowrap;
     }
     .suggestion-chip:hover {
@@ -162,9 +173,9 @@
       flex-shrink: 0;
     }
     .input-box {
-      background: var(--card-bg); border: 1.5px solid var(--border);
-      border-radius: 16px; padding: 12px 16px;
-      box-shadow: var(--shadow); transition: border-color 0.2s;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+      transition: border-color 0.15s;
     }
     .input-box:focus-within { border-color: var(--accent); }
 
@@ -172,9 +183,9 @@
       display: flex; align-items: center; gap: 8px;
     }
     .attach-btn {
-      background: none; border: none; cursor: pointer; color: var(--muted);
-      padding: 4px; border-radius: 6px; display: flex;
-      transition: color 0.15s;
+      background: none; border: none; cursor: pointer; color: var(--text3);
+      padding: 4px; border-radius: 5px; display: flex;
+      transition: color 0.1s;
     }
     .attach-btn:hover { color: var(--text); }
 
@@ -183,20 +194,20 @@
       color: var(--text); background: transparent; resize: none;
       font-family: inherit; height: 24px; line-height: 24px;
     }
-    #chat-input::placeholder { color: var(--muted); }
+    #chat-input::placeholder { color: var(--text3); }
 
     .send-btn {
-      width: 32px; height: 32px; background: var(--accent);
-      border: none; border-radius: 8px; cursor: pointer;
+      width: 30px; height: 30px; background: var(--accent);
+      border: none; border-radius: 6px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      color: #fff; transition: opacity 0.15s;
+      color: #fff; transition: opacity 0.1s;
     }
     .send-btn:hover { opacity: 0.85; }
 
     .voice-btn {
       background: none; border: none; cursor: pointer;
-      color: var(--muted); padding: 4px; border-radius: 6px;
-      display: flex; transition: color 0.15s;
+      color: var(--text3); padding: 4px; border-radius: 5px;
+      display: flex; transition: color 0.1s;
     }
     .voice-btn:hover { color: var(--text); }
 
@@ -206,20 +217,21 @@
     }
     .tool-btn {
       display: flex; align-items: center; gap: 5px;
-      padding: 5px 12px; border-radius: 20px; font-size: 12.5px;
-      cursor: pointer; border: 1.5px solid var(--border);
-      background: var(--card-bg); color: #444;
-      transition: all 0.15s; white-space: nowrap;
+      padding: 5px 12px; border-radius: 5px; font-size: 12px;
+      cursor: pointer; border: 1px solid var(--border);
+      background: var(--card-bg); color: var(--text2);
+      transition: all 0.1s; white-space: nowrap;
+      font-family: inherit;
     }
-    .tool-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tool-btn:hover { background: var(--bg2); }
     .tool-btn.active {
-      background: var(--accent-light); border-color: var(--accent);
+      background: var(--accent-light); border-color: #d0dae8;
       color: var(--accent);
     }
     .tool-btn .badge-new { font-size: 9px; padding: 1px 4px; }
 
     .input-footer {
-      text-align: center; font-size: 11px; color: var(--muted);
+      text-align: center; font-size: 11px; color: var(--text3);
       margin-top: 8px;
     }
 
@@ -227,7 +239,7 @@
     #skills-popup {
       position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%);
       background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      border-radius: var(--radius); box-shadow: 0 8px 24px rgba(0,0,0,0.1);
       width: 380px; max-height: 420px; overflow-y: auto; z-index: 100;
       display: none; padding: 12px;
     }
@@ -235,52 +247,52 @@
 
     .popup-search {
       display: flex; align-items: center; gap: 8px;
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 8px; padding: 7px 12px; margin-bottom: 12px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 7px 12px; margin-bottom: 12px;
     }
     .popup-search input {
       border: none; outline: none; background: transparent;
-      font-size: 13px; flex: 1; color: var(--text);
+      font-size: 13px; flex: 1; color: var(--text); font-family: inherit;
     }
-    .popup-search input::placeholder { color: var(--muted); }
+    .popup-search input::placeholder { color: var(--text3); }
 
     .popup-section-label {
-      font-size: 12px; font-weight: 600; color: var(--muted);
+      font-size: 12px; font-weight: 600; color: var(--text2);
       padding: 4px 8px; display: flex; align-items: center;
       justify-content: space-between;
     }
-    .popup-section-label span { cursor: pointer; }
+    .popup-section-label span { cursor: pointer; color: var(--text3); }
 
     .popup-skill-item {
       display: flex; align-items: flex-start; gap: 10px;
-      padding: 8px 10px; border-radius: 8px; cursor: pointer;
-      transition: background 0.15s; position: relative;
+      padding: 8px 10px; border-radius: 6px; cursor: pointer;
+      transition: background 0.1s; position: relative;
     }
-    .popup-skill-item:hover { background: var(--bg); }
+    .popup-skill-item:hover { background: var(--bg2); }
     .popup-skill-item.has-preview:hover .skill-preview-bubble { display: block; }
 
     .skill-icon-sm {
-      width: 32px; height: 32px; background: #f3f4f6;
-      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; background: var(--bg2);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
     .popup-skill-info { flex: 1; }
-    .popup-skill-name { font-size: 13.5px; font-weight: 500; }
-    .popup-skill-desc { font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+    .popup-skill-name { font-size: 13px; font-weight: 500; }
+    .popup-skill-desc { font-size: 11.5px; color: var(--text2); margin-top: 2px; line-height: 1.4; }
 
     .skill-preview-bubble {
       display: none; position: absolute; left: 110%; top: 0;
       width: 240px; background: var(--card-bg);
-      border: 1px solid var(--border); border-radius: 10px;
-      padding: 12px; font-size: 12px; color: #444; line-height: 1.6;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px; font-size: 12px; color: var(--text2); line-height: 1.6;
       box-shadow: var(--shadow); z-index: 200;
     }
 
     .popup-divider { height: 1px; background: var(--border); margin: 8px 0; }
     .popup-add {
       display: flex; align-items: center; gap: 8px;
-      padding: 8px 10px; cursor: pointer; border-radius: 8px;
-      font-size: 13px; color: var(--accent); transition: background 0.15s;
+      padding: 8px 10px; cursor: pointer; border-radius: 6px;
+      font-size: 13px; color: var(--accent); transition: background 0.1s;
     }
     .popup-add:hover { background: var(--accent-light); }
 
@@ -290,41 +302,42 @@
     }
     .skills-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 28px 40px 20px;
+      padding: 24px 32px 18px;
+      border-bottom: 1px solid var(--border);
     }
-    .skills-header h1 { font-size: 22px; font-weight: 700; }
+    .skills-header h1 { font-size: 18px; font-weight: 600; }
     .create-btn {
       background: var(--accent); color: #fff; border: none;
-      border-radius: 8px; padding: 8px 16px; font-size: 13.5px;
+      border-radius: 6px; padding: 6px 14px; font-size: 12px;
       cursor: pointer; display: flex; align-items: center; gap: 6px;
-      transition: opacity 0.15s;
+      transition: opacity 0.1s; font-family: inherit; font-weight: 500;
     }
     .create-btn:hover { opacity: 0.85; }
 
     .skills-tabs {
-      display: flex; gap: 4px; padding: 0 40px 16px;
+      display: flex; gap: 4px; padding: 12px 32px;
       border-bottom: 1px solid var(--border);
     }
     .skills-tab {
-      padding: 7px 18px; border-radius: 8px; cursor: pointer;
-      font-size: 13.5px; color: var(--muted);
+      padding: 6px 16px; border-radius: 5px; cursor: pointer;
+      font-size: 13px; color: var(--text2);
       border: none; background: none;
       display: flex; align-items: center; gap: 5px;
-      transition: all 0.15s;
+      transition: all 0.1s; font-family: inherit;
     }
     .skills-tab.active {
-      background: var(--accent-light); color: var(--accent); font-weight: 600;
+      background: var(--accent-light); color: var(--accent); font-weight: 500;
     }
-    .skills-tab:hover:not(.active) { color: var(--text); }
+    .skills-tab:hover:not(.active) { background: #ececee; }
 
     .skills-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px; padding: 24px 40px; overflow-y: auto; flex: 1;
+      gap: 14px; padding: 20px 32px; overflow-y: auto; flex: 1;
     }
 
     .skill-card {
       background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 18px;
+      border-radius: var(--radius); padding: 16px;
       display: flex; flex-direction: column; gap: 10px;
       transition: box-shadow 0.15s; cursor: default;
     }
@@ -334,8 +347,8 @@
       display: flex; align-items: flex-start; justify-content: space-between;
     }
     .skill-icon {
-      width: 36px; height: 36px; background: #f3f4f6;
-      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; background: var(--bg2);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
     }
     .skill-card-controls { display: flex; align-items: center; gap: 8px; }
 
@@ -357,41 +370,41 @@
     .toggle input:checked ~ .toggle-slider::before { transform: translateX(16px); }
 
     .more-btn {
-      background: none; border: none; cursor: pointer; color: var(--muted);
-      padding: 2px; border-radius: 4px;
+      background: none; border: none; cursor: pointer; color: var(--text3);
+      padding: 2px; border-radius: 4px; font-size: 16px; line-height: 1;
     }
     .more-btn:hover { color: var(--text); }
 
-    .skill-card-name { font-size: 15px; font-weight: 600; }
-    .skill-card-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+    .skill-card-name { font-size: 13.5px; font-weight: 600; }
+    .skill-card-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
 
     .skill-card-footer {
       display: flex; align-items: center; justify-content: space-between;
       margin-top: auto;
     }
-    .skill-date { font-size: 11.5px; color: var(--muted); }
+    .skill-date { font-size: 11.5px; color: var(--text3); }
     .skill-actions { display: flex; gap: 10px; }
     .skill-link {
-      font-size: 12.5px; color: var(--accent); cursor: pointer;
-      text-decoration: none; background: none; border: none;
+      font-size: 12px; color: var(--accent); cursor: pointer;
+      text-decoration: none; background: none; border: none; font-family: inherit;
     }
     .skill-link:hover { text-decoration: underline; }
 
     .skill-status {
       display: flex; align-items: center; gap: 4px;
-      font-size: 11.5px; color: var(--muted);
+      font-size: 11.5px; color: var(--text3);
     }
 
     /* Toast */
     #toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: #1a1a2e; color: #fff; padding: 10px 20px;
-      border-radius: 8px; font-size: 13px; opacity: 0;
+      background: #1d1d1f; color: #fff; padding: 10px 20px;
+      border-radius: 6px; font-size: 12.5px; opacity: 0;
       transition: opacity 0.3s; z-index: 999; pointer-events: none;
       display: flex; align-items: center; gap: 8px;
     }
     #toast.show { opacity: 1; }
-    #toast.success { background: #16a34a; }
+    #toast.success { background: var(--green); }
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 4px; }
