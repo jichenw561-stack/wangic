@@ -689,6 +689,17 @@
       font-size: 10.5px; color: var(--text3); text-align: center;
       margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border);
     }
+    .r-callout {
+      background: #fff8f0; border-left: 3px solid #f59e0b;
+      padding: 10px 13px; border-radius: 0 6px 6px 0; margin: 0 0 10px;
+    }
+    .r-callout-hd { font-size: 11.5px; font-weight: 600; color: #92400e; margin-bottom: 5px; }
+    .r-callout-body { font-size: 12px; color: var(--text2); line-height: 1.65; }
+    .r-tag-box { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+    .r-tag-item {
+      font-size: 11px; padding: 3px 10px; border-radius: 12px;
+      background: #f5f5f7; color: var(--text2); border: 1px solid var(--border);
+    }
 
     /* ─── EXPERTS VIEW ─── */
     #view-experts { flex-direction: column; }
@@ -900,6 +911,33 @@
             </div>
             <div class="uc-title">@专家<br>向宏观专家提问</div>
             <div class="uc-desc">召唤领域专家，获取宏观、固收、产业等专业视角的深度解读</div>
+          </button>
+          <button class="use-case-card" onclick="showDemo('nev-inventory')">
+            <div class="uc-icon" style="background:#fff7ed;color:#ea580c">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h5l2 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+            </div>
+            <div class="uc-title">因子技能<br>新能源渠道库存压力</div>
+            <div class="uc-desc">调用因子技能，通过产量−出口量−上险量构建累库指标，量化渠道库存压力趋势</div>
+          </button>
+          <button class="use-case-card" onclick="showDemo('northbound-fund')">
+            <div class="uc-icon" style="background:#eff6ff;color:#1d4ed8">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              </svg>
+            </div>
+            <div class="uc-title">因子技能<br>北向资金持仓异动</div>
+            <div class="uc-desc">扫描陆股通持仓变化，识别近期行业与个股层面的显著增减持异动信号</div>
+          </button>
+          <button class="use-case-card" onclick="showDemo('earnings-revision')">
+            <div class="uc-icon" style="background:#f0fdfa;color:#0d9488">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+              </svg>
+            </div>
+            <div class="uc-title">因子技能<br>消费板块盈利预期修订</div>
+            <div class="uc-desc">追踪卖方分析师 EPS 预期修订动向，识别消费子板块上修扩散信号与业绩催化节点</div>
           </button>
         </div>
       </div>
@@ -1275,6 +1313,138 @@
         { tag: '资讯', cls: 'zixun', title: '宽松预期升温，长端利率还有多少下行空间？', date: '2025-03-15' },
         { tag: '研报', cls: 'yan', title: '期限利差与曲线形态：哑铃策略适用性探讨', date: '2025-03-08' },
       ]
+    },
+    'nev-inventory': {
+      userMsg: '新能源车企目前上险量维度的渠道库存压力趋势是怎么样的？',
+      steps: [
+        {
+          title: '调用因子技能 · 加载原始数据',
+          subs: [
+            { type: 'tool', text: 'SKILL 渠道库存压力分析(universe=["比亚迪","理想","赛力斯","广汽新能源"], period="2025-01~2025-12")' },
+            { type: 'tool', text: 'GET insure_reg(source="乘联会", metric="上险量", freq="monthly") + GET production(source="中汽协") + GET exports(source="海关总署")' },
+            { type: 'data', text: '上险量数据：4家车企 × 12期，完整加载' },
+            { type: 'data', text: '产量数据：4家车企 × 12期；出口量数据：4家车企 × 12期' },
+            { type: 'note', text: '✦ 原始数据获取完成，共 4 家车企 × 4 类指标 × 12 月' },
+          ]
+        },
+        {
+          title: '因子加工 · 计算累库量与累库深度',
+          subs: [
+            { type: 'tool', text: 'CALC monthly_accum = 产量 - 出口量 - 上险量  # 月度库存变化量' },
+            { type: 'tool', text: 'CALC cumulative_stock = cumsum(monthly_accum)  # 累计库存水位' },
+            { type: 'data', text: '比亚迪累库量：1月 +1.5万 → 9月峰值 26万 → 12月 <strong>13.77万辆</strong>' },
+            { type: 'tool', text: 'CALC inventory_depth = cumulative_stock / rolling_avg(retail_sales, window=3)  # 累库深度（月）' },
+            { type: 'data', text: '比亚迪累库深度：9月高点 0.75个月 → 12月 <strong>0.40个月</strong>，环比 <strong>−30%</strong>' },
+            { type: 'note', text: '✦ 累库量环比 −4.39万辆，去库信号明确，深度连续 4 个月下行' },
+          ]
+        },
+        {
+          title: '生成可视化图表',
+          subs: [
+            { type: 'tool', text: 'PLOT bar_line(x=月份, bar=cumulative_stock[比亚迪], line=inventory_depth[比亚迪], annotate=["Sep-peak","Dec-curr"])' },
+            { type: 'data', text: '图表生成完毕：累库量柱状图（红/绿色编码）+ 累库深度折线，含关键节点标注' },
+            { type: 'note', text: '✦ 可视化就绪，9月峰值与12月去库节点已高亮' },
+          ]
+        },
+        {
+          title: '分析概括 · 输出简报',
+          subs: [
+            { type: 'tool', text: 'ANALYZE anomaly(metric="inventory_depth", flag="threshold<0.5 AND MoM_pct<-20%")' },
+            { type: 'data', text: '异动标记：比亚迪 12月深度 0.40（↓30% MoM），广汽新能源深度 0.51（↑环比+5%，仍处警戒线上）' },
+            { type: 'note', text: '✦ 分析简报生成完毕，含异动指标与推荐关注指标' },
+          ]
+        }
+      ],
+      result: 'nev-inventory',
+      refs: [
+        { tag: '数据', cls: 'shuju', title: '乘联会：2025年12月新能源乘用车上险量数据', date: '2026-01-15' },
+        { tag: '数据', cls: 'shuju', title: '中汽协：2025年12月汽车产销数据快报', date: '2026-01-12' },
+        { tag: '数据', cls: 'shuju', title: '海关总署：2025年12月汽车出口数量及金额统计', date: '2026-01-14' },
+        { tag: '研报', cls: 'yan', title: '新能源汽车行业月报：去库化趋势持续，关注春节旺季拉动', date: '2025-12-28' },
+        { tag: '研报', cls: 'yan', title: '比亚迪深度：渠道库存趋势向好，盈利弹性可期', date: '2025-12-20' },
+        { tag: '公告', cls: 'gong', title: '比亚迪：2025年12月产销快报', date: '2026-01-06' },
+        { tag: '资讯', cls: 'zixun', title: '零公里二手车库存持续消化，渠道价格压力边际缓解', date: '2026-01-08' },
+      ]
+    },
+    'northbound-fund': {
+      userMsg: '北向资金近期持仓变化有哪些值得关注的板块和个股异动？',
+      steps: [
+        {
+          title: '加载陆股通持仓数据',
+          subs: [
+            { type: 'tool', text: 'GET hk_connect_holding(period="2025-12-01~2025-12-31", level=["SW_1级行业","个股"], source="Wind")' },
+            { type: 'data', text: '已加载 31 个申万一级行业北向持仓变化，3200+ 标的个股持股数据' },
+            { type: 'note', text: '✦ 数据来源：Wind 陆股通持股，截至 2025-12-31' },
+          ]
+        },
+        {
+          title: '计算持仓变化因子',
+          subs: [
+            { type: 'tool', text: 'CALC sector_chg = Σ net_buy_amount(行业)  # 月度净买入（亿元）' },
+            { type: 'tool', text: 'CALC holding_pct_rank = percentile_rank(sector_chg, window=24)  # 24M历史分位' },
+            { type: 'data', text: '电子行业净买入 +28.5亿，历史分位 <strong>93pct</strong>（近24月最高值）' },
+            { type: 'data', text: '汽车行业净买入 +22.3亿，历史分位 <strong>88pct</strong>；银行净流出 −18.9亿，分位 <strong>8pct</strong>' },
+            { type: 'note', text: '✦ 因子计算完成，识别出 5 个行业显著异动信号' },
+          ]
+        },
+        {
+          title: '筛选异动标的 · 生成可视化',
+          subs: [
+            { type: 'tool', text: 'FILTER top_k_sectors(abs_net_buy, k=8) + PLOT horizontal_bar(sectors, net_buy, color="pos/neg")' },
+            { type: 'data', text: '增持 TOP3：电子 +28.5亿、汽车 +22.3亿、食品饮料 +18.7亿' },
+            { type: 'data', text: '减持 TOP3：银行 −18.9亿、传媒 −15.6亿、消费者服务 −8.4亿' },
+            { type: 'note', text: '✦ 可视化生成完毕，已标注历史分位背景色' },
+          ]
+        }
+      ],
+      result: 'northbound-fund',
+      refs: [
+        { tag: '数据', cls: 'shuju', title: '陆股通各行业北向持股数据（Wind，2025年12月）', date: '2025-12-31' },
+        { tag: '研报', cls: 'yan', title: '北向资金月报：12月外资流向与行业偏好解读', date: '2025-12-31' },
+        { tag: '研报', cls: 'yan', title: '电子行业：北向持续增持，AI硬件与消费电子共振', date: '2025-12-25' },
+        { tag: '资讯', cls: 'zixun', title: '外资视角：中国消费复苏路径与配置节奏前瞻', date: '2025-12-28' },
+        { tag: '公告', cls: 'gong', title: '港交所：12月陆港通资金流向公告', date: '2026-01-03' },
+      ]
+    },
+    'earnings-revision': {
+      userMsg: '消费行业卖方分析师盈利预期近期是否出现明显上修趋势？',
+      steps: [
+        {
+          title: '获取分析师EPS预期数据',
+          subs: [
+            { type: 'tool', text: 'GET analyst_consensus(sectors=["食品饮料","家用电器","汽车","社会服务"], period="2025-10~2025-12", min_coverage=3)' },
+            { type: 'data', text: '已获取消费板块 156 只个股，近 3 个月分析师 EPS 一致预期数据（覆盖 ≥ 3 家）' },
+            { type: 'note', text: '✦ 数据来源：Wind 一致预期，统计截至 2025-12-31' },
+          ]
+        },
+        {
+          title: '计算EPS修订因子',
+          subs: [
+            { type: 'tool', text: 'CALC eps_revision = (当期EPS均值 - 3M前EPS均值) / |3M前EPS均值|  # 修订幅度' },
+            { type: 'tool', text: 'CALC revision_breadth = (上修家数 - 下修家数) / 覆盖家数 × 100  # 净修订扩散度(%)' },
+            { type: 'data', text: '家用电器净修订扩散度：<strong>+35%</strong>，近12个月历史高位' },
+            { type: 'data', text: '乳制品：<strong>+28%</strong>；调味品：<strong>+22%</strong>，均处历史 80pct 以上分位' },
+            { type: 'note', text: '✦ 家电与乳制品上修趋势最显著，EPS 扩散度持续走阔' },
+          ]
+        },
+        {
+          title: '生成可视化 · 输出分析简报',
+          subs: [
+            { type: 'tool', text: 'PLOT bar(x=子板块, y=revision_breadth, color="pos/neg", ref_line=historical_mean)' },
+            { type: 'data', text: '图表生成：9 个消费子板块净修订扩散度对比，含历史均值参考线' },
+            { type: 'note', text: '✦ 分析简报生成，建议关注家电与乳制品业绩催化节点' },
+          ]
+        }
+      ],
+      result: 'earnings-revision',
+      refs: [
+        { tag: '数据', cls: 'shuju', title: '消费板块一致预期 EPS 修订数据（Wind，2025Q4）', date: '2025-12-31' },
+        { tag: '研报', cls: 'yan', title: '家用电器：Q4 排产超预期，机构上调 2026 年盈利预测', date: '2025-12-20' },
+        { tag: '研报', cls: 'yan', title: '乳制品行业深度：原料成本回落，2026 年利润弹性测算', date: '2025-12-18' },
+        { tag: '研报', cls: 'yan', title: '消费板块 2026 年投资策略：寻找预期差与业绩拐点', date: '2025-12-25' },
+        { tag: '公告', cls: 'gong', title: '海尔智家：2025 年业绩预告，净利润同比 +18%', date: '2026-01-10' },
+        { tag: '资讯', cls: 'zixun', title: '年末消费复苏边际改善，家电以旧换新政策延续利好', date: '2025-12-28' },
+      ]
     }
   };
 
@@ -1394,6 +1564,254 @@
 ## 四、下周展望
 关注 3月18日 CPIA 月度数据发布 …</pre>
           </div>
+          <div class="r-disclaimer">回答由 AI 生成，仅供研究参考，不构成任何投资建议</div>
+        </div>`;
+
+    } else if (type === 'nev-inventory') {
+      return `
+      <div class="demo-result-hd">
+        <div style="width:22px;height:22px;border-radius:6px;background:#ea580c;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="1" y="3" width="13" height="11" rx="1.5"/><path d="M14 7h4l2 5v2h-6V7z"/><circle cx="4.5" cy="16.5" r="2"/><circle cx="16.5" cy="16.5" r="2"/></svg>
+        </div>
+        <span class="demo-result-hd-title">新能源渠道库存压力简报</span>
+        <span class="demo-tag bullish">去库加速</span>
+      </div>
+      <div class="demo-result-body-full">
+          <div class="r-hd">比亚迪累库量与累库深度趋势（2025年）</div>
+          <div class="demo-chart-wrap" style="margin-bottom:10px">
+            <div class="demo-chart-label">累库量（万辆，柱）· 累库深度（个月，线）· 红色=累库 绿色=去库</div>
+            <svg viewBox="0 0 270 62" width="100%" height="62" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="nev-up" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#fca5a5" stop-opacity="0.85"/>
+                  <stop offset="100%" stop-color="#fca5a5" stop-opacity="0.4"/>
+                </linearGradient>
+                <linearGradient id="nev-dn" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#86efac" stop-opacity="0.9"/>
+                  <stop offset="100%" stop-color="#86efac" stop-opacity="0.5"/>
+                </linearGradient>
+              </defs>
+              <line x1="18" y1="5" x2="270" y2="5" stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="18" y1="18" x2="270" y2="18" stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="18" y1="30" x2="270" y2="30" stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="18" y1="42" x2="270" y2="42" stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="18" y1="55" x2="270" y2="55" stroke="#e5e5ea" stroke-width="1"/>
+              <text x="0" y="8" font-size="7" fill="#c7c7cc">28万</text>
+              <text x="0" y="21" font-size="7" fill="#c7c7cc">21万</text>
+              <text x="0" y="33" font-size="7" fill="#c7c7cc">14万</text>
+              <text x="0" y="45" font-size="7" fill="#c7c7cc">7万</text>
+              <!-- Accumulating bars Jan-Sep (red) -->
+              <rect x="20" y="44.3" width="11" height="10.7" fill="url(#nev-up)" rx="1"/>
+              <rect x="41" y="42.1" width="11" height="12.9" fill="url(#nev-up)" rx="1"/>
+              <rect x="62" y="38.6" width="11" height="16.4" fill="url(#nev-up)" rx="1"/>
+              <rect x="83" y="33.6" width="11" height="21.4" fill="url(#nev-up)" rx="1"/>
+              <rect x="104" y="27.9" width="11" height="27.1" fill="url(#nev-up)" rx="1"/>
+              <rect x="125" y="23.4" width="11" height="31.6" fill="url(#nev-up)" rx="1"/>
+              <rect x="146" y="18.4" width="11" height="36.6" fill="url(#nev-up)" rx="1"/>
+              <rect x="167" y="12.1" width="11" height="42.9" fill="url(#nev-up)" rx="1"/>
+              <rect x="188" y="8.6" width="11" height="46.4" fill="url(#nev-up)" rx="1"/>
+              <!-- Destocking bars Oct-Dec (green) -->
+              <rect x="209" y="13.9" width="11" height="41.1" fill="url(#nev-dn)" rx="1"/>
+              <rect x="230" y="22.6" width="11" height="32.4" fill="url(#nev-dn)" rx="1"/>
+              <rect x="251" y="30.4" width="11" height="24.6" fill="url(#nev-dn)" rx="1" opacity="0.95"/>
+              <!-- Sep peak label -->
+              <text x="184" y="6" font-size="6.5" fill="#ef4444" font-weight="700">26万▲</text>
+              <!-- Dec label -->
+              <text x="242" y="27" font-size="6.5" fill="#22c55e" font-weight="700">13.77</text>
+              <!-- Depth trend line (orange) -->
+              <polyline points="25.5,44.4 46.5,41.9 67.5,38.1 88.5,33.1 109.5,27.5 130.5,23.1 151.5,18.1 172.5,11.2 193.5,8.1 214.5,13.1 235.5,21.9 256.5,30.0" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="256.5" cy="30" r="2.5" fill="#f59e0b"/>
+              <text x="240" y="43" font-size="6.5" fill="#f59e0b" font-weight="700">深度↓30%</text>
+            </svg>
+            <div class="demo-chart-xaxis" style="padding-left:18px">
+              <span>1月</span><span>2月</span><span>3月</span><span>4月</span><span>5月</span><span>6月</span><span>7月</span><span>8月</span><span>9月</span><span>10月</span><span>11月</span><span>12月</span>
+            </div>
+            <div class="demo-chart-legend">
+              <div class="demo-chart-legend-item"><div class="demo-chart-legend-line" style="background:#fca5a5"></div>累库量（柱）</div>
+              <div class="demo-chart-legend-item"><div class="demo-chart-legend-line" style="background:#86efac"></div>去库量（柱）</div>
+              <div class="demo-chart-legend-item"><div class="demo-chart-legend-line" style="background:#f59e0b"></div>累库深度（线）</div>
+            </div>
+          </div>
+
+          <div class="r-hd">重点车企数据对比（2025年11-12月）</div>
+          <table class="demo-table">
+            <thead><tr><th>车企</th><th>11月累库(万辆)</th><th>12月累库(万辆)</th><th>环比变化</th><th>累库深度</th></tr></thead>
+            <tbody>
+              <tr><td>比亚迪</td><td>18.16</td><td><strong>13.77</strong></td><td class="up">−4.39万</td><td class="flat"><strong>0.40个月</strong></td></tr>
+              <tr><td>理想汽车</td><td>2.31</td><td><strong>1.85</strong></td><td class="up">−0.46万</td><td class="flat">0.35个月</td></tr>
+              <tr><td>赛力斯</td><td>3.24</td><td><strong>2.67</strong></td><td class="up">−0.57万</td><td class="flat">0.42个月</td></tr>
+              <tr><td>广汽新能源</td><td>1.92</td><td><strong>2.18</strong></td><td class="down">+0.26万</td><td class="down">0.51个月</td></tr>
+            </tbody>
+          </table>
+          <div class="r-sources">数据来源：<span class="cn">1</span><span class="cn">2</span><span class="cn">3</span></div>
+
+          <div class="r-hd">异动指标</div>
+          <div class="r-callout">
+            <div class="r-callout-hd">⚡ 比亚迪：累库深度单月下降 30%，去库信号显著</div>
+            <div class="r-callout-body">
+              截至 2025年12月，比亚迪渠道累库量达 <strong>13.77万辆</strong>，较上月减少 <strong>4.39万辆</strong>；累库深度降至 <strong>0.40个月</strong>（11月：0.58个月），环比下降 <strong>30%</strong>。连续 4 个月去库，渠道库存压力持续缓解，为 2025 年 3 月以来最低水位<span class="cn">4</span><span class="cn">5</span>。
+            </div>
+          </div>
+
+          <div class="r-hd">推荐关注指标</div>
+          <div class="r-tag-box">
+            <span class="r-tag-item">📊 终端零售销量数据</span>
+            <span class="r-tag-item">🏪 车企门店数量变化</span>
+            <span class="r-tag-item">🚗 零公里二手车挂牌量</span>
+            <span class="r-tag-item">📦 出口渠道分流比例</span>
+          </div>
+          <p style="font-size:12px;color:var(--text3);margin:0 0 10px;line-height:1.6">
+            零公里二手车挂牌量反映实际终端去化压力，是渠道库存的领先指标；门店数量变化体现终端扩张节奏；出口分流可缓解国内库存，需结合上险量同步观测<span class="cn">6</span><span class="cn">7</span>。
+          </p>
+          <div class="r-disclaimer">回答由 AI 生成，仅供研究参考，不构成任何投资建议</div>
+        </div>`;
+
+    } else if (type === 'northbound-fund') {
+      return `
+      <div class="demo-result-hd">
+        <div style="width:22px;height:22px;border-radius:6px;background:#1d4ed8;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        </div>
+        <span class="demo-result-hd-title">北向资金持仓异动分析</span>
+        <span class="demo-tag bullish">电子领涨</span>
+      </div>
+      <div class="demo-result-body-full">
+          <div class="r-hd">行业月度净买入（2025年12月，亿元）</div>
+          <div class="demo-chart-wrap" style="margin-bottom:10px">
+            <div class="demo-chart-label">绿色=净买入 · 红色=净卖出 · 历史分位色深=高分位</div>
+            <svg viewBox="0 0 280 111" width="100%" height="111" xmlns="http://www.w3.org/2000/svg">
+              <!-- Center axis -->
+              <line x1="120" y1="2" x2="120" y2="111" stroke="#e5e5ea" stroke-width="1"/>
+              <!-- Row 0: 电子 +28.5 -->
+              <rect x="120" y="4" width="43" height="10" fill="#bbf7d0" rx="1"/>
+              <text x="116" y="12" font-size="8" text-anchor="end" fill="var(--text2)">电子</text>
+              <text x="166" y="12" font-size="7.5" fill="#16a34a" font-weight="600">+28.5亿</text>
+              <!-- Row 1: 汽车 +22.3 -->
+              <rect x="120" y="18" width="33" height="10" fill="#bbf7d0" rx="1"/>
+              <text x="116" y="26" font-size="8" text-anchor="end" fill="var(--text2)">汽车</text>
+              <text x="156" y="26" font-size="7.5" fill="#16a34a" font-weight="600">+22.3亿</text>
+              <!-- Row 2: 食品饮料 +18.7 -->
+              <rect x="120" y="32" width="28" height="10" fill="#bbf7d0" rx="1"/>
+              <text x="116" y="40" font-size="8" text-anchor="end" fill="var(--text2)">食品饮料</text>
+              <text x="151" y="40" font-size="7.5" fill="#16a34a" font-weight="600">+18.7亿</text>
+              <!-- Row 3: 医药生物 +15.2 -->
+              <rect x="120" y="46" width="23" height="10" fill="#d1fae5" rx="1"/>
+              <text x="116" y="54" font-size="8" text-anchor="end" fill="var(--text2)">医药生物</text>
+              <text x="146" y="54" font-size="7.5" fill="#16a34a">+15.2亿</text>
+              <!-- Row 4: 有色金属 +12.8 -->
+              <rect x="120" y="60" width="19" height="10" fill="#d1fae5" rx="1"/>
+              <text x="116" y="68" font-size="8" text-anchor="end" fill="var(--text2)">有色金属</text>
+              <text x="142" y="68" font-size="7.5" fill="#16a34a">+12.8亿</text>
+              <!-- Separator -->
+              <line x1="70" y1="75" x2="280" y2="75" stroke="#f2f2f7" stroke-width="1" stroke-dasharray="4,3"/>
+              <!-- Row 5: 消费者服务 -8.4 -->
+              <rect x="107" y="78" width="13" height="10" fill="#fecaca" rx="1"/>
+              <text x="116" y="86" font-size="8" text-anchor="end" fill="var(--text2)">消费者服务</text>
+              <text x="123" y="86" font-size="7.5" fill="#dc2626">−8.4亿</text>
+              <!-- Row 6: 传媒 -15.6 -->
+              <rect x="96" y="92" width="24" height="10" fill="#fecaca" rx="1"/>
+              <text x="116" y="100" font-size="8" text-anchor="end" fill="var(--text2)">传媒</text>
+              <text x="123" y="100" font-size="7.5" fill="#dc2626">−15.6亿</text>
+              <!-- Row 7: 银行 -18.9 -->
+              <rect x="92" y="100" width="28" height="10" fill="#fecaca" rx="1" opacity="0.9"/>
+              <text x="116" y="109" font-size="8" text-anchor="end" fill="var(--text2)">银行</text>
+              <text x="123" y="109" font-size="7.5" fill="#dc2626" font-weight="600">−18.9亿</text>
+            </svg>
+          </div>
+
+          <div class="r-hd">个股层面亮点（净买入 TOP5）</div>
+          <table class="demo-table">
+            <thead><tr><th>个股</th><th>行业</th><th>12月净买入(亿)</th><th>持股变化</th></tr></thead>
+            <tbody>
+              <tr><td>立讯精密</td><td>电子</td><td class="up"><strong>+8.2</strong></td><td class="up">+3.2%</td></tr>
+              <tr><td>比亚迪A</td><td>汽车</td><td class="up"><strong>+6.8</strong></td><td class="up">+2.8%</td></tr>
+              <tr><td>贵州茅台</td><td>食品饮料</td><td class="up"><strong>+5.9</strong></td><td class="up">+1.5%</td></tr>
+              <tr><td>招商银行</td><td>银行</td><td class="down"><strong>−7.3</strong></td><td class="down">−2.1%</td></tr>
+              <tr><td>中国平安</td><td>非银金融</td><td class="down"><strong>−4.8</strong></td><td class="down">−1.8%</td></tr>
+            </tbody>
+          </table>
+          <div class="r-sources">数据来源：<span class="cn">1</span><span class="cn">2</span></div>
+
+          <div class="r-hd">核心判断</div>
+          <p style="font-size:12.5px;color:var(--text2);line-height:1.75;margin:0 0 8px">电子行业北向净买入处于近 24 个月 <strong>93pct</strong> 历史分位，外资对 AI 硬件及消费电子复苏的持仓意愿达阶段性高点<span class="cn">3</span>。食品饮料获增持源于春节前消费预期改善，而银行持续减持与利率下行压制净息差预期相关<span class="cn">4</span>。</p>
+
+          <div class="r-hd">风险提示</div>
+          <ul class="r-risks" style="margin:0 0 8px">
+            <li class="r-risk"><div class="r-dot"></div><span>汇率波动影响外资收益，人民币贬值阶段性加速北向流出</span></li>
+            <li class="r-risk"><div class="r-dot"></div><span>单月数据噪音较大，建议结合 3 个月滚动均值判断趋势<span class="cn">2</span></span></li>
+          </ul>
+          <div class="r-disclaimer">回答由 AI 生成，仅供研究参考，不构成任何投资建议</div>
+        </div>`;
+
+    } else if (type === 'earnings-revision') {
+      return `
+      <div class="demo-result-hd">
+        <div style="width:22px;height:22px;border-radius:6px;background:#0d9488;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <span class="demo-result-hd-title">消费板块 EPS 预期修订分析</span>
+        <span class="demo-tag bullish">家电领跑</span>
+      </div>
+      <div class="demo-result-body-full">
+          <div class="r-hd">净修订扩散度（消费子板块，2025年10-12月）</div>
+          <div class="demo-chart-wrap" style="margin-bottom:10px">
+            <div class="demo-chart-label">净修订扩散度 = (上修家数 − 下修家数) / 覆盖家数 × 100%</div>
+            <svg viewBox="0 0 280 82" width="100%" height="82" xmlns="http://www.w3.org/2000/svg">
+              <!-- Grid -->
+              <line x1="28" y1="5" x2="280" y2="5" stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="28" y1="25" x2="280" y2="25" stroke="#f2f2f7" stroke-width="1"/>
+              <line x1="28" y1="55" x2="280" y2="55" stroke="#e5e5ea" stroke-width="1.5"/>
+              <line x1="28" y1="65" x2="280" y2="65" stroke="#f2f2f7" stroke-width="1"/>
+              <!-- Y labels -->
+              <text x="0" y="8" font-size="7.5" fill="#c7c7cc">+40%</text>
+              <text x="0" y="28" font-size="7.5" fill="#c7c7cc">+20%</text>
+              <text x="0" y="58" font-size="7.5" fill="#c7c7cc">0</text>
+              <text x="0" y="68" font-size="7.5" fill="#c7c7cc">−10%</text>
+              <!-- Historical mean reference line -->
+              <line x1="28" y1="40" x2="280" y2="40" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,3"/>
+              <text x="234" y="38" font-size="6.5" fill="#f59e0b">历史均值+15%</text>
+              <!-- Positive bars -->
+              <rect x="34" y="20" width="18" height="35" fill="#bbf7d0" rx="2"/>
+              <text x="43" y="17" font-size="7" fill="#16a34a" text-anchor="middle" font-weight="700">+35%</text>
+              <rect x="66" y="27" width="18" height="28" fill="#bbf7d0" rx="2"/>
+              <text x="75" y="24" font-size="7" fill="#16a34a" text-anchor="middle">+28%</text>
+              <rect x="98" y="33" width="18" height="22" fill="#d1fae5" rx="2"/>
+              <text x="107" y="30" font-size="7" fill="#16a34a" text-anchor="middle">+22%</text>
+              <rect x="130" y="37" width="18" height="18" fill="#d1fae5" rx="2"/>
+              <text x="139" y="34" font-size="7" fill="#16a34a" text-anchor="middle">+18%</text>
+              <rect x="162" y="40" width="18" height="15" fill="#d1fae5" rx="2"/>
+              <text x="171" y="37" font-size="7" fill="#16a34a" text-anchor="middle">+15%</text>
+              <!-- Negative bars -->
+              <rect x="194" y="55" width="18" height="8" fill="#fecaca" rx="2"/>
+              <text x="203" y="72" font-size="7" fill="#dc2626" text-anchor="middle">−8%</text>
+              <rect x="226" y="55" width="18" height="12" fill="#fecaca" rx="2"/>
+              <text x="235" y="72" font-size="7" fill="#dc2626" text-anchor="middle">−12%</text>
+            </svg>
+            <div class="demo-chart-xaxis" style="padding-left:28px">
+              <span>家用电器</span><span>乳制品</span><span>调味品</span><span>白酒</span><span>啤酒</span><span>化妆品</span><span>餐饮</span>
+            </div>
+          </div>
+
+          <div class="r-hd">上修幅度 TOP4 个股</div>
+          <table class="demo-table">
+            <thead><tr><th>标的</th><th>子板块</th><th>EPS修订幅度(3M)</th><th>跟踪券商家数</th></tr></thead>
+            <tbody>
+              <tr><td>美的集团</td><td>家用电器</td><td class="up"><strong>+12.3%</strong></td><td>28家</td></tr>
+              <tr><td>海尔智家</td><td>家用电器</td><td class="up"><strong>+10.8%</strong></td><td>22家</td></tr>
+              <tr><td>伊利股份</td><td>乳制品</td><td class="up"><strong>+9.5%</strong></td><td>25家</td></tr>
+              <tr><td>海天味业</td><td>调味品</td><td class="up"><strong>+8.2%</strong></td><td>18家</td></tr>
+            </tbody>
+          </table>
+          <div class="r-sources">数据来源：<span class="cn">1</span><span class="cn">2</span><span class="cn">3</span></div>
+
+          <div class="r-hd">分析结论</div>
+          <p style="font-size:12.5px;color:var(--text2);line-height:1.75;margin:0 0 8px">家用电器与乳制品净修订扩散度分别为 <strong>+35%</strong> 和 <strong>+28%</strong>，均高于历史均值 +15%，且扩散度仍在走阔趋势中，反映卖方分析师对上游原料成本下行及以旧换新政策拉动效果的乐观预期<span class="cn">2</span><span class="cn">4</span>。白酒与啤酒扩散度转正但仍偏低，Q4 旺季数据验证后有望进一步上修<span class="cn">3</span>。</p>
+
+          <div class="r-hd">风险提示</div>
+          <ul class="r-risks" style="margin:0 0 8px">
+            <li class="r-risk"><div class="r-dot"></div><span>以旧换新政策退出或不及预期，家电需求边际回落风险<span class="cn">5</span></span></li>
+            <li class="r-risk"><div class="r-dot"></div><span>餐饮与化妆品子板块修订扩散度持续为负，消费分化风险</span></li>
+          </ul>
           <div class="r-disclaimer">回答由 AI 生成，仅供研究参考，不构成任何投资建议</div>
         </div>`;
 
