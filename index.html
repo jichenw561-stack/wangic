@@ -534,6 +534,83 @@
     .ds-btn { padding: 5px 12px; border-radius: 5px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500; }
     .ds-btn-p { background: var(--accent); color: white; border: none; }
     .ds-btn-s { background: white; color: var(--text2); border: 1px solid var(--border); }
+
+    /* ─── EXPERTS VIEW ─── */
+    #view-experts { flex-direction: column; }
+    .experts-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 32px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .experts-header h1 { font-size: 18px; font-weight: 600; }
+    .experts-body { flex: 1; overflow-y: auto; padding: 20px 32px 32px; }
+    .expert-category { margin-bottom: 28px; }
+    .expert-cat-title {
+      font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 0.6px;
+      text-transform: uppercase; margin-bottom: 12px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .expert-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px;
+    }
+    .expert-card {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; background: var(--card-bg);
+      display: flex; flex-direction: column; gap: 10px; transition: box-shadow 0.15s;
+    }
+    .expert-card:hover { box-shadow: var(--shadow); }
+    .expert-card-top { display: flex; align-items: center; gap: 10px; }
+    .expert-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .expert-meta { flex: 1; min-width: 0; }
+    .expert-name { font-size: 13.5px; font-weight: 600; color: var(--text); }
+    .expert-title-text { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .expert-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+    .expert-ask-btn {
+      align-self: flex-start; padding: 5px 14px; border-radius: 5px;
+      border: 1px solid var(--border); background: white; color: var(--accent);
+      font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500;
+      transition: all 0.1s;
+    }
+    .expert-ask-btn:hover { background: var(--accent-light); border-color: var(--accent); }
+
+    /* Expert popup */
+    #expert-popup {
+      position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%);
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      width: 320px; max-height: 380px; overflow-y: auto; z-index: 100;
+      display: none; padding: 12px;
+    }
+    #expert-popup.open { display: block; }
+    .ep-search {
+      display: flex; align-items: center; gap: 8px; background: var(--bg2);
+      border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; margin-bottom: 10px;
+    }
+    .ep-search input {
+      border: none; outline: none; background: transparent;
+      font-size: 13px; flex: 1; color: var(--text); font-family: inherit;
+    }
+    .ep-search input::placeholder { color: var(--text3); }
+    .ep-cat-label {
+      font-size: 10.5px; font-weight: 700; color: var(--text3); letter-spacing: 0.4px;
+      padding: 6px 8px 3px; text-transform: uppercase;
+    }
+    .ep-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 10px; border-radius: 6px; cursor: pointer; transition: background 0.1s;
+    }
+    .ep-item:hover { background: var(--bg2); }
+    .ep-ava {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .ep-info { flex: 1; }
+    .ep-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .ep-title { font-size: 11px; color: var(--text3); margin-top: 1px; }
   </style>
 </head>
 <body>
@@ -575,6 +652,14 @@
       </svg>
       技能广场
       <span class="badge-new">NEW</span>
+    </div>
+    <div class="nav-item" onclick="showExpertsView()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      专家顾问
     </div>
   </nav>
 
@@ -703,6 +788,14 @@
     </div>
 
     <div id="skills-grid" class="skills-grid"></div>
+  </div>
+
+  <!-- EXPERTS VIEW -->
+  <div id="view-experts" class="view">
+    <div class="experts-header">
+      <h1>专家顾问</h1>
+    </div>
+    <div class="experts-body" id="experts-body"></div>
   </div>
 
   <!-- INPUT AREA (always visible) -->
@@ -841,7 +934,27 @@
             <polyline points="6 9 12 15 18 9"/>
           </svg>
         </button>
+        <button class="tool-btn" id="use-expert-btn" onclick="toggleExpertPopup()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          @专家
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
       </div>
+    </div>
+
+    <!-- EXPERT POPUP -->
+    <div id="expert-popup">
+      <div class="ep-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" placeholder="搜索专家" oninput="filterExperts(this.value)" />
+      </div>
+      <div id="expert-popup-list"></div>
     </div>
 
     <div class="input-footer">内容由AI生成，查核查重要信息</div>
@@ -1079,10 +1192,155 @@
     showToast(msg, checkbox.checked);
   }
 
+  // ── EXPERTS DATA ──
+  const expertsData = [
+    {
+      category: '宏观与策略',
+      experts: [
+        { id: 'macro',    name: '陈宏观', title: '宏观经济首席',   desc: '专注经济周期判断、货币政策解读与大类资产宏观框架', color: '#2563eb' },
+        { id: 'strategy', name: '林策略', title: '权益策略首席',   desc: 'A股市场走势研判、行业轮动节奏与风格切换配置',     color: '#7c3aed' },
+        { id: 'quant',    name: '张量化', title: '量化研究员',     desc: '多因子模型构建、Alpha挖掘与量化策略回测',         color: '#0891b2' },
+      ]
+    },
+    {
+      category: '固定收益',
+      experts: [
+        { id: 'fixedincome', name: '王固收',  title: '固收研究首席', desc: '利率债、信用债全覆盖分析，债券组合久期与仓位管理',      color: '#059669' },
+        { id: 'cb',          name: '刘可转债', title: '可转债专家',   desc: '可转债定价模型、条款博弈与正股联动套利策略研究',       color: '#d97706' },
+        { id: 'credit',      name: '赵信用',  title: '信用研究员',   desc: '发行人资质评估、信用利差分析与违约风险早期预警',       color: '#dc2626' },
+      ]
+    },
+    {
+      category: '权益研究',
+      experts: [
+        { id: 'pharma',   name: '钱医药', title: '医药生物首席',   desc: '创新药研发进度、医疗器械集采与CXO产业链深度研究', color: '#e11d48' },
+        { id: 'consumer', name: '冯消费', title: '消费行业研究员', desc: '白酒、家电、食饮与零售全赛道覆盖，消费复苏节奏跟踪', color: '#f97316' },
+        { id: 'finance',  name: '陈金融', title: '金融行业研究员', desc: '银行、券商与保险估值分析，监管政策与利率影响解读',   color: '#0369a1' },
+        { id: 'tmt',      name: '孙科技', title: '科技成长首席',   desc: '互联网平台、云计算与信创行业跟踪，成长股估值框架',   color: '#6d28d9' },
+      ]
+    },
+    {
+      category: '产业专题',
+      experts: [
+        { id: 'storage',  name: '周储能',  title: '储能与电力专家', desc: '储能技术路线对比、电力市场改革与新型电力系统投资机会', color: '#16a34a' },
+        { id: 'solar',    name: '吴光伏',  title: '光伏行业专家',   desc: '光伏全产业链供需跟踪、装机预测与主产环节价格趋势',   color: '#ca8a04' },
+        { id: 'semi',     name: '郑半导体', title: '半导体行业专家', desc: '芯片设计、晶圆制造与封测产业链，国产替代进度评估',   color: '#8b5cf6' },
+        { id: 'ai',       name: '沈AI',    title: 'AI产业专家',     desc: '大模型能力评测、AI应用落地与算力基础设施产业链研究', color: '#2563eb' },
+      ]
+    }
+  ];
+
+  // ── RENDER EXPERTS VIEW ──
+  function renderExperts(filter) {
+    const body = document.getElementById('experts-body');
+    body.innerHTML = '';
+    const q = (filter || '').toLowerCase();
+    expertsData.forEach(cat => {
+      const list = cat.experts.filter(e =>
+        !q || e.name.includes(q) || e.title.includes(q) || e.desc.includes(q)
+      );
+      if (!list.length) return;
+      const section = document.createElement('div');
+      section.className = 'expert-category';
+      section.innerHTML = `<div class="expert-cat-title">${cat.category}</div>`;
+      const grid = document.createElement('div');
+      grid.className = 'expert-grid';
+      list.forEach(e => {
+        const card = document.createElement('div');
+        card.className = 'expert-card';
+        card.innerHTML = `
+          <div class="expert-card-top">
+            <div class="expert-avatar" style="background:${e.color}">${e.name[0]}</div>
+            <div class="expert-meta">
+              <div class="expert-name">${e.name}</div>
+              <div class="expert-title-text">${e.title}</div>
+            </div>
+          </div>
+          <div class="expert-desc">${e.desc}</div>
+          <button class="expert-ask-btn" onclick="invokeExpert('${e.id}')">向TA提问</button>
+        `;
+        grid.appendChild(card);
+      });
+      section.appendChild(grid);
+      body.appendChild(section);
+    });
+  }
+
+  // ── RENDER EXPERT POPUP LIST ──
+  function renderExpertPopup(filter) {
+    const list = document.getElementById('expert-popup-list');
+    list.innerHTML = '';
+    const q = (filter || '').toLowerCase();
+    expertsData.forEach(cat => {
+      const items = cat.experts.filter(e =>
+        !q || e.name.includes(q) || e.title.includes(q)
+      );
+      if (!items.length) return;
+      const label = document.createElement('div');
+      label.className = 'ep-cat-label';
+      label.textContent = cat.category;
+      list.appendChild(label);
+      items.forEach(e => {
+        const item = document.createElement('div');
+        item.className = 'ep-item';
+        item.innerHTML = `
+          <div class="ep-ava" style="background:${e.color}">${e.name[0]}</div>
+          <div class="ep-info">
+            <div class="ep-name">${e.name}</div>
+            <div class="ep-title">${e.title}</div>
+          </div>
+        `;
+        item.onclick = () => invokeExpert(e.id);
+        list.appendChild(item);
+      });
+    });
+  }
+
+  function filterExperts(q) { renderExpertPopup(q); }
+
+  let activeExpert = null;
+
+  function invokeExpert(id) {
+    const expert = expertsData.flatMap(c => c.experts).find(e => e.id === id);
+    if (!expert) return;
+    activeExpert = expert;
+    closeExpertPopup();
+    updateExpertBtn();
+    showChatView();
+    const input = document.getElementById('chat-input');
+    input.value = `@${expert.name} `;
+    input.focus();
+  }
+
+  function toggleExpertPopup() {
+    const popup = document.getElementById('expert-popup');
+    const isOpen = popup.classList.contains('open');
+    closeSkillsPopup();
+    if (isOpen) { popup.classList.remove('open'); } else {
+      renderExpertPopup('');
+      popup.classList.add('open');
+    }
+  }
+  function closeExpertPopup() { document.getElementById('expert-popup').classList.remove('open'); }
+
+  function updateExpertBtn() {
+    const btn = document.getElementById('use-expert-btn');
+    const chevron = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
+    const icon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    if (activeExpert) {
+      btn.classList.add('active');
+      btn.innerHTML = `${icon} @${activeExpert.name} ${chevron}`;
+    } else {
+      btn.classList.remove('active');
+      btn.innerHTML = `${icon} @专家 ${chevron}`;
+    }
+  }
+
   // ── VIEW SWITCHING ──
   function showChatView() {
     document.getElementById('view-chat').classList.add('active');
     document.getElementById('view-skills').classList.remove('active');
+    document.getElementById('view-experts').classList.remove('active');
     document.querySelectorAll('.nav-item').forEach((n,i) => n.classList.toggle('active', i===0));
   }
 
@@ -1090,8 +1348,18 @@
     closeSkillsPopup();
     document.getElementById('view-skills').classList.add('active');
     document.getElementById('view-chat').classList.remove('active');
+    document.getElementById('view-experts').classList.remove('active');
     document.querySelectorAll('.nav-item').forEach((n,i) => n.classList.toggle('active', i===1));
     renderSkills(currentTab);
+  }
+
+  function showExpertsView() {
+    closeSkillsPopup(); closeExpertPopup();
+    document.getElementById('view-experts').classList.add('active');
+    document.getElementById('view-chat').classList.remove('active');
+    document.getElementById('view-skills').classList.remove('active');
+    document.querySelectorAll('.nav-item').forEach((n,i) => n.classList.toggle('active', i===2));
+    renderExperts('');
   }
 
   function newChat() {
@@ -1099,8 +1367,8 @@
     showChatView();
     document.getElementById('chat-input').value = '';
     document.querySelectorAll('.nav-item').forEach((n,i) => n.classList.toggle('active', i===0));
-    activeSkill = null;
-    updateSkillBtn();
+    activeSkill = null; updateSkillBtn();
+    activeExpert = null; updateExpertBtn();
   }
 
   function loadHistory(name) {
@@ -1124,9 +1392,12 @@
   }
 
   document.addEventListener('click', (e) => {
-    const popup = document.getElementById('skills-popup');
-    const btn = document.getElementById('use-skill-btn');
-    if (!popup.contains(e.target) && !btn.contains(e.target)) closeSkillsPopup();
+    const sp = document.getElementById('skills-popup');
+    const sb = document.getElementById('use-skill-btn');
+    if (!sp.contains(e.target) && !sb.contains(e.target)) closeSkillsPopup();
+    const ep = document.getElementById('expert-popup');
+    const eb = document.getElementById('use-expert-btn');
+    if (!ep.contains(e.target) && !eb.contains(e.target)) closeExpertPopup();
   });
 
   function filterPopupSkills(query) {
@@ -1166,7 +1437,7 @@
   // ── CHAT INPUT ──
   function setMode(btn, mode) {
     document.querySelectorAll('.tool-btn').forEach(b => {
-      if (b.id !== 'use-skill-btn') b.classList.remove('active');
+      if (b.id !== 'use-skill-btn' && b.id !== 'use-expert-btn') b.classList.remove('active');
     });
     btn.classList.add('active');
   }
