@@ -152,38 +152,39 @@
     /* ── CHAT VIEW ── */
     #view-chat {
       align-items: center; justify-content: center;
-      padding: 40px 20px 0;
+      padding: 24px 20px 0;
     }
     .chat-welcome {
-      text-align: center; max-width: 680px; width: 100%;
+      text-align: center; max-width: 600px; width: 100%;
     }
-    .chat-logo {
-      width: 56px; height: 56px; background: var(--accent);
-      border-radius: 14px; margin: 0 auto 28px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .chat-logo svg { width: 30px; height: 30px; color: #fff; }
-    .chat-welcome h2 { font-size: 20px; font-weight: 600; margin-bottom: 32px; color: var(--text); }
 
-    /* RIS center welcome logo */
-    .chat-ris-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 32px; gap: 14px; }
-    .chat-ris-badge {
-      width: 64px; height: 64px; background: #2563eb; border-radius: 18px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 0.5px;
-      box-shadow: 0 4px 16px rgba(37,99,235,0.25);
+    /* RIS center welcome logo — horizontal compact */
+    .chat-ris-wrap {
+      display: flex; flex-direction: row; align-items: center;
+      justify-content: center; gap: 12px; margin-bottom: 20px;
     }
-    .chat-ris-text { text-align: center; }
-    .chat-ris-name { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; }
-    .chat-ris-sub { font-size: 12.5px; color: var(--text3); margin-top: 5px; }
+    .chat-ris-badge {
+      width: 44px; height: 44px; background: #2563eb; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #fff; letter-spacing: 0.4px;
+      box-shadow: 0 3px 10px rgba(37,99,235,0.22); flex-shrink: 0;
+    }
+    .chat-ris-text { text-align: left; }
+    .chat-ris-name { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .chat-ris-sub { font-size: 11.5px; color: var(--text3); margin-top: 3px; }
+
+    .chat-welcome h2 {
+      font-size: 24px; font-weight: 700; color: var(--text);
+      margin-bottom: 20px; letter-spacing: -0.3px;
+    }
 
     .suggestions {
-      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
-      margin-bottom: 40px;
+      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+      margin-top: 12px;
     }
     .suggestion-chip {
-      background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: 6px; padding: 8px 14px; font-size: 12.5px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 6px 14px; font-size: 12px;
       cursor: pointer; color: var(--text2); transition: all 0.1s;
       white-space: nowrap;
     }
@@ -437,24 +438,21 @@
     ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
 
     /* ─── USE CASE CARDS ─── */
-    .use-case-section { width: 100%; max-width: 580px; margin-bottom: 20px; }
-    .use-case-label { font-size: 11px; color: var(--text3); font-weight: 500; letter-spacing: 0.3px; margin-bottom: 8px; }
-    .use-cases { display: flex; flex-direction: column; gap: 8px; }
+    .use-case-section { width: 100%; margin-bottom: 0; }
+    .use-case-label { font-size: 11px; color: var(--text3); font-weight: 500; letter-spacing: 0.3px; margin-bottom: 10px; }
+    .use-cases { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .use-case-card {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px; border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+      padding: 14px 16px; border: 1px solid var(--border);
       border-radius: var(--radius); background: var(--card-bg);
-      cursor: pointer; transition: all 0.15s; text-align: left; width: 100%;
+      cursor: pointer; transition: all 0.15s; text-align: left;
     }
     .use-case-card:hover { border-color: var(--accent); background: var(--accent-light); }
-    .use-case-card:hover .uc-arrow { color: var(--accent); }
-    .uc-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .uc-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .uc-icon.blue { background: #dce8f8; color: var(--accent); }
     .uc-icon.green { background: #dcf0e5; color: var(--green); }
-    .uc-body { flex: 1; }
-    .uc-title { font-size: 13px; font-weight: 600; color: var(--text); }
-    .uc-desc { font-size: 11.5px; color: var(--text2); margin-top: 3px; }
-    .uc-arrow { color: var(--text3); font-size: 16px; line-height: 1; transition: color 0.15s; }
+    .uc-title { font-size: 12.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .uc-desc { font-size: 11.5px; color: var(--text2); line-height: 1.4; }
 
     /* ─── DEMO PANEL ─── */
     #view-chat.demo-mode { justify-content: flex-start; padding-top: 32px; }
@@ -715,7 +713,7 @@
       </div>
       <h2>有什么可以帮你？</h2>
 
-      <!-- Use case cards -->
+      <!-- Use case cards + quick chips -->
       <div class="use-case-section">
         <div class="use-case-label">使用案例</div>
         <div class="use-cases">
@@ -725,11 +723,8 @@
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
               </svg>
             </div>
-            <div class="uc-body">
-              <div class="uc-title">使用技能：债券利率走势研判</div>
-              <div class="uc-desc">调用官方技能，分析通胀信号，自动输出利率走势研判与久期配置建议</div>
-            </div>
-            <div class="uc-arrow">›</div>
+            <div class="uc-title">使用技能<br>债券利率走势研判</div>
+            <div class="uc-desc">调用官方技能，分析通胀信号，自动输出利率走势研判与久期配置建议</div>
           </button>
           <button class="use-case-card" onclick="showDemo('create-skill')">
             <div class="uc-icon green">
@@ -737,20 +732,16 @@
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
             </div>
-            <div class="uc-body">
-              <div class="uc-title">创建技能：光伏行业周报生成</div>
-              <div class="uc-desc">描述分析需求，AI 自动设计技能框架，一键生成可复用的专属研究技能</div>
-            </div>
-            <div class="uc-arrow">›</div>
+            <div class="uc-title">创建技能<br>光伏行业周报生成</div>
+            <div class="uc-desc">描述需求，AI 自动设计技能框架，一键生成可复用的专属研究技能</div>
           </button>
         </div>
       </div>
 
-      <!-- Quick chips -->
       <div class="suggestions">
-        <div class="suggestion-chip" onclick="useChip(this)">使用「债券利率走势研判」技能：...</div>
-        <div class="suggestion-chip" onclick="useChip(this)">使用「基金对比分析」技能：采用...</div>
-        <div class="suggestion-chip" onclick="useChip(this)">使用「宏观数据解读」技能：分析...</div>
+        <div class="suggestion-chip" onclick="useChip(this)">使用「债券利率走势研判」技能分析当前利率</div>
+        <div class="suggestion-chip" onclick="useChip(this)">使用「基金对比分析」技能对比主动基金</div>
+        <div class="suggestion-chip" onclick="useChip(this)">使用「宏观数据解读」技能解读最新PMI</div>
       </div>
     </div>
 
