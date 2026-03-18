@@ -454,7 +454,7 @@
     /* ─── USE CASE CARDS ─── */
     .use-case-section { width: 100%; margin-bottom: 0; }
     .use-case-label { font-size: 11px; color: var(--text3); font-weight: 500; letter-spacing: 0.3px; margin-bottom: 10px; }
-    .use-cases { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .use-cases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .use-case-card {
       display: flex; flex-direction: column; align-items: stretch;
       padding: 0; border: 1px solid var(--border); border-radius: var(--radius);
@@ -463,6 +463,12 @@
     }
     .use-case-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(37,99,235,0.08); }
     .use-case-card:hover .uc-play { background: var(--accent-light); color: var(--accent); }
+    @keyframes ucClickPulse {
+      0%   { transform: scale(1);    box-shadow: 0 0 0 0   rgba(46,74,122,0.40); border-color: var(--accent); }
+      40%  { transform: scale(1.03); box-shadow: 0 0 0 7px rgba(46,74,122,0.14); border-color: var(--accent); }
+      100% { transform: scale(1);    box-shadow: 0 0 0 0   rgba(46,74,122,0);    border-color: var(--accent); }
+    }
+    .uc-highlight { animation: ucClickPulse 0.65s ease-out forwards; border-color: var(--accent) !important; }
     /* Card preview area */
     .uc-preview {
       height: 74px; padding: 10px 14px; display: flex; align-items: center;
@@ -978,7 +984,7 @@
         <div class="use-cases">
 
           <!-- Card 1: 使用技能 -->
-          <button class="use-case-card" onclick="showDemo('use-skill')">
+          <button class="use-case-card" id="card-use-skill" onclick="showDemo('use-skill')">
             <div class="uc-preview uc-prev-blue">
               <svg viewBox="0 0 200 54" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="13" cy="13" r="6" fill="#2563eb"/>
@@ -1005,7 +1011,7 @@
           </button>
 
           <!-- Card 2: 创建技能 -->
-          <button class="use-case-card" onclick="showDemo('create-skill')">
+          <button class="use-case-card" id="card-create-skill" onclick="showDemo('create-skill')">
             <div class="uc-preview uc-prev-green">
               <svg viewBox="0 0 200 54" xmlns="http://www.w3.org/2000/svg">
                 <rect x="18" y="6" width="164" height="42" rx="6" fill="white" opacity="0.75"/>
@@ -1030,7 +1036,7 @@
           </button>
 
           <!-- Card 3: @专家 -->
-          <button class="use-case-card" onclick="showDemo('ask-expert')">
+          <button class="use-case-card" id="card-ask-expert" onclick="showDemo('ask-expert')">
             <div class="uc-preview uc-prev-indigo">
               <svg viewBox="0 0 200 54" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="20" cy="27" r="13" fill="#4f46e5"/>
@@ -1215,7 +1221,7 @@
     </div>
 
     <div class="suggested-qs">
-      <button class="sq-chip" onclick="showDemo('nev-inventory')">
+      <button class="sq-chip" id="chip-nev-inventory" onclick="showDemo('nev-inventory')">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
         新能源车企目前上险量维度的渠道库存压力趋势是怎么样的？
       </button>
@@ -2040,31 +2046,55 @@
   let tourActive = false;
 
   function playAllDemos() {
-    const types = ['use-skill', 'create-skill', 'ask-expert'];
-    const labels = ['使用技能', '创建技能', '@专家'];
+    const sequence = [
+      { type: 'use-skill',     targetId: 'card-use-skill',     label: '使用技能' },
+      { type: 'create-skill',  targetId: 'card-create-skill',  label: '创建技能' },
+      { type: 'ask-expert',    targetId: 'card-ask-expert',    label: '@专家'    },
+      { type: 'nev-inventory', targetId: 'chip-nev-inventory', label: '因子技能' },
+    ];
     tourActive = true;
     let idx = 0;
-    function playNext() {
-      if (!tourActive || idx >= types.length) {
+
+    function highlightAndPlay() {
+      if (!tourActive || idx >= sequence.length) {
         tourActive = false;
         const ind = document.getElementById('demo-tour-indicator');
         if (ind) ind.textContent = '';
         return;
       }
+      const item = sequence[idx];
       const ind = document.getElementById('demo-tour-indicator');
-      if (ind) ind.textContent = labels[idx] + ' · ' + (idx + 1) + ' / ' + types.length;
-      showDemo(types[idx], () => {
-        idx++;
+
+      // Highlight the target card / chip to simulate the user clicking it
+      const el = document.getElementById(item.targetId);
+      if (el) {
+        el.classList.remove('uc-highlight');
+        void el.offsetWidth; // force reflow to restart animation
+        el.classList.add('uc-highlight');
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // After highlight, start the demo
+      setTimeout(() => {
         if (!tourActive) return;
-        if (idx < types.length) {
-          setTimeout(playNext, 2000 / playbackSpeed);
-        } else {
-          tourActive = false;
-          if (ind) ind.textContent = '已全部播放完毕';
-        }
-      });
+        if (el) el.classList.remove('uc-highlight');
+        if (ind) ind.textContent = item.label + ' · ' + (idx + 1) + ' / ' + sequence.length;
+        showDemo(item.type, () => {
+          idx++;
+          if (!tourActive) return;
+          if (idx < sequence.length) {
+            // Return to welcome screen, then highlight next target
+            hideDemo(true);
+            setTimeout(highlightAndPlay, 600 / playbackSpeed);
+          } else {
+            tourActive = false;
+            if (ind) ind.textContent = '已全部播放完毕';
+          }
+        });
+      }, 900 / playbackSpeed);
     }
-    playNext();
+
+    highlightAndPlay();
   }
 
   function setPlaybackSpeed(spd) {
@@ -2243,10 +2273,12 @@
     }, collapseAt + 650);
   }
 
-  function hideDemo() {
-    tourActive = false;
-    const ind = document.getElementById('demo-tour-indicator');
-    if (ind) ind.textContent = '';
+  function hideDemo(fromTour) {
+    if (!fromTour) {
+      tourActive = false;
+      const ind = document.getElementById('demo-tour-indicator');
+      if (ind) ind.textContent = '';
+    }
     document.getElementById('chat-welcome').style.display = '';
     document.getElementById('view-chat').classList.remove('demo-mode');
     document.getElementById('demo-panel').classList.remove('active');
