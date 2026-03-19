@@ -1041,30 +1041,6 @@
             </div>
           </button>
 
-          <!-- Card 3: @专家 -->
-          <button class="use-case-card" id="card-ask-expert" onclick="showDemo('ask-expert')">
-            <div class="uc-preview uc-prev-indigo">
-              <svg viewBox="0 0 200 54" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="20" cy="27" r="13" fill="#4f46e5"/>
-                <text x="20" y="30" font-size="8" fill="white" text-anchor="middle" font-weight="700">宏观</text>
-                <rect x="40" y="8" width="152" height="38" rx="7" fill="white" opacity="0.82"/>
-                <polygon points="40,20 32,27 40,34" fill="white" opacity="0.82"/>
-                <rect x="52" y="17" width="100" height="3.5" rx="1.5" fill="#e8eaed"/>
-                <rect x="52" y="25" width="120" height="3.5" rx="1.5" fill="#e8eaed"/>
-                <rect x="52" y="33" width="78" height="3.5" rx="1.5" fill="#e8eaed"/>
-                <rect x="133" y="38" width="46" height="7" rx="3.5" fill="#eef0fb"/>
-                <text x="156" y="44" font-size="6.5" fill="#4f46e5" text-anchor="middle">偏多债市</text>
-              </svg>
-            </div>
-            <div class="uc-body">
-              <div class="uc-meta">
-                <span class="uc-label">@专家</span>
-                <span class="uc-dur"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>约 5 秒</span>
-              </div>
-              <div class="uc-title">向宏观专家提问</div>
-            </div>
-          </button>
-
         </div>
       </div>
     </div>
@@ -1420,55 +1396,6 @@
         { tag: '公告', cls: 'gong', title: '关于推进分布式光伏发电项目管理办法（征求意见稿）', date: '2025-02-28' },
         { tag: '研报', cls: 'yan', title: '光伏供应链月报：硅料价格底部确认信号渐现', date: '2025-03-05' },
         { tag: '资讯', cls: 'zixun', title: '分布式光伏新政落地，装机配额或超预期', date: '2025-03-13' },
-      ]
-    },
-    'ask-expert': {
-      userMsg: '@宏观专家 当前货币政策宽松预期升温，如何看待债券市场的走势与配置机会？',
-      steps: [
-        {
-          title: '识别专家角色 · 加载研究框架',
-          subs: [
-            { type: 'tool', text: 'LOAD expert(role="宏观专家", domain=["利率","流动性","央行政策","宏观周期"])' },
-            { type: 'data', text: '专家框架：IS-LM → 货币政策传导 → 债券市场定价三层逻辑链' },
-            { type: 'note', text: '✦ 知识库版本：宏观研究框架 v3.2，覆盖 2010–2025 政策周期' },
-          ]
-        },
-        {
-          title: '拆解问题维度 · 确认分析路径',
-          subs: [
-            { type: 'note', text: '维度① 货币政策宽松预期的来源与可靠性' },
-            { type: 'note', text: '维度② 宽松预期 → 利率下行传导路径（短端 vs 长端差异）' },
-            { type: 'note', text: '维度③ 当前时点的债券配置性价比与组合结构建议' },
-          ]
-        },
-        {
-          title: '调取关键利率 & 流动性数据',
-          subs: [
-            { type: 'tool', text: 'GET rates(["DR007","R007","MLF","OMO_7D","10Y_CGB","1Y_CGB","超储率"])' },
-            { type: 'data', text: 'DR007：<strong>1.72%</strong> | OMO 7D：<strong>1.50%</strong> | MLF：<strong>2.00%</strong>' },
-            { type: 'data', text: '10Y国债：<strong>1.98%</strong> | 1Y国债：<strong>1.42%</strong> | 期限利差：<strong>56bp</strong>' },
-            { type: 'data', text: '银行间超储率（估算）：<strong>1.8%</strong>，处历史中高位，资金面充裕' },
-          ]
-        },
-        {
-          title: '交叉验证 · 生成专家研判',
-          subs: [
-            { type: 'note', text: '宽松验证：OMO 利率低于 DR007 中枢，政策意图显著' },
-            { type: 'note', text: '曲线形态：期限利差 56bp，曲线偏平，长端配置空间有限但仍存在' },
-            { type: 'note', text: '✦ 专家视角回复生成完毕，附数据引用与风险提示' },
-          ]
-        }
-      ],
-      result: 'ask-expert',
-      refs: [
-        { tag: '研报', cls: 'yan', title: '货币政策观察：降准落地后的流动性展望与债市影响', date: '2025-03-16' },
-        { tag: '资讯', cls: 'zixun', title: '货币政策宽松预期下资产配置策略研讨纪要', date: '2025-03-12' },
-        { tag: '数据', cls: 'shuju', title: '公开市场业务操作公告（2025年第51号）', date: '2025-03-10' },
-        { tag: '研报', cls: 'yan', title: '利率走廊机制解读：OMO与DR007背离信号分析', date: '2025-03-09' },
-        { tag: '研报', cls: 'yan', title: '2025年货币政策展望：降息窗口或在Q2打开', date: '2025-03-06' },
-        { tag: '公告', cls: 'gong', title: '2025年政府债券发行总体安排说明', date: '2025-01-20' },
-        { tag: '资讯', cls: 'zixun', title: '宽松预期升温，长端利率还有多少下行空间？', date: '2025-03-15' },
-        { tag: '研报', cls: 'yan', title: '期限利差与曲线形态：哑铃策略适用性探讨', date: '2025-03-08' },
       ]
     },
     'nev-inventory': {
@@ -2055,7 +1982,6 @@
     const sequence = [
       { type: 'use-skill',     targetId: 'card-use-skill',     label: '使用技能' },
       { type: 'create-skill',  targetId: 'card-create-skill',  label: '创建技能' },
-      { type: 'ask-expert',    targetId: 'card-ask-expert',    label: '@专家'    },
       { type: 'nev-inventory', targetId: 'chip-nev-inventory', label: '因子技能' },
     ];
     tourActive = true;
