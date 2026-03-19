@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 商情中枢 — AI RIS</title>
+<style>
+:root{--bg:#ffffff;--bg2:#f7f7f8;--bg3:#ebebed;--border:#e4e4e7;--text:#232333;--text2:#6b6b80;--text3:#a1a1aa;--blue:#2952a3;--blue-dim:rgba(41,82,163,0.06);--green:#12b76a;--red:#f04438;--purple:#7b61ff;--accent:#2952a3;--gold:#2952a3;--gold-dim:rgba(41,82,163,0.06);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','SF Pro Display','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;font-size:13.5px;-webkit-font-smoothing:antialiased;}
+.app{display:grid;grid-template-columns:220px 1fr 340px;height:100vh;}
+/* Sidebar */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.sidebar-header{padding:18px 16px;border-bottom:1px solid var(--border);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:30px;height:30px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;}
+.logo-text{font-size:15px;font-weight:700;color:var(--text);}
+.logo-sub{font-size:10px;margin-left:auto;background:var(--blue-dim);color:var(--blue);padding:2px 8px;border-radius:4px;font-weight:600;}
+.nav-items{flex:1;padding:8px;overflow-y:auto;}
+.nav-group{margin-bottom:16px;}
+.nav-group-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:1px;padding:6px 10px;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s ease;}
+.nav-item:hover{background:rgba(0,0,0,0.03);color:var(--text);}
+.nav-item.active{background:var(--blue-dim);color:var(--blue);font-weight:600;}
+.nav-item .ni-icon{width:20px;text-align:center;font-size:14px;}
+.nav-item .ni-badge{margin-left:auto;font-size:10px;padding:1px 7px;border-radius:10px;background:var(--blue);color:white;font-weight:600;}
+.sidebar-footer{padding:14px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;}
+.user-name{font-size:12.5px;color:var(--text);font-weight:600;}
+.user-role{font-size:10px;color:var(--text3);}
+/* Main */
+.main{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border);background:var(--bg);}
+.main-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.main-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.main-title .dot{width:8px;height:8px;border-radius:50%;background:var(--blue);animation:dotPulse 2s ease-in-out infinite;}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(11,92,255,0.3);}50%{box-shadow:0 0 0 4px rgba(11,92,255,0.08);}}
+.main-title .dot.idle{background:var(--text3);animation:none;}
+.main-status{font-size:11px;color:var(--text3);}
+.main-actions{display:flex;gap:8px;}
+.btn{padding:7px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;transition:all .15s ease;border:1px solid var(--border);background:white;color:var(--text2);}
+.btn:hover{background:var(--bg2);color:var(--text);}
+.btn.gold{border:none;background:var(--blue);color:white;}
+.btn.gold:hover{background:#0050e0;}
+.btn.purple{border:none;background:var(--purple);color:white;}
+.btn.purple:hover{background:#6a4de6;}
+.btn.green{border:none;background:var(--green);color:white;}
+.btn.green:hover{background:#0fa35e;}
+.signal-feed{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;}
+/* Signal cards */
+.sig-card{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:10px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .2s ease;opacity:0;transform:translateY(12px);animation:sigIn .4s ease forwards;}
+.sig-card:hover{border-color:rgba(11,92,255,0.25);background:rgba(11,92,255,0.02);}
+.sig-card.active{border-color:var(--blue);background:rgba(11,92,255,0.03);}
+@keyframes sigIn{to{opacity:1;transform:translateY(0);}}
+.sig-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.sig-icon.sentiment{background:rgba(240,68,56,0.08);color:var(--red);}
+.sig-icon.venture{background:rgba(123,97,255,0.08);color:var(--purple);}
+.sig-icon.research{background:rgba(11,92,255,0.08);color:var(--blue);}
+.sig-icon.client{background:rgba(18,183,106,0.08);color:var(--green);}
+.sig-body{flex:1;min-width:0;}
+.sig-source{font-size:10px;color:var(--text3);font-weight:500;letter-spacing:.3px;margin-bottom:3px;}
+.sig-text{font-size:13px;color:var(--text);line-height:1.6;}
+.sig-text b{color:var(--blue);font-weight:600;}
+.sig-meta{font-size:10px;color:var(--text3);margin-top:4px;display:flex;gap:12px;}
+.sig-conf{color:var(--green);font-weight:600;}
+.conv-banner{margin:8px 0;padding:12px 16px;border-radius:10px;background:var(--blue-dim);border:1px solid rgba(11,92,255,0.15);display:flex;align-items:center;gap:10px;opacity:0;animation:sigIn .4s ease forwards;cursor:pointer;transition:all .15s;}
+.conv-banner:hover{background:rgba(11,92,255,0.1);}
+.conv-banner .cb-icon{font-size:18px;}
+.conv-banner .cb-text{font-size:13px;color:var(--blue);font-weight:600;flex:1;}
+.conv-banner .cb-tag{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--blue);color:white;font-weight:600;}
+/* Detail */
+.detail{background:var(--bg2);display:flex;flex-direction:column;overflow:hidden;}
+.detail-header{padding:14px 16px;border-bottom:1px solid var(--border);}
+.detail-header h3{font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text);}
+.detail-header .dh-sub{font-size:11px;color:var(--text2);}
+.detail-body{flex:1;overflow-y:auto;padding:16px;}
+.deal-chain{display:flex;flex-direction:column;gap:0;margin-bottom:16px;}
+.deal-node{padding:10px 12px;font-size:12.5px;color:var(--text);line-height:1.6;border-left:2px solid var(--blue);margin-left:8px;position:relative;}
+.deal-node::before{content:'';position:absolute;left:-5px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--blue);border:2px solid var(--bg2);}
+.deal-node b{color:var(--blue);}
+.deal-node .dn-role{font-size:10px;color:var(--blue);font-weight:600;letter-spacing:.5px;margin-bottom:2px;}
+.deal-node .dn-text{color:var(--text2);}
+.dt-section{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.5px;margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.dt-section:first-child{margin-top:0;}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:12px;gap:8px;}
+.empty-state .es-icon{font-size:32px;opacity:.5;}
+/* Chat for Story 2 */
+.chat-area{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px;}
+.chat-msg{display:flex;gap:10px;max-width:88%;animation:sigIn .3s ease forwards;opacity:0;}
+.chat-msg.user{align-self:flex-end;flex-direction:row-reverse;}
+.chat-avatar{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0;}
+.chat-avatar.ai{background:var(--purple);position:relative;}
+.chat-avatar.ai::after{content:'AI';position:absolute;bottom:-3px;right:-3px;font-size:6px;background:var(--blue);color:white;padding:0px 2px;border-radius:2px;font-weight:700;}
+.chat-avatar.human{background:var(--blue);}
+.chat-bubble{padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.7;}
+.chat-msg.assistant .chat-bubble{background:var(--bg2);border:1px solid var(--border);border-top-left-radius:3px;}
+.chat-msg.user .chat-bubble{background:var(--blue);color:white;border-top-right-radius:3px;}
+.chat-bubble b{color:var(--blue);font-weight:600;}
+.chat-msg.user .chat-bubble b{color:white;}
+.chat-system{text-align:center;font-size:11px;color:var(--text3);padding:4px 0;opacity:0;animation:sigIn .3s ease forwards;}
+.chat-system-card{margin:4px auto;padding:10px 16px;border-radius:10px;background:var(--blue-dim);border:1px solid rgba(11,92,255,0.15);font-size:12px;color:var(--blue);max-width:420px;text-align:left;line-height:1.6;opacity:0;animation:sigIn .4s ease forwards;cursor:pointer;transition:all .15s;}
+.chat-system-card:hover{background:rgba(11,92,255,0.1);}
+.chat-system-card b{font-weight:600;}
+/* Config panel */
+.config-panel{padding:16px;background:var(--bg);border-radius:10px;border:1px solid var(--border);margin-bottom:12px;}
+.config-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);}
+.config-row:last-child{border-bottom:none;}
+.config-label{color:var(--text3);width:80px;flex-shrink:0;font-size:11px;}
+.config-val{color:var(--text);font-weight:500;}
+.config-val b{color:var(--blue);}
+/* Twin selector */
+.twin-list{padding:8px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;overflow-x:auto;}
+.twin-chip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);cursor:pointer;transition:all .15s;white-space:nowrap;font-size:12px;color:var(--text2);}
+.twin-chip:hover{border-color:var(--purple);color:var(--text);}
+.twin-chip.active{border-color:var(--purple);background:rgba(123,97,255,0.06);color:var(--purple);font-weight:600;}
+.twin-chip-dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.twin-chip-dot.busy{background:var(--red);}
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#d4d4d8;border-radius:10px;}
+@keyframes pulseGold{0%,100%{box-shadow:0 0 0 0 rgba(11,92,255,0.3);}50%{box-shadow:0 0 12px 2px rgba(11,92,255,0.15);}}
+.nav-item.pulse{animation:pulseGold 1.5s ease-in-out 3;}
+.typing{display:flex;gap:4px;padding:4px 0;align-items:center;}
+.typing span{width:4px;height:4px;background:var(--blue);border-radius:50%;animation:blink 1.4s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-4px);opacity:1}}
+</style>
+<link rel="stylesheet" href="digital-asset.css">
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">RIS</div>
+        <span class="logo-text">AI RIS</span>
+        <span class="logo-sub">商情中枢</span>
+      </div>
+    </div>
+    <div class="nav-items">
+      <div class="nav-group">
+        <div class="nav-group-label">信号监控</div>
+        <div class="nav-item active" id="navRadar" onclick="switchTab('radar')">
+          <span class="ni-icon">⚡</span>我的 Skill
+          <span class="ni-badge" id="sigCount">0</span>
+        </div>
+        <div class="nav-item" id="navAlert" onclick="switchTab('alert')">
+          <span class="ni-icon">🔔</span>商情提醒
+        </div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">业务协同</div>
+        <div class="nav-item" id="navDeal" onclick="switchTab('deal')">
+          <span class="ni-icon">🤝</span>并购撮合
+        </div>
+        <div class="nav-item" id="navCapital" onclick="switchTab('capital')">
+          <span class="ni-icon">🏭</span>产业资本合作
+        </div>
+        <div class="nav-item" id="navTwin" onclick="switchTab('twin')">
+          <span class="ni-icon">👤</span>首席连线
+        </div>
+        <div class="nav-item" id="navClient" onclick="switchTab('client')">
+          <span class="ni-icon">📋</span>客户洞察
+        </div>
+        <div class="nav-item" id="navRefinance" onclick="switchTab('refinance')">
+          <span class="ni-icon">💰</span>再融资协同
+        </div>
+        <div class="nav-item" id="navDeriv" onclick="switchTab('deriv')">
+          <span class="ni-icon">📐</span>衍生品 / 做市
+        </div>
+        <div class="nav-item" id="navCross" onclick="switchTab('cross')">
+          <span class="ni-icon">🌍</span>跨境联动
+        </div>
+        <div class="nav-item" id="navBranch" onclick="switchTab('branch')">
+          <span class="ni-icon">📍</span>属地协同
+        </div>
+        <div class="nav-item" id="navRoadshow" onclick="switchTab('roadshow')">
+          <span class="ni-icon">🎯</span>机构共振
+        </div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">资产管理</div>
+        <div class="nav-item" id="navPortfolio" onclick="switchTab('portfolio')">
+          <span class="ni-icon">💎</span>被投追踪
+        </div>
+        <div class="nav-item" id="navExit" onclick="switchTab('exit')">
+          <span class="ni-icon">📤</span>退出策略
+        </div>
+        <div class="nav-item" id="navProduct" onclick="switchTab('product')">
+          <span class="ni-icon">🧺</span>主题产品
+        </div>
+        <div class="nav-item" id="navRisk" onclick="switchTab('risk')">
+          <span class="ni-icon">🛡️</span>风险预警
+        </div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">技能沉淀</div>
+        <div class="nav-item" id="navSkill" onclick="switchTab('skill')">
+          <span class="ni-icon">⚡</span>数字资产
+        </div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">系统</div>
+        <div class="nav-item" onclick="window.location.href='overview.html'">
+          <span class="ni-icon">←</span>返回总览
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer" id="sidebarFooter">
+      <div class="user-avatar">W</div>
+      <div>
+        <div class="user-name">王总</div>
+        <div class="user-role">投行业务负责人</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main" id="mainPanel">
+    <div class="main-header" id="mainHeader">
+      <div class="main-title">
+        <span class="dot idle" id="radarDot"></span>
+        <span id="mainTitleText">商情雷达</span>
+        <span class="main-status" id="mainStatus">待启动</span>
+      </div>
+      <div class="main-actions" id="mainActions">
+        <button class="btn" id="configBtn" onclick="toggleConfig()">⚙ 条件配置</button>
+        <button class="btn gold" id="startBtn" onclick="runStory1()">▶ 启动扫描</button>
+      </div>
+    </div>
+    <div class="signal-feed" id="mainContent">
+      <div class="empty-state" id="emptyState">
+        <div class="es-icon">📡</div>
+        <div>点击「启动扫描」观看完整用户故事</div>
+        <div style="font-size:11px;color:var(--text3);max-width:300px;text-align:center;line-height:1.6;">投行领导 W 自定义了一套商情碰撞 Skill，系统 7×24 扫描四条线信号，碰撞出撮合机会</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail">
+    <div class="detail-header">
+      <h3 id="detailTitle">详情面板</h3>
+      <div class="dh-sub" id="detailSub">选择左侧信号查看详情</div>
+    </div>
+    <div class="detail-body" id="detailBody">
+      <div class="empty-state"><div class="es-icon">📋</div><div>等待信号输入…</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const mainContent = document.getElementById('mainContent');
+const mainPanel = document.getElementById('mainPanel');
+const detailBody = document.getElementById('detailBody');
+const detailTitle = document.getElementById('detailTitle');
+const detailSub = document.getElementById('detailSub');
+let running = false;
+let currentSkillRole = 'admin';
+let currentSkillFocus = 'overview';
+
+const signals = [
+  {id:'sig1',icon:'sentiment',emoji:'📡',source:'AI 睿思 · 舆情监测',
+   text:'海外 <b>具身智能</b> 赛道突然爆火，头部公司估值 24h 内暴涨 <b>340%</b>，社交媒体讨论量激增 12 倍',
+   time:'09:12',conf:'95%',detail:'舆情热度指数从 12 → 847（72倍），Twitter/Reddit 讨论量 24h +1200%。Figure AI 估值 $2.6B→$11.5B。国内搜索指数同步上升。'},
+  {id:'sig2',icon:'venture',emoji:'💎',source:'创新投资部 · 被投企业',
+   text:'华泰创新 B 轮领投 <b>灵巧机器人</b>（具身智能赛道），当前估值已达投资时 <b>8.6 倍</b>',
+   time:'09:15',conf:'内部',detail:'灵巧机器人 2023 年成立，华泰创新 B 轮投 3000 万，现估值 2.58 亿。核心团队来自清华、ETH Zurich。已有 3 家 Pre-IPO 基金接触。'},
+  {id:'sig3',icon:'research',emoji:'🔬',source:'华泰行之 · 研究追踪',
+   text:'机械首席 <b>陈明</b> 近 6 个月深度覆盖具身智能，与 <b>汇力智造（300XXX）董事长李总</b> 会面 4 次',
+   time:'09:18',conf:'行为数据',detail:'陈明近 6 月发布具身智能相关研报 7 篇，路演 12 场。行之 APP 显示与汇力智造李总互动 4 次（2 次正式调研 + 2 次闭门交流），互动频率 Top 3。'},
+  {id:'sig4',icon:'client',emoji:'📋',source:'客户动态 · 公开信息',
+   text:'汇力智造 <b>李总</b> 近期 3 次公开提及 "<b>布局具身智能</b>"，公司股价异动 +15%',
+   time:'09:21',conf:'公开',detail:'2026-03-01 业绩说明会："下半年重点布局具身智能"；2026-03-08 券商策略会：提及已与多家机器人公司接触；2026-03-12 公告披露设立智能制造子公司。'}
+];
+
+function switchTab(tab){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  running=false;
+  const map={radar:'navRadar',alert:'navAlert',deal:'navDeal',capital:'navCapital',twin:'navTwin',client:'navClient',refinance:'navRefinance',deriv:'navDeriv',cross:'navCross',branch:'navBranch',roadshow:'navRoadshow',portfolio:'navPortfolio',exit:'navExit',product:'navProduct',risk:'navRisk',skill:'navSkill'};
+  if(map[tab]) document.getElementById(map[tab]).classList.add('active');
+  if(tab==='radar') showRadarView();
+  else if(tab==='alert') showAlertView();
+  else if(tab==='deal') showDealView();
+  else if(tab==='capital') showIndustryCapitalView();
+  else if(tab==='twin') showTwinView();
+  else if(tab==='client') showClientView();
+  else if(tab==='refinance') showRefinanceView();
+  else if(tab==='deriv') showDerivativesView();
+  else if(tab==='cross') showCrossBorderView();
+  else if(tab==='branch') showBranchCoordView();
+  else if(tab==='roadshow') showRoadshowView();
+  else if(tab==='portfolio') showPortfolioView();
+  else if(tab==='exit') showExitView();
+  else if(tab==='product') showProductView();
+  else if(tab==='risk') showRiskView();
+  else if(tab==='skill') showSkillAssetView();
+}
+
+// ==================== 我的 Skill ====================
+function showRadarView(){
+  setUser('W','王总','投行业务负责人');
+  setHeader('⚡','我的 Skill','','btn gold','▶ 演示完整流程','runStory1()');
+  mainContent.className='signal-feed';
+  mainContent.innerHTML='<div class="empty-state"><div class="es-icon">⚡</div><div>点击「演示完整流程」</div><div style="font-size:11px;color:var(--text3);max-width:300px;text-align:center;line-height:1.6;">观看王总如何用自然语言创建一个商情监控 Skill，并看到这个 Skill 7×24 运行后碰撞出的第一个商机</div></div>';
+  detailTitle.textContent='我的 Skill';
+  detailSub.textContent='当前 0 个活跃 Skill';
+  detailBody.innerHTML='<div class="empty-state"><div class="es-icon">💡</div><div>创建你的第一个 Skill…</div></div>';
+}
+
+// ==================== 商情提醒（历史记录） ====================
+function showAlertView(){
+  setUser('W','王总','投行业务负责人');
+  setHeader('🔔','商情提醒','','btn','','');
+  mainContent.className='signal-feed';
+  const alerts=[
+    {time:'今日 09:22',title:'具身智能 · 投行并购撮合机会',tag:'高优先级',tagColor:'var(--gold)',detail:'四信号碰撞：舆情爆火 + 华泰已投标的 + 首席深度覆盖 + 买方意向明确'},
+    {time:'03-14 16:30',title:'新能源储能 · 研究所首席观点分歧',tag:'中优先级',tagColor:'var(--blue)',detail:'光伏首席 vs 电力首席对储能路径判断不一致，建议组织内部研讨'},
+    {time:'03-12 11:15',title:'半导体设备 · 被投企业估值突破',tag:'退出信号',tagColor:'var(--green)',detail:'被投芯徽半导体估值突破 10 亿，3 家 PE 在接触，建议评估退出'},
+    {time:'03-10 09:40',title:'医药CXO · 客户集中咨询',tag:'客户需求',tagColor:'var(--purple)',detail:'3 位高净值客户在 48 小时内咨询 CXO 板块，财富管理部建议出专题'},
+  ];
+  mainContent.innerHTML='';
+  alerts.forEach((a,i)=>{
+    const card=document.createElement('div');
+    card.className='conv-banner'; card.style.animationDelay=(i*0.08)+'s';
+    card.innerHTML=`<span class="cb-icon">⚡</span><span class="cb-text">${a.title}</span><span class="cb-tag" style="background:${a.tagColor}20;color:${a.tagColor}">${a.tag}</span>`;
+    card.onclick=()=>{
+      detailTitle.textContent=a.title; detailSub.textContent=a.time;
+      detailBody.innerHTML=`<div class="dt-section">提醒详情</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">${a.detail}</div><div class="dt-section">触发时间</div><div style="font-size:12px;color:var(--text2);">${a.time}</div>`;
+    };
+    mainContent.appendChild(card);
+  });
+  detailTitle.textContent='商情提醒'; detailSub.textContent='累计 34 条提醒';
+  detailBody.innerHTML='<div class="dt-section">提醒统计</div><div style="display:flex;gap:8px;margin-bottom:12px;"><div style="flex:1;padding:10px;border-radius:6px;background:var(--bg);text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--gold);">34</div><div style="font-size:10px;color:var(--text3);">累计提醒</div></div><div style="flex:1;padding:10px;border-radius:6px;background:var(--bg);text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--green);">12</div><div style="font-size:10px;color:var(--text3);">已转化</div></div><div style="flex:1;padding:10px;border-radius:6px;background:var(--bg);text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--blue);">35%</div><div style="font-size:10px;color:var(--text3);">转化率</div></div></div><div style="font-size:12px;color:var(--text3);line-height:1.6;">点击左侧提醒查看详情</div>';
+}
+
+// ==================== 并购撮合 ====================
+function showDealView(){
+  setUser('W','王总','投行业务负责人');
+  setHeader('🤝','并购撮合','','btn gold','▶ 启动扫描','runStory1()');
+  mainContent.className='signal-feed';
+  mainContent.innerHTML='<div class="empty-state"><div class="es-icon">🤝</div><div>点击「启动扫描」观看并购撮合场景</div><div style="font-size:11px;color:var(--text3);max-width:300px;text-align:center;line-height:1.6;">系统自动碰撞跨部门信号，发现并购撮合机会，推荐牵头人、关键人、标的方、协同方</div></div>';
+  detailTitle.textContent='并购撮合'; detailSub.textContent='跨部门信号碰撞';
+  detailBody.innerHTML='<div class="empty-state"><div class="es-icon">🤝</div><div>等待场景启动…</div></div>';
+}
+
+async function runStory1(){
+  if(running) return; running=true;
+  mainContent.innerHTML='';
+  // Phase 1: Skill Creation via conversation
+  const createChat=[
+    {r:'system',t:'王总开始创建商情监控 Skill'},
+    {r:'user',a:'W',t:'帮我监控一个场景：当某个技术赛道突然爆火，同时华泰创新已经投过这个赛道的公司，并且研究所首席对这个领域有深度覆盖，而且有上市公司高管公开表态想切入——这四个条件同时出现时，第一时间提醒我。'},
+    {r:'assistant',a:'Nx',t:'已理解。为您解析为 <b>4 个监控条件</b>：<br><br>① 舆情热度 > <b>500%</b>（AI 睿思监测）<br>② 华泰创新已有<b>被投标的</b>在该赛道<br>③ 研究所首席有<b>深度覆盖</b>（研报≥3篇 或 会面≥2次）<br>④ 上市公司高管有<b>明确切入意向</b>（公开信息）<br><br>四条件<b>同时命中</b>时，自动生成商情提醒并推送给您。<br><br>数据源：AI 睿思舆情、创新投资部被投库、华泰行之 APP 首席行为数据、客户动态公开信息。<br><br>确认创建？'},
+    {r:'user',a:'W',t:'对，就这样，跑起来。'},
+    {r:'system-card',t:'✓ <b>Skill 已创建</b>：商情碰撞监控<br>4 个条件 · 4 个数据源 · 7×24 后台扫描<br><br>正在启动首次扫描…'},
+  ];
+  // Show detail: empty at first, then conditions appear
+  detailTitle.textContent='创建 Skill'; detailSub.textContent='自然语言 → 结构化条件';
+  detailBody.innerHTML='<div class="empty-state"><div class="es-icon">💡</div><div>等待输入…</div></div>';
+  await playChat(createChat, mainContent);
+  // Update detail to show parsed conditions
+  detailTitle.textContent='王总的 Skill'; detailSub.textContent='商情碰撞监控 · 运行中';
+  detailBody.innerHTML=`<div class="dt-section">触发条件（全部命中时告警）</div><div class="config-panel"><div class="config-row"><span class="config-label">条件 1</span><span class="config-val">舆情热度 > <b>500%</b></span></div><div class="config-row"><span class="config-label">条件 2</span><span class="config-val">华泰已有<b>被投标的</b>在该赛道</span></div><div class="config-row"><span class="config-label">条件 3</span><span class="config-val">研究所首席有<b>深度覆盖</b></span></div><div class="config-row"><span class="config-label">条件 4</span><span class="config-val">上市公司高管有<b>明确切入意向</b></span></div></div><div class="dt-section">数据源</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· AI 睿思 — 舆情/行业图谱<br>· 创新投资部 — 被投企业库<br>· 华泰行之 APP — 首席行为数据<br>· 客户动态 — 公开信息聚合</div><div class="dt-section">运行状态</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">7×24 后台扫描<br>状态: <b style="color:var(--green)">运行中</b></div>`;
+  // Phase 2: Signal scanning (auto-continue)
+  await wait(1500);
+  // Add a divider in chat
+  const divider=document.createElement('div');
+  divider.className='chat-system'; divider.textContent='— Skill 首次运行 · 发现信号 —';
+  mainContent.appendChild(divider); mainContent.scrollTop=mainContent.scrollHeight;
+  await wait(800);
+  const sigBadge=document.getElementById('sigCount');
+  for(let i=0;i<signals.length;i++){
+    await wait(1200);
+    const s=signals[i];
+    const card=document.createElement('div');
+    card.className='sig-card'; card.id=s.id;
+    card.innerHTML=`<div class="sig-icon ${s.icon}">${s.emoji}</div><div class="sig-body"><div class="sig-source">${s.source}</div><div class="sig-text">${s.text}</div><div class="sig-meta"><span class="sig-conf">置信度 ${s.conf}</span><span style="color:var(--text3)">今日 ${s.time}</span></div></div>`;
+    card.onclick=()=>showSigDetail(s);
+    mainContent.appendChild(card);
+    sigBadge.textContent=(i+1);
+    mainContent.scrollTop=mainContent.scrollHeight;
+    if(i===0) showSigDetail(s);
+  }
+  await wait(1000);
+  const syncChat=[
+    {r:'assistant',a:'投',t:'<b>投行数字人</b>：我已生成三方会面邮件草稿和项目立项摘要，可直接外发。'},
+    {r:'assistant',a:'研',t:'<b>研究数字人</b>：陈明的行业判断、买方问答和可比案例已整理成会前版本，可直接进会。'},
+    {r:'assistant',a:'创',t:'<b>创新投资数字人</b>：灵巧机器人估值、客户验证和融资口径已整理成 one-pager。'},
+    {r:'assistant',a:'分',t:'<b>分公司数字人</b>：苏州分公司侧的属地联系人、会面时间和园区资源清单已拉齐。'},
+    {r:'system-card',t:'🚀 <b>数字人协同结果</b><br>会前材料与会面安排已同步归集，可以直接发会。'}
+  ];
+  const syncDivider=document.createElement('div');
+  syncDivider.className='chat-system';
+  syncDivider.textContent='— 投行 / 研究 / 创新 / 分公司数字人协同中 —';
+  mainContent.appendChild(syncDivider);
+  mainContent.scrollTop=mainContent.scrollHeight;
+  await playChat(syncChat, mainContent);
+  const analyzing=document.createElement('div');
+  analyzing.className='chat-system'; analyzing.textContent='AI 碰撞分析中…';
+  mainContent.appendChild(analyzing); mainContent.scrollTop=mainContent.scrollHeight;
+  await wait(1500); analyzing.remove();
+  const conv=document.createElement('div');
+  conv.className='conv-banner';
+  conv.innerHTML='<span class="cb-icon">⚡</span><span class="cb-text">四条件全部命中 · 发现投行并购撮合机会</span><span class="cb-tag">高优先级</span>';
+  conv.onclick=showDealDetail;
+  mainContent.appendChild(conv);
+  mainContent.scrollTop=mainContent.scrollHeight;
+  showDealDetail();
+  running=false;
+}
+
+function showSigDetail(s){
+  document.querySelectorAll('.sig-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById(s.id)?.classList.add('active');
+  detailTitle.textContent=s.source; detailSub.textContent='今日 '+s.time+' · 置信度 '+s.conf;
+  detailBody.innerHTML=`<div class="dt-section">信号详情</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">${s.detail}</div><div class="dt-section">命中条件</div><div style="font-size:12px;color:var(--text2);line-height:1.6;">· 赛道: 具身智能 / 机器人<br>· 关联首席: 陈明（机械）<br>· 关联客户: 汇力智造 300XXX<br>· 关联被投: 灵巧机器人</div>`;
+}
+
+function showDealDetail(){
+  detailTitle.textContent='商情提醒 · 跨部门撮合'; detailSub.textContent='投行并购 · 高优先级';
+  const acts=[{r:'牵头人',t:'投行制造业组 张磊（执行董事）发起撮合流程，报告王总'},{r:'关键人',t:'调动研究所首席 陈明，约汇力智造李总专场会面，输出行业判断'},{r:'标的方',t:'邀请创新部灵巧机器人项目对接人参会，准备估值与业务材料'},{r:'协同方',t:'抄送华泰苏州分公司负责人 — 汇力智造总部在苏州，探索综合金融服务机会'}];
+  let h='<div class="dt-section">撮合链路</div><div style="font-size:12.5px;color:var(--text);line-height:1.6;margin-bottom:12px;font-weight:600;">汇力智造（李总）有意切入具身智能 → 华泰已投灵巧机器人（标的）→ 首席陈明是双方人脉节点 → 投行并购撮合窗口期</div>';
+  h+='<div class="dt-section">行动建议</div><div class="deal-chain">';
+  acts.forEach(a=>{h+=`<div class="deal-node"><div class="dn-role">${a.r}</div><div class="dn-text">${a.t}</div></div>`;});
+  h+='</div><div class="dt-section">触发条件回溯</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">此商情由 <b style="color:var(--gold)">W 自建 Skill</b> 触发：<br>✓ 舆情热度 72 倍 > 500%<br>✓ 创新部已投灵巧机器人<br>✓ 首席陈明 7 篇研报 + 4 次会面<br>✓ 李总 3 次公开表态</div>';
+  detailBody.innerHTML=h + buildExecutionHtml({
+    ready:['三方会面邮件草稿','灵巧机器人 one-pager','汇力智造并购补链问答清单'],
+    dispatch:[{role:'T+0 · 张磊',text:'发出陈明、汇力智造、灵巧机器人三方会面邀约，并锁定本周时间。'},{role:'T+0 · 创新投资团队',text:'准备灵巧机器人最新估值、客户验证与融资口径材料。'},{role:'T+1 · 苏州分公司',text:'确认汇力智造董事长办公室与属地会面安排，保障管理层到场。'}],
+    timeline:[{role:'T+1',text:'完成三方材料交换与问题清单汇总。'},{role:'T+3',text:'组织管理层会面，确认是走合作、入股还是正式并购路线。'},{role:'T+7',text:'若买方意愿明确，启动财务顾问立项与排他谈判准备。'}],
+    result:'若三方会面顺利，这条线索会直接进入并购 mandate，而不是停留在“知道有机会”。'
+  });
+}
+
+// ==================== 产业资本合作 ====================
+function showIndustryCapitalView(){
+  setScenarioIntro('吴','吴昊','董事总经理 · 产业金融','🏭','产业资本合作','btn gold','▶ 演示场景','runIndustryCapitalDemo()','🏭','点击「演示场景」观看完整场景','当研究确认技术进入量产拐点、上市公司不想一次性并购而是优先战略入股时，系统会自动把产业买方、被投项目、地方基金和投行团队串起来。','产业资本合作','产业金融 / 投行 / 创新投资联动');
+}
+
+async function runIndustryCapitalDemo(){
+  const cards=[
+    {icon:'research',emoji:'🤖',source:'研究追踪 · 机器人零部件',text:'机械首席判断 <b>力控传感 + 灵巧手</b> 已进入量产验证期，产业链从“看概念”切向“看交付”',time:'09:48',conf:'行为数据',panelTitle:'机器人零部件 · 量产拐点',panelSub:'今日 09:48 · 研究判断',panelHtml:`<div class="dt-section">投研信号</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">行业关注点已从整机想象力切换到核心零部件交付能力。对于上市公司而言，最优动作往往不是一次性买断，而是先做战略入股、联合验证和供应链绑定。</div><div class="dt-section">业务含义</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">这是产业资本合作最容易落地的窗口：技术路线清晰、估值还没被完全抬上去、双方都需要试错空间。</div>`},
+    {icon:'client',emoji:'🏭',source:'客户动态 · 恒拓精密（002XXX）',text:'恒拓精密董事会讨论对传感器企业进行 <b>3-5 亿元战略入股</b>，优先考虑“少数股权 + 供货绑定”',time:'09:56',conf:'公开',panelTitle:'恒拓精密 · 战略入股意向',panelSub:'今日 09:56 · 管理层口径',panelHtml:`<div class="dt-section">客户动作</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">管理层明确表示现阶段更倾向“先合作、后控股”，核心诉求是锁定零部件能力、保留后续并购选择权，并避免一次性整合风险。</div><div class="dt-section">券商机会</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">这类场景天然需要财务顾问设计交易结构、估值区间、治理安排和后续资本路径。</div>`},
+    {icon:'venture',emoji:'🧭',source:'项目库线索 · 灵枢传感',text:'华泰服务项目 <b>灵枢传感</b> 正在启动 Pre-C 轮，现有股东接受 <b>产业投资人领投</b> 与独家供货条款',time:'10:03',conf:'内部',panelTitle:'灵枢传感 · 可合作标的',panelSub:'今日 10:03 · 项目库匹配',panelHtml:`<div class="dt-section">标的状态</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">项目团队愿意引入产业股东，但希望保留独立经营与后续多轮融资空间，和恒拓精密当前的入股偏好高度匹配。</div><div class="dt-section">结构空间</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">可设计“战略投资 + 联合验证 + 未来并购优先权”三段式合作，而不是简单股权买卖。</div>`},
+    {icon:'sentiment',emoji:'🏛️',source:'协同资金 · 先进制造基金',text:'苏州先进制造基金对机器人零部件项目有明确配置意愿，可作为 <b>联合投资人</b> 放大交易确定性',time:'10:12',conf:'渠道',panelTitle:'地方基金 · 联合投资人',panelSub:'今日 10:12 · 资金协同',panelHtml:`<div class="dt-section">协同资金</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">地方基金希望引入上市公司和优质技术项目共同落地，既能放大项目确定性，也能让上市公司减少一次性出资压力。</div><div class="dt-section">集团意义</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">投行、创新投资、分公司与政府关系并不是分散资源，而是同一笔产业资本合作的不同抓手。</div>`}
+  ];
+  const summary={icon:'🏭',text:'恒拓精密 × 灵枢传感可落地为“战略入股 + 联合基金 + 后续并购权”',tag:'可执行',title:'产业资本合作 · 机器人零部件',sub:'产业金融 / 投行 / 创新投资 / 分公司',html:`<div class="dt-section">协同链路</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">投研识别窗口</div><div class="dn-text">先由研究确认赛道从主题交易转向量产验证，确保合作是产业逻辑而不是概念追高。</div></div><div class="deal-node"><div class="dn-role">投行设计结构</div><div class="dn-text">把交易设计成战略入股、联合验证和未来并购优先权，而不是一步到位收购。</div></div><div class="deal-node"><div class="dn-role">创新投资匹配标的</div><div class="dn-text">项目库直接提供可谈标的，缩短从赛道判断到真实 deal 的时间。</div></div><div class="deal-node"><div class="dn-role">地方基金放大确定性</div><div class="dn-text">引入联合投资人和地方产业资源，让合作从财务投资升级为产业落地。</div></div></div><div class="dt-section">可落地业务</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 1 单战略投资财务顾问<br>· 1 个联合产业基金合作机会<br>· 1 条后续并购与再融资 pipeline</div><div class="dt-section">收入机会</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">顾问费、基金合作费、后续融资与并购延展机会都会跟着进来，且客户粘性高于单次撮合。</div>`,exec:{banner:'已生成合作执行单 · 3 方任务待发送',ready:['战略入股结构草案','灵枢传感 cap table 与老股流转建议','恒拓精密供应链协同问答清单'],dispatch:[{role:'T+0 · 吴昊',text:'向恒拓精密 CFO 发送“少数股权 + 供货绑定 + 并购优先权”交易草案。'},{role:'T+0 · 创新投资团队',text:'整理灵枢传感最新融资口径、股东名单与可接受条款，供首轮沟通使用。'},{role:'T+1 · 苏州分公司',text:'预约先进制造基金与企业管理层三方电话会，确认是否引入联合投资人。'}],timeline:[{role:'T+1',text:'完成双边意向沟通和条款红线确认，决定是否进入排他谈判。'},{role:'T+3',text:'组织管理层 + 项目团队现场会，验证供货绑定与联合验证安排。'},{role:'T+7',text:'形成 term sheet 与估值区间，推动财务顾问 mandate 落地。'}],result:'若顺利进入排他流程，可先落 1 单战略投资顾问，再衔接联合基金、后续并购和再融资机会。'}};
+  await runSignalScenario(cards, summary);
+}
+
+// ==================== 衍生品 / 做市 ====================
+function showDerivativesView(){
+  setScenarioIntro('郑','郑昱','执行董事 · 股权衍生品','📐','衍生品 / 做市','btn gold','▶ 演示场景','runDerivativesDemo()','📐','点击「演示场景」观看完整场景','当研究确认波动上升、客户即将进入可转债或大额交易窗口时，系统会把 ECM、衍生品、做市和机构资金一起拉进同一条服务链。','衍生品 / 做市','ECM / 衍生品 / 做市 / 机构联动');
+}
+
+async function runDerivativesDemo(){
+  const cards=[
+    {icon:'research',emoji:'🧠',source:'研究追踪 · 先进封装',text:'电子首席提示先进封装板块进入 <b>高波动 + 高关注</b> 阶段，未来 2 个月事件密集',time:'10:28',conf:'行为数据',panelTitle:'先进封装 · 波动窗口',panelSub:'今日 10:28 · 研究判断',panelHtml:`<div class="dt-section">投研信号</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">赛道基本面向上，但事件窗口密集、价格波动放大。对券商来说，这类阶段不只适合投行承销，也适合衍生品和做市团队切入。</div><div class="dt-section">业务含义</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">研究先看见波动，交易业务才能更早设计风险管理和流动性服务。</div>`},
+    {icon:'client',emoji:'💳',source:'客户动态 · 芯曜科技（688XXX）',text:'芯曜科技正评估 <b>15 亿元可转债</b> 方案，控股股东同步关注发行窗口前后的市值波动',time:'10:35',conf:'公开',panelTitle:'芯曜科技 · 发行与市值诉求',panelSub:'今日 10:35 · CFO 反馈',panelHtml:`<div class="dt-section">客户动作</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">公司并不是只想“把债发出去”，还在意发行阶段股价波动、转债上市后的流动性，以及股东层面的市值管理与风险对冲。</div><div class="dt-section">券商机会</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">这类客户一旦只由 ECM 服务，就会漏掉大量交易类收入池。</div>`},
+    {icon:'venture',emoji:'📊',source:'机构反馈 · 转债资金',text:'转债与量化资金明确表示，若有稳定做市与借券支持，将显著提高参与意愿',time:'10:42',conf:'内部',panelTitle:'机构承接 · 做市前提',panelSub:'今日 10:42 · 资金反馈',panelHtml:`<div class="dt-section">买方需求</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">资金更在意可交易性和退出效率，而不是单纯故事好坏。稳定做市、券源与风险对冲工具，是它们敢不敢重仓参与的关键。</div><div class="dt-section">协同重点</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">承销、做市、借券、股衍联动起来，发行质量和后续交易活跃度都会更高。</div>`},
+    {icon:'sentiment',emoji:'🔄',source:'交易台 · 方案打包',text:'衍生品团队可提供 <b>股东 collar / 收益互换</b>，做市团队可承接转债上市后的流动性支持',time:'10:50',conf:'模型',panelTitle:'交易服务 · 打包方案',panelSub:'今日 10:50 · 产品匹配',panelHtml:`<div class="dt-section">服务组合</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">发行前可做股东风险管理，发行中提升定价与承接效率，发行后通过做市和券源支持维持活跃度，形成完整的交易闭环。</div><div class="dt-section">高层价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">这是最适合展示“投研怎么把一级业务继续引到二级与交易业务”的场景之一。</div>`}
+  ];
+  const summary={icon:'📐',text:'芯曜科技可转债窗口可同步转化为股衍与做市收入池',tag:'交易延展',title:'衍生品 / 做市 · 芯曜科技',sub:'ECM / 衍生品 / 做市 / 机构销售',html:`<div class="dt-section">协同链路</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">ECM 拿发行</div><div class="dn-text">先锁定可转债项目和核心条款，形成一级业务入口。</div></div><div class="deal-node"><div class="dn-role">股衍管波动</div><div class="dn-text">为控股股东设计 collar、收益互换或股价风险管理方案，稳定发行期预期。</div></div><div class="deal-node"><div class="dn-role">做市保流动性</div><div class="dn-text">转债上市后由做市团队提供双边报价与券源支持，提升资金参与度。</div></div><div class="deal-node"><div class="dn-role">机构销售放大承接</div><div class="dn-text">提前对接转债、量化和套利资金，形成更强的市场化承接。</div></div></div><div class="dt-section">可落地业务</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 1 条可转债承销 mandate<br>· 1 套股东风险管理 / 场外衍生品方案<br>· 1 组转债做市与券源支持收入</div><div class="dt-section">收入机会</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">承销收入之外，还能延展到场外期权、收益互换、做市点差和借券等更高频收入池。</div>`,exec:{banner:'已生成发行执行单 · 股衍与做市联动待确认',ready:['可转债发行窗口测算','股东 collar / 收益互换简版方案','转债资金与做市承接名单'],dispatch:[{role:'T+0 · ECM 团队',text:'与芯曜科技 CFO 确认可转债核心条款与时间表，锁定项目窗口。'},{role:'T+0 · 股衍团队',text:'向控股股东发送市值波动管理方案，确认其对 collar / 收益互换的接受度。'},{role:'T+1 · 做市团队',text:'准备转债上市后流动性支持、券源安排和报价区间测算。'}],timeline:[{role:'T+1',text:'完成发行、股衍、做市三方会，统一客户口径与执行边界。'},{role:'T+3',text:'向核心资金做预沟通，确认对做市、借券和承接安排的反馈。'},{role:'T+7',text:'形成打包服务报价，争取把承销 mandate 一并扩成交易服务包。'}],result:'若客户接受一体化方案，一级承销可直接延展成股衍、做市、券源与高频交易收入。'}};
+  await runSignalScenario(cards, summary);
+}
+
+// ==================== 属地协同 ====================
+function showBranchCoordView(){
+  setScenarioIntro('赵','赵晨','总经理 · 苏州分公司','📍','属地协同','btn purple','▶ 演示场景','runBranchCoordDemo()','📍','点击「演示场景」观看完整场景','当分公司先看到地方政府、园区基金和链主企业的同步动作时，系统会把属地关系从“信息优势”变成可执行的集团商机。','属地协同','分公司 / 研究 / 投行 / 国资协同');
+}
+
+async function runBranchCoordDemo(){
+  const cards=[
+    {icon:'sentiment',emoji:'🏙️',source:'属地线索 · 苏州园区',text:'苏州园区启动 <b>具身智能专项载体</b> 与配套基金，优先支持关键零部件和场景示范项目',time:'11:06',conf:'属地',panelTitle:'苏州园区 · 政策与载体',panelSub:'今日 11:06 · 属地政策',panelHtml:`<div class="dt-section">属地信号</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">分公司往往比总部更早拿到园区、产业基金和项目落地信息。对集团来说，这类信息不是“知道就行”，而是可以立刻转成项目路由。</div><div class="dt-section">价值点</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">一旦总部研究和投行及时接入，地方线索会从人脉消息变成组织能力。</div>`},
+    {icon:'client',emoji:'🏗️',source:'客户动态 · 澄虎机电（688XXX）',text:'澄虎机电计划在苏州落地机器人视觉产线，并同步寻找 <b>机器视觉软件标的</b> 与地方配套资金',time:'11:14',conf:'公开',panelTitle:'澄虎机电 · 属地扩张需求',panelSub:'今日 11:14 · 客户动态',panelHtml:`<div class="dt-section">客户动作</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">企业诉求不是单一融资，而是“项目落地 + 产业资源 + 资金配套 + 标的筛选”同时推进，典型需要分公司牵头组织。</div><div class="dt-section">集团机会</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">这类场景里，分公司不是末梢执行，而是最先触发集团协同的入口。</div>`},
+    {icon:'research',emoji:'🔬',source:'研究追踪 · 工业自动化',text:'工业自动化首席判断机器视觉与力控环节将在 12 个月内进入 <b>国产替代加速期</b>',time:'11:22',conf:'行为数据',panelTitle:'研究验证 · 产业方向',panelSub:'今日 11:22 · 首席判断',panelHtml:`<div class="dt-section">研究作用</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">首席帮助总部判断：这是不是值得调动集团资源的真方向，而不是地方政府短期招商噪音。</div><div class="dt-section">落地意义</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">有了研究背书，分公司拿到的地方项目更容易升级成投行、产业基金和创新投资协同机会。</div>`},
+    {icon:'venture',emoji:'🤝',source:'分公司关系 · 园区国资',text:'苏州分公司已可安排 <b>园区国资 + 企业管理层 + 华泰团队</b> 72 小时内同桌沟通',time:'11:30',conf:'排期',panelTitle:'属地编排 · 三方会面',panelSub:'今日 11:30 · 分公司协调',panelHtml:`<div class="dt-section">执行优势</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">分公司掌握的是“谁能拍板、谁能给资源、谁最着急落地”的现实顺序，这正是总部最难即时补齐的部分。</div><div class="dt-section">协同抓手</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">总部负责方案，分公司负责关系与节奏，双方拼起来才是完整的项目打法。</div>`}
+  ];
+  const summary={icon:'📍',text:'苏州园区线索可升级为“项目落地 + 国资协同 + 并购储备”组合机会',tag:'属地优势',title:'属地协同 · 苏州园区机器人链',sub:'分公司 / 投行 / 研究 / 国资',html:`<div class="dt-section">协同链路</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">分公司拿一手关系</div><div class="dn-text">先锁定园区、国资与链主企业的真实决策人和推进节奏。</div></div><div class="deal-node"><div class="dn-role">研究所做方向验证</div><div class="dn-text">确认机器视觉与力控是真景气，而不是纯地方政策概念。</div></div><div class="deal-node"><div class="dn-role">投行设计项目包</div><div class="dn-text">把项目落地、配套基金、潜在并购和后续融资一并设计成可执行方案。</div></div><div class="deal-node"><div class="dn-role">国资放大成交概率</div><div class="dn-text">通过地方基金和园区资源提高客户落地意愿，把总部方案变成真实项目。</div></div></div><div class="dt-section">可落地业务</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 1 个园区基金合作机会<br>· 1 条项目落地后的融资 / 并购 pipeline<br>· 1 组总部与分公司联合拜访机会</div><div class="dt-section">收入机会</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">不仅有投行顾问费，还能延展到基金合作、企业综合金融和持续客户经营。</div>`,exec:{banner:'已生成属地推进单 · 分公司可直接拉会',ready:['园区政策与基金支持清单','澄虎机电项目落地需求摘要','总部 + 分公司联合拜访提纲'],dispatch:[{role:'T+0 · 赵晨',text:'发起园区国资、澄虎机电和华泰三方会面邀约，锁定 72 小时内时间。'},{role:'T+0 · 投行团队',text:'准备“项目落地 + 配套基金 + 潜在并购”一揽子方案初稿。'},{role:'T+1 · 研究所',text:'输出机器视觉与力控国产替代验证材料，供园区和客户决策。'}],timeline:[{role:'T+1',text:'完成三方电话会，确认企业诉求、园区资源和基金参与边界。'},{role:'T+3',text:'安排现场拜访与项目落地图，判断是否同步并购储备。'},{role:'T+7',text:'形成项目建议书，推动基金合作与后续融资线索并轨。'}],result:'若顺利推进，分公司将不只是提供线索，而是直接带出园区基金合作、项目融资和并购储备三条业务线。'}};
+  await runSignalScenario(cards, summary);
+}
+
+// ==================== STORY 2: 数字分身 ====================
+
+function showTwinView(){
+  document.getElementById('sidebarFooter').innerHTML='<div class="user-avatar" style="background:var(--accent)">张</div><div><div class="user-name">张磊</div><div class="user-role">执行董事 · 投行制造业组</div></div>';
+  document.getElementById('mainHeader').innerHTML=`
+    <div class="main-title"><span style="font-size:14px;">👤</span><span>数字分身 · 陈明（机械首席）</span></div>
+    <div class="main-actions"><button class="btn purple" onclick="runStory2()">▶ 演示对话</button></div>`;
+  mainContent.className='signal-feed';
+  // Twin selector bar
+  mainContent.innerHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <div class="twin-chip active"><span class="twin-chip-dot"></span>陈明 · 机械首席</div>
+      <div class="twin-chip"><span class="twin-chip-dot"></span>赵薇 · TMT首席</div>
+      <div class="twin-chip"><span class="twin-chip-dot"></span>孙强 · 新能源首席</div>
+      <div class="twin-chip"><span class="twin-chip-dot busy"></span>周志远 · 医药首席</div>
+    </div>
+    <div class="empty-state" id="twinEmpty" style="flex:1;">
+      <div class="es-icon">💬</div>
+      <div>点击「演示对话」观看完整用户故事</div>
+      <div style="font-size:11px;color:var(--text3);max-width:300px;text-align:center;line-height:1.6;">投行张磊约不到首席陈明，通过陈明的数字分身了解行业、发现协作机会</div>
+    </div>`;
+  // Detail: twin profile
+  detailTitle.textContent='陈明 · 数字分身';
+  detailSub.textContent='机械行业首席 · 研究所';
+  detailBody.innerHTML=`
+    <div class="dt-section">知识覆盖</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:8px;">具身智能、工业自动化、新能源设备、精密制造</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <div style="flex:1;padding:8px;border-radius:6px;background:var(--bg);text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--blue);">47</div><div style="font-size:9px;color:var(--text3);">研报</div></div>
+      <div style="flex:1;padding:8px;border-radius:6px;background:var(--bg);text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--green);">126</div><div style="font-size:9px;color:var(--text3);">交互</div></div>
+      <div style="flex:1;padding:8px;border-radius:6px;background:var(--bg);text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--purple);">23</div><div style="font-size:9px;color:var(--text3);">人脉</div></div>
+    </div>
+    <div class="dt-section">核心人脉</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.8;">
+      · 汇力智造 李总（董事长）— 会面 4 次<br>
+      · 中科机器人 王院士 — 学术顾问<br>
+      · 灵巧机器人 张博 — 技术交流 3 次<br>
+      · Figure AI 亚太负责人 — 海外路演
+    </div>
+    <div class="dt-section">为什么用数字分身？</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.8;">
+      <span style="color:var(--red);">✗</span> 张磊找陈明 → 排期 2 周 → <b style="color:var(--red)">窗口期错过</b><br>
+      <span style="color:var(--green);">✓</span> 张磊问数字分身 → <b style="color:var(--green)">即时</b>获取行业判断 + 人脉线索 → 分身通知真人 → 精准约会
+    </div>`;
+}
+
+async function runStory2(){
+  if(running) return; running=true;
+  document.getElementById('twinEmpty')?.remove();
+  const chat=[
+    {r:'system',t:'张磊 开始与 陈明·数字分身 对话'},
+    {r:'user',a:'张',t:'陈明老师好，我是投行制造业组张磊。我们最近在看一个具身智能方向的并购机会，想快速了解一下这个赛道目前的核心玩家和投资逻辑。'},
+    {r:'assistant',a:'陈',t:'张磊你好。具身智能赛道目前分三个梯队：<br><br><b>第一梯队</b>：Figure AI（$11.5B）、1X Technologies（$600M）— 通用人形路线<br><b>第二梯队</b>：灵巧机器人、Covariant、Agility — 垂直场景切入<br><b>第三梯队</b>：高校 spin-off 早期团队<br><br>投资逻辑核心是<b>「软件定义硬件」</b>，大模型能力迁移到物理世界。估值泡沫已经出现，但产业资本进场意愿很强，上市公司并购窗口期 <b>6-12 个月</b>。'},
+    {r:'user',a:'张',t:'你对汇力智造（300XXX）的看法？他们切入这个赛道靠谱吗？'},
+    {r:'assistant',a:'陈',t:'汇力智造的优势是<b>精密传动和减速器</b>技术积累，这正好是具身智能的核心零部件瓶颈。李总最近 3 次公开喊话布局具身智能，我判断是认真的：<br><br>· 他们去年成立了智能制造子公司<br>· 我上个月和李总 1v1 交流，他明确提到<b>「想通过并购快速切入」</b><br>· 缺的是<b>算法团队和软件能力</b><br><br>如果你们有这方向的标的，汇力智造是非常适合的买方。'},
+    {r:'system-card',t:'⚡ <b>系统识别到协作机会</b><br>张磊（投行）对具身智能赛道有并购需求 + 陈明·数字分身确认汇力智造李总有明确收购意向 + 华泰创新已投灵巧机器人（标的匹配）<br><br>→ 建议安排<b>三方会面</b>：陈明（引荐）+ 张磊（投行）+ 灵巧机器人（标的）+ 汇力智造李总（买方）'},
+    {r:'user',a:'张',t:'太好了，帮我通知陈明本人，我想约个时间当面聊。'},
+    {r:'assistant',a:'陈',t:'已通知 <b>陈明本人</b>。根据他的日程，最近可约时间：<br><br>· 3月19日（周三）下午 14:00-15:00<br>· 3月21日（周五）上午 10:00-11:00<br><br>同时已将本次对话摘要同步给陈明，让他提前了解你的需求。是否需要我同步预约<b>汇力智造李总</b>和<b>灵巧机器人</b>的对接人？'}
+  ];
+  await playChat(chat, mainContent);
+  const story2SyncDivider=document.createElement('div');
+  story2SyncDivider.className='chat-system';
+  story2SyncDivider.textContent='- 研究 / 投行 / 创投 / 分公司数字人开始接力 -';
+  mainContent.appendChild(story2SyncDivider);
+  mainContent.scrollTop=mainContent.scrollHeight;
+  await playChat([
+    {r:'assistant',a:'研',t:'<b>研究数字人</b>：我已把赛道判断、可比标的和会前问答整理成 2 页摘要，可直接发给张磊和买方。'},
+    {r:'assistant',a:'投',t:'<b>投行数字人</b>：我已沿用张磊的作业模板生成三方会面邮件、项目备忘录和会议目标清单，可直接进入排期。'},
+    {r:'assistant',a:'创',t:'<b>创新投资数字人</b>：灵巧机器人的股东结构、融资口径、估值拆解材料已同步生成，可直接进入买方预沟通。'},
+    {r:'assistant',a:'分',t:'<b>分公司数字人</b>：我已拉齐属地会面时间、接待安排和园区资源名单，只等发出会邀。'},
+    {r:'system-card',t:'🚀 <b>数字人中段结果</b><br>会前材料、邮件草稿、项目备忘录和会议安排已同步生成，可直接进入排期与对接。'}
+  ], mainContent);
+  const card=document.createElement('div');
+  card.className='chat-system-card';
+  card.innerHTML='🚀 <b>数字人已生成执行单</b><br>已同步陈明本人、整理会面摘要、生成三方引荐邮件草稿，可直接进入排期与对接。';
+  card.onclick=()=>{
+    detailTitle.textContent='首席连线 · 执行面板';
+    detailSub.textContent='数字分身已完成前置处理';
+    detailBody.innerHTML=buildExecutionHtml({
+      ready:['张磊与陈明对话摘要','汇力智造 / 灵巧机器人三方引荐邮件草稿','可约时间与会前问题清单'],
+      dispatch:[{role:'T+0 · 陈明本人',text:'确认 3 月 19 日或 3 月 21 日会面时间，并选择是否同步买方与标的方。'},{role:'T+0 · 张磊',text:'确认本次会面的目标是行业判断、交易可行性还是直接撮合。'},{role:'T+1 · 数字分身系统',text:'将完整对话摘要与行业判断同步到 CRM 和项目备忘中。'}],
+      timeline:[{role:'T+1',text:'完成真人首席接力，避免重复沟通背景。'},{role:'T+3',text:'组织正式会面或三方电话会。'},{role:'T+5',text:'若判断成立，切到并购撮合或产业合作场景继续推进。'}],
+      result:'数字人不只是回答问题，而是把“找到首席”直接升级成“安排会面并开始交易前置动作”。'
+    });
+  };
+  mainContent.appendChild(card);
+  mainContent.scrollTop=mainContent.scrollHeight;
+  card.onclick();
+  running=false;
+}
+
+// ==================== 客户洞察 ====================
+function showClientView(){
+  setUser('娜','李娜','高级副总裁 · 财富管理');
+  setHeader('👤','客户洞察','','btn purple','▶ 演示场景','runClientDemo()');
+  mainContent.className='signal-feed';
+  mainContent.innerHTML='<div class="empty-state"><div class="es-icon">📋</div><div>点击「演示场景」观看完整场景</div><div style="font-size:11px;color:var(--text3);max-width:300px;text-align:center;line-height:1.6;">财富管理李娜的高净值客户周总问了一个行业问题，李娜通过首席数字分身秒级响应</div></div>';
+  detailTitle.textContent='客户洞察'; detailSub.textContent='高净值客户实时需求聚合';
+  detailBody.innerHTML='<div class="empty-state"><div class="es-icon">💎</div><div>等待场景启动…</div></div>';
+}
+async function runClientDemo(){
+  if(running) return; running=true;
+  const chat=[
+    {r:'system',t:'场景：高净值客户周总来电咨询'},
+    {r:'user',a:'周',t:'李总你好，我最近看到具身智能很火，想了解一下华泰对这个赛道的观点，以及有没有相关的投资机会？'},
+    {r:'system',t:'李娜过去需要：找研究所首席约时间 → 等 3 天 → 再回复客户 → 客户已流失'},
+    {r:'system',t:'现在：李娜打开商情中枢 → 首席连线'},
+    {r:'assistant',a:'陈',t:'<b>陈明·数字分身</b>为您整理：<br><br>具身智能赛道 Q1 估值中位数上涨 <b>340%</b>，产业资本密集进场，我判断并购窗口期 <b>6-12 个月</b>。<br><br>华泰创新部已投 <b>灵巧机器人</b>（B轮，估值 2.58 亿），Pre-IPO 基金已在接触。<br><br>此外，<b>汇力智造（300XXX）</b>正在布局该赛道，股价近 1 月 +15%，有二级市场配置价值。'},
+    {r:'system-card',t:'⚡ <b>客户匹配建议</b><br>周总持仓中有 3 只制造业个股 → 推荐关注汇力智造<br>周总风险偏好适合 Pre-IPO → 可推荐灵巧机器人份额'},
+    {r:'user',a:'娜',t:'周总，华泰研究所机械首席陈明最新观点：具身智能赛道处于并购窗口期，我们有两个方向供您参考……'},
+  ];
+  mainContent.innerHTML='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;"><div class="twin-chip active"><span class="twin-chip-dot"></span>周总 · 高净值客户</div><div class="twin-chip"><span class="twin-chip-dot"></span>陈明 · 机械首席</div></div>';
+  detailTitle.textContent='客户画像 · 周总'; detailSub.textContent='高净值 · 制造业偏好';
+  detailBody.innerHTML='<div class="dt-section">客户画像</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 资产规模: <b style="color:var(--gold)">5,000 万+</b><br>· 偏好行业: 制造业、新能源<br>· 风险偏好: 中高<br>· 持仓: 3 只制造业个股</div><div class="dt-section">传统 vs 数字分身</div><div style="font-size:12px;color:var(--text2);line-height:1.8;"><span style="color:var(--red);">✗</span> 找首席约时间 → 等 3 天 → 客户已询问其他券商<br><span style="color:var(--green);">✓</span> 数字分身秒出观点 → <b style="color:var(--green)">5 分钟</b>回复客户 → 客户下单</div>';
+  await playChat(chat, mainContent);
+  const clientSyncDivider=document.createElement('div');
+  clientSyncDivider.className='chat-system';
+  clientSyncDivider.textContent='- 财富 / 研究 / 产品 / 股权数字人协同中 -';
+  mainContent.appendChild(clientSyncDivider);
+  mainContent.scrollTop=mainContent.scrollHeight;
+  await playChat([
+    {r:'assistant',a:'财',t:'<b>财富数字人</b>：我已根据周总的风险偏好和持仓结构生成个性化推荐摘要，可直接发客户。'},
+    {r:'assistant',a:'研',t:'<b>研究数字人</b>：我已把首席观点、可比标的和风险提示整理成客户可读版，可直接发给客户。'},
+    {r:'assistant',a:'产',t:'<b>产品数字人</b>：二级市场配置方案、Pre-IPO 份额简介和适当性提示材料已自动准备好。'},
+    {r:'assistant',a:'股',t:'<b>股权数字人</b>：灵巧机器人的项目摘要、交易节点和后续筛选问题清单已同步完成。'},
+    {r:'system-card',t:'🚀 <b>数字人中段结果</b><br>客户摘要、产品简介、适当性材料和项目线索包已同步生成，可直接进入跟单。'}
+  ], mainContent);
+  const card=document.createElement('div');
+  card.className='chat-system-card';
+  card.innerHTML='🚀 <b>客户转化执行单已生成</b><br>已生成周总专属摘要、推荐话术与后续产品清单，可直接进入跟单。';
+  card.onclick=()=>{
+    detailTitle.textContent='客户洞察 · 执行面板';
+    detailSub.textContent='财富端可直接跟单';
+    detailBody.innerHTML=buildExecutionHtml({
+      ready:['周总专属两页观点摘要','汇力智造 + 灵巧机器人产品推荐话术','回访问题与风险揭示模板'],
+      dispatch:[{role:'T+0 · 李娜',text:'将两页摘要发给周总，并预约当天收盘后的回访电话。'},{role:'T+0 · 财富产品经理',text:'准备 Pre-IPO 份额与二级市场配置的适当性材料。'},{role:'T+1 · 客户经理',text:'记录周总对二级市场与股权投资两类方案的偏好，进入跟单。'}],
+      timeline:[{role:'T+1',text:'完成客户回访并确定首选方案。'},{role:'T+3',text:'若客户接受二级市场方向，安排研究路演；若接受股权方向，进入份额转化流程。'},{role:'T+7',text:'形成后续客户经营计划，沉淀成高净值画像资产。'}],
+      result:'这页不再只是“客户问了什么”，而是能直接转成跟单、转化和持续经营动作。'
+    });
+  };
+  mainContent.appendChild(card);
+  mainContent.scrollTop=mainContent.scrollHeight;
+  card.onclick();
+  running=false;
+}
+
+function setScenarioIntro(userChar,name,role,icon,title,btnClass,btnText,btnAction,emptyIcon,emptyTitle,emptyDesc,detailHead,detailSubtext,detailIcon='📊'){
+  setUser(userChar,name,role);
+  setHeader(icon,title,'',btnClass,btnText,btnAction);
+  mainContent.className='signal-feed';
+  mainContent.innerHTML=`<div class="empty-state"><div class="es-icon">${emptyIcon}</div><div>${emptyTitle}</div><div style="font-size:11px;color:var(--text3);max-width:320px;text-align:center;line-height:1.6;">${emptyDesc}</div></div>`;
+  detailTitle.textContent=detailHead;
+  detailSub.textContent=detailSubtext;
+  detailBody.innerHTML=`<div class="empty-state"><div class="es-icon">${detailIcon}</div><div>等待场景启动…</div></div>`;
+}
+
+function buildExecutionHtml(exec){
+  if(!exec) return '';
+  let h='';
+  if(exec.ready?.length){
+    h+='<div class="dt-section">执行材料</div><div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px;">以下材料由对应部门数字人沿用团队作业模板自动生成，可直接外发、排会或进入提案。</div><div class="config-panel">';
+    exec.ready.forEach((item,i)=>{h+=`<div class="config-row"><span class="config-label">材料 ${i+1}</span><span class="config-val">${item}</span></div>`;});
+    h+='</div>';
+  }
+  if(exec.dispatch?.length){
+    h+='<div class="dt-section">待派发任务</div><div class="deal-chain">';
+    exec.dispatch.forEach(item=>{h+=`<div class="deal-node"><div class="dn-role">${item.role}</div><div class="dn-text">${item.text}</div></div>`;});
+    h+='</div>';
+  }
+  if(exec.timeline?.length){
+    h+='<div class="dt-section">推进节奏</div><div class="deal-chain">';
+    exec.timeline.forEach(item=>{h+=`<div class="deal-node"><div class="dn-role">${item.role}</div><div class="dn-text">${item.text}</div></div>`;});
+    h+='</div>';
+  }
+  if(exec.result){
+    h+=`<div class="dt-section">预计转化</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">${exec.result}</div>`;
+  }
+  return h;
+}
+
+function buildAutoScenarioChat(summary){
+  if(!summary.exec || !summary.sub) return null;
+  const deptLabels = summary.sub.split('/').map(s=>s.trim()).filter(Boolean).slice(0,4);
+  if(!deptLabels.length) return null;
+  const short = label=>{
+    const clean=label.replace(/数字人|团队|业务|负责人/g,'').trim();
+    return /[A-Za-z]/.test(clean) ? clean.slice(0,3) : clean.slice(0,2);
+  };
+  const msgs=[{r:'system',t:'各部门数字人开始并行备料与任务路由'}];
+  deptLabels.forEach((dept,idx)=>{
+    const texts=[
+      `我先接牵头动作，已把执行单、时间表和外发目录拉齐。`,
+      `我已沿用团队作业模板归集关键材料，并同步生成内外部版本。`,
+      `我会把客户/买方/资金侧需要的外发版本和问答同步准备好。`,
+      `我负责把排期、跟进和反馈回流到系统，保持推进节奏一致。`
+    ];
+    msgs.push({r:'assistant',a:short(dept),t:`<b>${dept}数字人</b>：${texts[idx] || texts[texts.length-1]}`});
+  });
+  msgs.push({r:'system-card',t:`🚀 <b>数字人协同结果</b><br>${summary.exec.ready?.length || 0} 份关键材料与 ${summary.exec.dispatch?.length || 0} 项任务已同步编排，可直接进入外发、排会和提案。`});
+  return {title:'— 数字人并行协同中 —',messages:msgs};
+}
+
+function renderScenarioSummary(summary){
+  detailTitle.textContent=summary.title;
+  detailSub.textContent=summary.sub;
+  detailBody.innerHTML=summary.html + buildExecutionHtml(summary.exec);
+}
+
+async function runSignalScenario(cards, summary){
+  if(running) return;
+  running=true;
+  mainContent.innerHTML='';
+  for(let i=0;i<cards.length;i++){
+    await wait(900);
+    const s=cards[i];
+    const card=document.createElement('div');
+    card.className='sig-card';
+    card.innerHTML=`<div class="sig-icon ${s.icon}">${s.emoji}</div><div class="sig-body"><div class="sig-source">${s.source}</div><div class="sig-text">${s.text}</div><div class="sig-meta"><span class="sig-conf">置信度 ${s.conf}</span><span style="color:var(--text3)">今日 ${s.time}</span></div></div>`;
+    card.onclick=()=>{
+      document.querySelectorAll('.sig-card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      detailTitle.textContent=s.panelTitle || s.source;
+      detailSub.textContent=s.panelSub || ('今日 '+s.time+' · 置信度 '+s.conf);
+      detailBody.innerHTML=s.panelHtml || `<div class="dt-section">信号详情</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">${s.detail || ''}</div>`;
+    };
+    mainContent.appendChild(card);
+    mainContent.scrollTop=mainContent.scrollHeight;
+    if(i===0) card.onclick();
+  }
+  const autoChat = summary.chat?.length ? {title:summary.chatTitle || '— 数字人协同处理中 —',messages:summary.chat} : buildAutoScenarioChat(summary);
+  if(autoChat?.messages?.length){
+    await wait(700);
+    const divider=document.createElement('div');
+    divider.className='chat-system';
+    divider.textContent=autoChat.title;
+    mainContent.appendChild(divider);
+    mainContent.scrollTop=mainContent.scrollHeight;
+    await playChat(autoChat.messages, mainContent);
+  }
+  await wait(900);
+  const conv=document.createElement('div');
+  conv.className='conv-banner';
+  conv.innerHTML=`<span class="cb-icon">${summary.icon || '⚡'}</span><span class="cb-text">${summary.text}</span><span class="cb-tag">${summary.tag || '高优先级'}</span>`;
+  conv.onclick=()=>renderScenarioSummary(summary);
+  mainContent.appendChild(conv);
+  mainContent.scrollTop=mainContent.scrollHeight;
+  if(summary.exec){
+    await wait(700);
+    const action=document.createElement('div');
+    action.className='conv-banner';
+    action.innerHTML=`<span class="cb-icon">🚀</span><span class="cb-text">${summary.exec.banner || `数字员工已生成执行单 · 待派发 ${summary.exec.dispatch?.length || 0} 项任务`}</span><span class="cb-tag">立即推进</span>`;
+    action.onclick=()=>renderScenarioSummary(summary);
+    mainContent.appendChild(action);
+    mainContent.scrollTop=mainContent.scrollHeight;
+  }
+  renderScenarioSummary(summary);
+  running=false;
+}
+
+// ==================== 再融资协同 ====================
+function showRefinanceView(){
+  setScenarioIntro('周','周宁','执行总经理 · ECM','💰','再融资协同','btn gold','▶ 演示场景','runRefinanceDemo()','💰','点击「演示场景」观看完整场景','客户扩产、首席景气判断、机构预询价与融资窗口同步抬升，数字员工把 ECM、研究、机构销售和财富端快速串起来。','再融资协同','ECM / 研究 / 销售联动');
+}
+
+async function runRefinanceDemo(){
+  const cards=[
+    {icon:'client',emoji:'💧',source:'客户动态 · 算力液冷',text:'<b>瀚云冷却（002XXX）</b> 启动 8 亿扩产预算，董事会倾向在 6 个月内选择 <b>定增 / 可转债</b>',time:'10:05',conf:'公开',panelTitle:'瀚云冷却 · 融资需求',panelSub:'今日 10:05 · 董事会口径',panelHtml:`<div class="dt-section">客户动作</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">管理层明确表示要扩建液冷产线和配电改造能力，核心诉求是“融资速度快、对估值冲击可控、最好同时引入长期机构”。</div><div class="dt-section">业务价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">这是典型的 ECM 提前卡位窗口，若研究与销售同步介入，提案成功率会显著提升。</div>`},
+    {icon:'research',emoji:'🔋',source:'研究追踪 · 电新首席',text:'电新首席 <b>孙强</b> 连续 4 篇点评上调液冷景气判断，测算 2026 年行业 CAPEX 有望 <b>翻倍</b>',time:'10:11',conf:'行为数据',panelTitle:'孙强 · 景气验证',panelSub:'今日 10:11 · 研究热度上行',panelHtml:`<div class="dt-section">研究支撑</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">首席已形成一套完整的“订单兑现期”论证框架，可以直接转成融资故事线、募投合理性和同业对比。</div><div class="dt-section">可沉淀能力</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">数字员工可自动输出 5 页 CAPEX 逻辑卡，帮助 ECM 直接提取核心论据，缩短成稿与提案周期。</div>`},
+    {icon:'venture',emoji:'🏦',source:'机构反馈 · 预路演',text:'机构销售汇总 <b>16 家核心基金</b> 反馈，AI 基建方向再融资项目询价意愿明显升温',time:'10:16',conf:'内部',panelTitle:'机构需求回流',panelSub:'今日 10:16 · 销售反馈',panelHtml:`<div class="dt-section">买方画像</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">长线公募偏好定增，主题基金偏好可转债，保险资金关注现金流与订单锁定。需求并非“有没有”，而是“谁先把项目组织起来”。</div><div class="dt-section">动作建议</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">先做反向预询价，再决定工具优先级，把销售的需求直接反馈给 ECM 方案设计。</div>`},
+    {icon:'sentiment',emoji:'📈',source:'市场窗口 · 可比交易',text:'近 30 天 <b>3 单同赛道融资项目</b> 获超额认购，发行窗口明显改善',time:'10:22',conf:'市场',panelTitle:'融资窗口',panelSub:'今日 10:22 · 可比交易跟踪',panelHtml:`<div class="dt-section">窗口判断</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">市场已经接受“AI 基建 + 业绩兑现”叙事，只要公司基本面和募投逻辑清晰，当前是较优窗口。</div><div class="dt-section">协同条线</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">ECM、研究所、机构销售、财富渠道都能参与，属于天然的集团协同场景。</div>`}
+  ];
+  const summary={icon:'💰',text:'瀚云冷却 · 定增 / 可转债协同窗口已打开',tag:'高优先级',title:'再融资协同 · 瀚云冷却',sub:'ECM / 研究 / 机构销售 / 财富',html:`<div class="dt-section">协同链路</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">ECM 牵头</div><div class="dn-text">先拿管理层融资口径，锁定定增与可转债双方案。</div></div><div class="deal-node"><div class="dn-role">研究所赋能</div><div class="dn-text">孙强数字分身自动输出景气、CAPEX、同业估值三份材料，直接进入 pitch book。</div></div><div class="deal-node"><div class="dn-role">机构销售预热</div><div class="dn-text">16 家核心基金做反向预询价，提前验证价格带与工具偏好。</div></div><div class="deal-node"><div class="dn-role">财富补充承接</div><div class="dn-text">若走可转债路径，可同步准备高净值客户和家办转化话术。</div></div></div><div class="dt-section">可落地商机</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 1 条再融资 mandate<br>· 1 场液冷闭门会与机构路演<br>· 1 套 AI 基建主题财富转化素材</div><div class="dt-section">高管价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">投研不再只是“帮忙背书”，而是提前把融资窗口、买方需求和工具选择都碰撞出来，缩短签约周期。</div>`,exec:{banner:'已生成融资执行单 · 材料与预询价可立即发出',ready:['定增 / 可转债双方案比较表','液冷 CAPEX 论证卡','16 家核心基金预询价反馈汇总'],dispatch:[{role:'T+0 · 周宁',text:'向瀚云冷却 CFO 发送双工具建议书，预约融资方案会。'},{role:'T+0 · 孙强数字分身',text:'输出 5 页行业景气与募投合理性材料，供 pitch book 直接引用。'},{role:'T+1 · 机构销售',text:'锁定 8 家优先基金名单，发出反向预询价问题清单。'}],timeline:[{role:'T+1',text:'完成内部融资工具选择会，确定优先走定增还是可转债。'},{role:'T+3',text:'安排管理层 + 研究 + 核心买方预沟通，验证价格带。'},{role:'T+7',text:'形成正式提案并争取融资 mandate。'}],result:'若项目进入正式提案阶段，可迅速转成融资签约、机构路演和财富转化三条并行收入。'}};
+  await runSignalScenario(cards, summary);
+}
+
+// ==================== 跨境联动 ====================
+function showCrossBorderView(){
+  setScenarioIntro('韩','韩璟','董事总经理 · 国际业务','🌍','跨境联动','btn gold','▶ 演示场景','runCrossBorderDemo()','🌍','点击「演示场景」观看完整场景','上市公司海外路演、海外团队目标筛选、衍生品对冲和境外融资不再各自为战，系统会自动把跨境机会串成一条链。','跨境联动','国际业务 / 海外投行 / 交易联动');
+}
+
+async function runCrossBorderDemo(){
+  const cards=[
+    {icon:'client',emoji:'🌍',source:'海外业务 · 储能出海',text:'<b>星海储能（300XXX）</b> 在欧洲路演中明确表示，希望并购 <b>EMS 软件公司</b> 补齐系统集成能力',time:'11:02',conf:'跨境',panelTitle:'星海储能 · 出海并购需求',panelSub:'今日 11:02 · 欧洲 NDR',panelHtml:`<div class="dt-section">客户需求</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">管理层已经不满足于硬件出海，而是希望通过并购软件能力提高欧洲项目交付壁垒，属于典型的跨境补链需求。</div><div class="dt-section">Deal 方向</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">优先看英国、德国、荷兰的小型 EMS 与能量管理软件标的，交易体量适中，整合难度可控。</div>`},
+    {icon:'venture',emoji:'🧭',source:'海外线索 · 伦敦团队',text:'华泰海外团队已筛出 <b>2 家可交易标的</b>，其中 1 家估值回落至过去高点的 45%',time:'11:10',conf:'内部',panelTitle:'伦敦团队 · 标的筛选',panelSub:'今日 11:10 · 海外线索库',panelHtml:`<div class="dt-section">线索质量</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">不是抽象的“建议出海”，而是已经形成可交易名单、初步估值区间和卖方股东结构。</div><div class="dt-section">效率提升</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">总部不需要重新从零找标的，跨境并购组可以直接进入初筛和管理层沟通。</div>`},
+    {icon:'research',emoji:'🔄',source:'交易台 · 汇率对冲',text:'交易团队测算本案若以欧元计价，未来 12 个月存在 <b>8%-10%</b> 汇率波动风险',time:'11:17',conf:'模型',panelTitle:'衍生品团队 · 汇率方案',panelSub:'今日 11:17 · 风险测算',panelHtml:`<div class="dt-section">风险提示</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">如果只做并购顾问，不处理汇率与资金安排，客户最终仍会回头找别家银行补服务。</div><div class="dt-section">增量商机</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">远期、掉期和并购过桥资金安排可以一起打包，形成更完整的综合金融方案。</div>`},
+    {icon:'sentiment',emoji:'💵',source:'境外资本 · 港新需求',text:'香港与新加坡账户对中国储能出海标的兴趣回升，已出现 <b>美元债</b> 与股权融资咨询',time:'11:24',conf:'市场',panelTitle:'境外资本承接',panelSub:'今日 11:24 · 投资人反馈',panelHtml:`<div class="dt-section">资本窗口</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">若并购完成后需要补充海外营运资金，可继续衔接美元债、配股或可转债窗口，不止是一单并购。</div><div class="dt-section">集团含义</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">国际业务、海外投行、销售交易和研究线索可以一次性打通。</div>`}
+  ];
+  const summary={icon:'🌍',text:'星海储能 · 跨境并购 + 汇率对冲 + 境外融资一体机会',tag:'集团协同',title:'跨境联动 · 星海储能',sub:'国际业务 / 海外投行 / 交易 / 研究',html:`<div class="dt-section">协同链路</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">海外投行</div><div class="dn-text">伦敦团队拿着目标清单先行接触卖方股东与财务顾问。</div></div><div class="deal-node"><div class="dn-role">研究所赋能</div><div class="dn-text">孙强数字分身输出欧洲储能集成与软件估值框架，支撑管理层判断。</div></div><div class="deal-node"><div class="dn-role">交易团队</div><div class="dn-text">同步设计欧元风险对冲和交割资金安排，避免客户另找银行补服务。</div></div><div class="deal-node"><div class="dn-role">境外融资</div><div class="dn-text">若并购完成后扩产，可继续切入美元债或境外股权融资。</div></div></div><div class="dt-section">可落地商机</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 1 单跨境并购顾问<br>· 1 套外汇套保方案<br>· 1 条境外融资后续 pipeline</div><div class="dt-section">高管价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">这类场景最适合向集团高管展示：研究先识别产业方向，系统再把海外、交易、投行资源自动拼成综合金融机会。</div>`,exec:{banner:'已生成跨境执行单 · 海外标的与汇率方案可同步推进',ready:['欧洲 2 家目标公司 longlist','欧元敏感性与套保测算','境外融资补充方案 memo'],dispatch:[{role:'T+0 · 伦敦团队',text:'对 2 家目标公司发出初步接触邮件并确认卖方顾问口径。'},{role:'T+0 · 交易团队',text:'把欧元套保与交割资金安排简版方案发给星海储能 CFO。'},{role:'T+1 · 国际业务',text:'安排客户与海外团队视频会，确认并购与融资是否并行。'}],timeline:[{role:'T+1',text:'完成目标优先级排序与管理层意向确认。'},{role:'T+3',text:'进入 NDA 与资料交换，同时确定汇率风险管理边界。'},{role:'T+7',text:'形成跨境并购顾问 + 套保 + 境外融资一体化提案。'}],result:'一旦进入正式接触，跨境并购不会停在财务顾问，而会顺带带出交易和境外融资两条收入链。'}};
+  await runSignalScenario(cards, summary);
+}
+
+// ==================== 机构共振 ====================
+function showRoadshowView(){
+  setScenarioIntro('许','许航','董事总经理 · 机构销售','🎯','机构共振','btn purple','▶ 演示场景','runRoadshowDemo()','🎯','点击「演示场景」观看完整场景','当机构客户对某个主题持续集中问询时，系统不只提醒销售，还会把研究、投行和上市公司管理层一起拉进来，形成反向路演和 deal 线索。','机构共振','研究 / 销售 / 投行联动');
+}
+
+async function runRoadshowDemo(){
+  const cards=[
+    {icon:'venture',emoji:'🎯',source:'机构问询 · 先进封装',text:'48 小时内 <b>22 家机构</b> 集中询问先进封装设备链，预约闭门会需求显著上升',time:'13:08',conf:'内部',panelTitle:'机构需求集中',panelSub:'今日 13:08 · 机构销售汇总',panelHtml:`<div class="dt-section">需求特征</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">这不是零散电话会，而是典型的主题共振。买方想要的不只是观点，而是公司管理层、产业链对比和后续资本动作判断。</div><div class="dt-section">机会判断</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">一旦研究、销售和投行一起跟进，路演会迅速升级成融资与并购线索源头。</div>`},
+    {icon:'research',emoji:'🧠',source:'研究追踪 · 电子首席',text:'电子首席 <b>赵薇</b> 已发布 <b>5 篇</b> 先进封装跟踪，具备完整国产替代与订单验证框架',time:'13:13',conf:'行为数据',panelTitle:'赵薇 · 研究抓手',panelSub:'今日 13:13 · 首席覆盖',panelHtml:`<div class="dt-section">研究能力</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">赵薇的数字分身可以直接回答“谁是真龙头、谁只是题材、谁需要融资补产能”，显著提升闭门会质量。</div><div class="dt-section">沉淀价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">首席知识不再停留在个人时间表，而是随时可以被销售与投行调用。</div>`},
+    {icon:'client',emoji:'🏭',source:'客户动态 · 芯源装备',text:'<b>芯源装备（688XXX）</b> CFO 同步释放信号：正在评估 <b>收购关键模组厂商 + 可转债</b> 双路径',time:'13:19',conf:'公开',panelTitle:'芯源装备 · 资本动作',panelSub:'今日 13:19 · 管理层反馈',panelHtml:`<div class="dt-section">客户动作</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">公司希望借行业热度把“融资补产能”和“并购补能力”同时推进，说明销售活动已经可以向投行项目转化。</div><div class="dt-section">协同重点</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">如果闭门会中提前埋入产业链标的与可比融资案例，转化效率会更高。</div>`},
+    {icon:'sentiment',emoji:'📍',source:'活动编排 · 72 小时内',text:'机构销售已可组织 <b>16 家核心基金</b> + 芯源装备管理层 + 赵薇闭门会',time:'13:27',conf:'排期',panelTitle:'闭门会编排',panelSub:'今日 13:27 · 会议排期',panelHtml:`<div class="dt-section">执行方案</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">会议可分成“行业判断 20 分钟 + 管理层问答 40 分钟 + 投行私下跟进 1v1”三段，销售活动天然承接投行线索。</div><div class="dt-section">结果导向</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">把一次高质量路演做成融资 / 并购 / 佣金三重转化。</div>`}
+  ];
+  const summary={icon:'🎯',text:'先进封装闭门会可升级为反向路演与资本动作入口',tag:'高转化',title:'机构共振 · 先进封装',sub:'机构销售 / 研究 / 投行',html:`<div class="dt-section">协同链路</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">销售聚合买方</div><div class="dn-text">22 家机构问询先沉淀成主题会名单和问题清单。</div></div><div class="deal-node"><div class="dn-role">研究提升质量</div><div class="dn-text">赵薇数字分身提供行业排序与关键问答，提升闭门会的决策含金量。</div></div><div class="deal-node"><div class="dn-role">投行埋点转化</div><div class="dn-text">会后围绕可转债与并购补链安排 1v1，迅速形成 mandate 机会。</div></div><div class="deal-node"><div class="dn-role">机构业务延展</div><div class="dn-text">主题热度可继续转成席位佣金、NDR 和后续定价支持。</div></div></div><div class="dt-section">可落地商机</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 1 场高级别闭门会<br>· 1 条可转债 / 再融资 pipeline<br>· 1 条产业并购线索</div><div class="dt-section">高管价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">机构销售不再只是“卖研究”，而是通过数字员工把机构热度直接导向投行与上市公司服务。</div>`,exec:{banner:'已生成路演执行单 · 闭门会与 1v1 可立即排期',ready:['22 家机构问题清单','赵薇闭门会讲稿提纲','芯源装备会后 1v1 拜访名单'],dispatch:[{role:'T+0 · 许航',text:'向 16 家核心机构发闭门会邀请，并附主题问答摘要。'},{role:'T+0 · 投行团队',text:'为芯源装备准备可转债与并购补链两页卡，嵌入会后 1v1。'},{role:'T+1 · 研究所',text:'输出先进封装关键问答和行业排序，统一闭门会口径。'}],timeline:[{role:'T+1',text:'确认闭门会名单与管理层出席安排。'},{role:'T+2',text:'完成闭门会与会后 1v1，收集融资 / 并购意向。'},{role:'T+5',text:'向芯源装备提交资本动作建议书，争取 mandate。'}],result:'如果会后转入一对一资本讨论，机构活动会直接变成再融资、并购和席位佣金三重转化。'}};
+  await runSignalScenario(cards, summary);
+}
+
+// ==================== 被投追踪 ====================
+function showPortfolioView(){
+  setUser('黄','黄磊','总监 · 创新投资部');
+  setHeader('💎','被投追踪','','btn green','▶ 演示场景','runPortfolioDemo()');
+  mainContent.className='signal-feed';
+  mainContent.innerHTML='<div class="empty-state"><div class="es-icon">💎</div><div>点击「演示场景」观看完整场景</div><div style="font-size:11px;color:var(--text3);max-width:300px;text-align:center;line-height:1.6;">创新投资部黄磊收到系统推送：被投企业估值异动，AI 综合多维信号建议退出/加持策略</div></div>';
+  detailTitle.textContent='被投追踪'; detailSub.textContent='47 家被投企业实时监控';
+  detailBody.innerHTML='<div class="empty-state"><div class="es-icon">📊</div><div>等待场景启动…</div></div>';
+}
+async function runPortfolioDemo(){
+  if(running) return; running=true;
+  mainContent.innerHTML='';
+  // Signal feed style
+  const sigs=[
+    {icon:'venture',emoji:'💎',source:'被投监控 · 灵巧机器人',text:'估值从 <b>3,000 万</b> → <b>2.58 亿</b>（8.6 倍），3 家 Pre-IPO 基金接触',time:'08:30',conf:'内部'},
+    {icon:'sentiment',emoji:'📡',source:'AI 睿思 · 赛道热度',text:'具身智能赛道热度 72 倍暴涨，海外头部 Figure AI 估值破 <b>$11.5B</b>',time:'09:12',conf:'95%'},
+    {icon:'research',emoji:'🔬',source:'研究所 · 首席覆盖',text:'机械首席陈明近 6 月发布 <b>7 篇</b>具身智能研报，路演 <b>12 场</b>',time:'09:18',conf:'行为数据'},
+    {icon:'client',emoji:'📋',source:'买方动态 · 汇力智造',text:'汇力智造李总明确表态 "<b>通过并购切入具身智能</b>"，设立子公司',time:'09:21',conf:'公开'}
+  ];
+  for(let i=0;i<sigs.length;i++){
+    await wait(1000);
+    const s=sigs[i];
+    const card=document.createElement('div');
+    card.className='sig-card';
+    card.innerHTML=`<div class="sig-icon ${s.icon}">${s.emoji}</div><div class="sig-body"><div class="sig-source">${s.source}</div><div class="sig-text">${s.text}</div><div class="sig-meta"><span class="sig-conf">置信度 ${s.conf}</span><span style="color:var(--text3)">今日 ${s.time}</span></div></div>`;
+    mainContent.appendChild(card); mainContent.scrollTop=mainContent.scrollHeight;
+  }
+  await wait(1200);
+  const syncDivider=document.createElement('div');
+  syncDivider.className='chat-system';
+  syncDivider.textContent='— 创投 / 研究 / 投行 / 分公司数字人协同中 —';
+  mainContent.appendChild(syncDivider);
+  mainContent.scrollTop=mainContent.scrollHeight;
+  await playChat([
+    {r:'assistant',a:'创',t:'<b>创投数字人</b>：我已把灵巧机器人的股东结构、估值区间和退出测算表准备好了。'},
+    {r:'assistant',a:'研',t:'<b>研究数字人</b>：赛道热度、买方逻辑和估值比较已整理为 IC 可读版本，可直接提交评审。'},
+    {r:'assistant',a:'投',t:'<b>投行数字人</b>：并购退出和 Pre-IPO 转让两套路径的首轮报价框架都已经生成。'},
+    {r:'assistant',a:'分',t:'<b>分公司数字人</b>：买方属地关系、会面安排和后续落地资源已同步拉齐。'},
+    {r:'system-card',t:'🚀 <b>数字人协同结果</b><br>退出判断所需材料已同步归集，可直接进 IC 和买方触达。'}
+  ], mainContent);
+  const conv=document.createElement('div');
+  conv.className='conv-banner';
+  conv.innerHTML='<span class="cb-icon">⚡</span><span class="cb-text">灵巧机器人 · 退出窗口期信号</span><span class="cb-tag">建议关注</span>';
+  mainContent.appendChild(conv); mainContent.scrollTop=mainContent.scrollHeight;
+  detailTitle.textContent='退出策略 · 灵巧机器人'; detailSub.textContent='B 轮 → 估值 8.6 倍';
+  detailBody.innerHTML=`<div class="dt-section">AI 退出建议</div><div style="font-size:12.5px;color:var(--text);line-height:1.6;font-weight:600;margin-bottom:12px;">赛道热度 + 买方出现 + 估值高位 = <span style="color:var(--gold)">最佳退出窗口</span></div><div class="dt-section">三条退出路径</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">路径 A · 并购退出</div><div class="dn-text">汇力智造有明确并购意向，投行张磊可牵头撮合，预估退出回报 <b>8-12 倍</b></div></div><div class="deal-node"><div class="dn-role">路径 B · Pre-IPO 转让</div><div class="dn-text">3 家 Pre-IPO 基金已接触，可部分退出锁定收益，保留上行空间</div></div><div class="deal-node"><div class="dn-role">路径 C · 继续持有</div><div class="dn-text">赛道仍在上升期，但估值泡沫风险 <b style="color:var(--red)">中高</b>，建议至少部分退出</div></div></div><div class="dt-section">关联资源</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 投行制造业组 张磊 — 可撮合并购<br>· 首席陈明 — 行业判断支持<br>· 苏州分公司 — 属地关系协调</div>` + buildExecutionHtml({
+    ready:['灵巧机器人退出测算表','Pre-IPO 与并购双路径报价区间','3 家接触基金与买方名单'],
+    dispatch:[{role:'T+0 · 黄磊',text:'把退出建议提交 IC，并确认优先走并购还是份额转让。'},{role:'T+0 · 张磊',text:'联系汇力智造，确认是否愿意进入正式并购评估。'},{role:'T+1 · 创新投资团队',text:'准备数据包与管理层问答，供潜在买方尽调。'}],
+    timeline:[{role:'T+1',text:'完成 IC 意见与主路径选择。'},{role:'T+3',text:'向优先买方发出项目摘要并收集非约束报价。'},{role:'T+7',text:'确定是进入并购谈判还是 Pre-IPO 转让执行。'}],
+    result:'被投追踪不再止于“建议退出”，而是直接进入 IC、买方触达和报价流程。'
+  });
+  running=false;
+}
+
+// ==================== 退出策略 ====================
+function showExitView(){
+  setScenarioIntro('唐','唐睿','执行董事 · 创投退出','📤','退出策略','btn green','▶ 演示场景','runExitDemo()','📤','点击「演示场景」观看完整场景','退出不再靠季度拍脑袋评估，而是由赛道热度、买方意向、份额需求和估值窗口共同触发，自动给出最优退出路径。','退出策略','创投退出 / 财富 / 投行协同');
+}
+
+async function runExitDemo(){
+  const cards=[
+    {icon:'venture',emoji:'🧬',source:'被投监控 · 启元生科',text:'<b>启元生科</b> 最新融资后估值较华泰进入时提升 <b>4.2 倍</b>，2 家产业资本进入尽调名单',time:'14:06',conf:'内部',panelTitle:'启元生科 · 估值与买方',panelSub:'今日 14:06 · 被投监控',panelHtml:`<div class="dt-section">资产状态</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">项目已进入“产业资本开始认真研究、财务投资人愿意接部分份额”的阶段，退出条件比单纯估值上升更成熟。</div><div class="dt-section">重点判断</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">现在不是简单卖或不卖，而是选择卖给谁、卖多少、是否保留未来上行。</div>`},
+    {icon:'research',emoji:'🧪',source:'研究追踪 · 合成生物',text:'化工首席 <b>周航</b> 判断生物制造景气修复，海外头部估值近一季回升 <b>180%</b>',time:'14:11',conf:'行为数据',panelTitle:'周航 · 赛道窗口',panelSub:'今日 14:11 · 研究判断',panelHtml:`<div class="dt-section">赛道窗口</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">赛道热度恢复意味着退出谈判议价能力提升，但也意味着后续波动加大，适合做部分退出而不是全赌未来。</div><div class="dt-section">研究作用</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">首席数字分身可快速输出“为什么现在卖一部分最优”的逻辑，支撑内部 IC 决策。</div>`},
+    {icon:'client',emoji:'🏭',source:'产业资本 · 嘉禾新材',text:'<b>嘉禾新材（300XXX）</b> 实控人明确表示，要通过并购搭建 <b>第二增长曲线</b>',time:'14:18',conf:'公开',panelTitle:'嘉禾新材 · 产业买方',panelSub:'今日 14:18 · 客户动态',panelHtml:`<div class="dt-section">买方特征</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">上市公司买方更关注补链与整合，而不是单纯财务回报，对优质平台型资产支付意愿通常更强。</div><div class="dt-section">投行价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">退出团队可以与投行化工组联动，把退出做成产业并购，不只是份额转让。</div>`},
+    {icon:'sentiment',emoji:'💼',source:'财富渠道 · 家办需求',text:'财富端收集到 <b>6 家家办</b> 关注生物制造后期份额，希望参与非控股小比例转让',time:'14:24',conf:'渠道',panelTitle:'财富渠道 · 份额承接',panelSub:'今日 14:24 · 家办需求',panelHtml:`<div class="dt-section">承接能力</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">部分高净值客户不一定适合直接买上市公司，但愿意承接优质未上市项目的少量份额，这给“部分退出”提供了第二选择。</div><div class="dt-section">协同意义</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">创投退出不一定只能卖给基金，也能与财富管理形成一二级联动。</div>`}
+  ];
+  const summary={icon:'📤',text:'启元生科 · 产业转让 + 份额转化进入最佳组合窗口',tag:'建议执行',title:'退出策略 · 启元生科',sub:'创投退出 / 投行 / 财富',html:`<div class="dt-section">三条退出路径</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">路径 A · 产业并购</div><div class="dn-text">优先接触嘉禾新材等产业资本，争取溢价和后续业务合作条款。</div></div><div class="deal-node"><div class="dn-role">路径 B · 部分份额转让</div><div class="dn-text">向家办与后期基金转让少量份额，锁定回报同时保留未来上行。</div></div><div class="deal-node"><div class="dn-role">路径 C · 继续持有</div><div class="dn-text">保留核心权益，等待下一轮产业整合机会，但需设定估值与时间止盈线。</div></div></div><div class="dt-section">可落地商机</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 1 条创投退出 pipeline<br>· 1 条产业并购顾问线索<br>· 1 组高净值客户份额转化机会</div><div class="dt-section">高管价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">退出不再是创投部门的单兵动作，而是由研究、投行、财富共同抬高回报与转化率。</div>`,exec:{banner:'已生成退出执行单 · 买方清单与份额方案待发送',ready:['产业买方优先级名单','部分份额转让结构建议','IC 退出判断 memo'],dispatch:[{role:'T+0 · 唐睿',text:'向嘉禾新材发送项目摘要并预约产业协同电话会。'},{role:'T+0 · 财富团队',text:'筛出 6 家家办中的优先承接对象，准备非控股份额话术。'},{role:'T+1 · 投行团队',text:'整理产业并购可比案例和估值区间，支持首轮报价。'}],timeline:[{role:'T+1',text:'完成产业买方与财富承接方的双边反馈收集。'},{role:'T+3',text:'确定先走产业并购还是部分份额转让的主路径。'},{role:'T+7',text:'进入报价与条款谈判，推动退出方案落地。'}],result:'一旦明确主路径，退出动作可以同步带出投行顾问和高净值份额转化，效率高于单一路径。'}};
+  await runSignalScenario(cards, summary);
+}
+
+// ==================== 主题产品 ====================
+function showProductView(){
+  setScenarioIntro('顾','顾宁','投资总监 · 资管','🧺','主题产品','btn green','▶ 演示场景','runProductDemo()','🧺','点击「演示场景」观看完整场景','当研究热度、政策催化、流动性和客户需求同时出现时，资管团队可以快速把主题从“观点”做成“产品”。','主题产品','资管 / 财富 / 机构销售联动');
+}
+
+async function runProductDemo(){
+  const cards=[
+    {icon:'sentiment',emoji:'🛩️',source:'政策热度 · 低空经济',text:'低空经济政策窗口持续打开，近两周主题热度提升 <b>260%</b>',time:'15:03',conf:'市场',panelTitle:'低空经济 · 政策催化',panelSub:'今日 15:03 · 热度跟踪',panelHtml:`<div class="dt-section">主题温度</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">政策催化让主题重新进入机构视野，但只有当基本面、标的池与交易承接都具备时，才适合产品化。</div><div class="dt-section">产品前提</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">数字员工先判断“是否能做产品”，而不是简单提示“很热”。</div>`},
+    {icon:'research',emoji:'🚀',source:'研究追踪 · 低空 / 商业航天',text:'交运与军工首席联合输出 <b>低空经济 + 商业航天</b> 产业图谱，已形成核心标的池',time:'15:09',conf:'行为数据',panelTitle:'首席联名图谱',panelSub:'今日 15:09 · 研究协同',panelHtml:`<div class="dt-section">研究底座</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">主题产品最怕概念化。联合图谱把低空整机、飞控、航电、商业航天材料与地服链条全部结构化，方便资管快速筛选标的。</div><div class="dt-section">沉淀价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">这类跨行业图谱非常适合沉淀为集团数字资产，可反复复用。</div>`},
+    {icon:'client',emoji:'🏙️',source:'分支协同 · 地方订单',text:'华东分公司反馈，<b>临港空航（603XXX）</b> 与地方国资正推进飞控与航电项目，订单预期升温',time:'15:15',conf:'属地',panelTitle:'分公司回流 · 基本面验证',panelSub:'今日 15:15 · 属地线索',panelHtml:`<div class="dt-section">基本面验证</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">分公司拿到的属地信息补足了公开市场看不到的订单线索，能帮助资管判断主题不是纯概念。</div><div class="dt-section">集团含义</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">资管、研究和分公司共享一套线索池，产品立项会更快、更稳。</div>`},
+    {icon:'venture',emoji:'🧺',source:'渠道反馈 · 产品需求',text:'财富与机构端同步反馈：已有 <b>11 个账户</b> 询问低空经济 / 商业航天主题配置方案',time:'15:22',conf:'渠道',panelTitle:'渠道需求确认',panelSub:'今日 15:22 · 认购意向',panelHtml:`<div class="dt-section">销售承接</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">有了研究图谱和分公司订单验证后，渠道已经能明确识别客户需求，不需要资管团队再从头教育市场。</div><div class="dt-section">产品形式</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">可先从主题篮子、指增组合或专户策略切入，再决定是否升级成公募产品。</div>`}
+  ];
+  const summary={icon:'🧺',text:'低空经济 / 商业航天主题已具备产品化条件',tag:'可产品化',title:'主题产品 · 低空经济 / 商业航天',sub:'资管 / 财富 / 分公司 / 研究',html:`<div class="dt-section">产品路径</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">第一步 · 主题篮子</div><div class="dn-text">先上线 8-12 只核心标的的主题篮子，快速验证客户认购与交易活跃度。</div></div><div class="deal-node"><div class="dn-role">第二步 · 专户策略</div><div class="dn-text">为高净值与机构客户推出低空经济 / 商业航天专户，承接更大资金量。</div></div><div class="deal-node"><div class="dn-role">第三步 · 升级产品</div><div class="dn-text">若主题持续兑现，再考虑公募或类公募化包装。</div></div></div><div class="dt-section">可落地商机</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">· 1 组主题产品与专户策略<br>· 1 套财富 / 机构联合销售话术<br>· 1 张跨行业研究图谱数字资产</div><div class="dt-section">高管价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">投研把主题做成产品，资管把产品做成规模，渠道再把规模做成收入池，这是研究引领集团化转化最直观的闭环。</div>`,exec:{banner:'已生成产品执行单 · 篮子与销售话术可直接上线',ready:['12 只核心标的主题篮子','适当性与销售话术模板','PM 回测与波动区间测算'],dispatch:[{role:'T+0 · 顾宁',text:'确认首批主题篮子成分股与权重，准备内部立项会。'},{role:'T+0 · 财富团队',text:'向高净值客户经理下发一页式销售话术和适当性提示。'},{role:'T+1 · 机构销售',text:'向重点机构账户发送主题篮子说明，征集专户需求。'}],timeline:[{role:'T+1',text:'完成产品立项与适当性审查。'},{role:'T+3',text:'上线主题篮子试运行并收集首轮认购反馈。'},{role:'T+10',text:'根据资金反馈决定是否升级成专户或更标准化产品。'}],result:'产品一旦上线，研究热度就会被直接转化为资管规模、渠道销量和持续客户经营。'}};
+  await runSignalScenario(cards, summary);
+}
+
+// ==================== 风险预警 ====================
+function showRiskView(){
+  setScenarioIntro('沈','沈岩','风控负责人 · 资管','🛡️','风险预警','btn green','▶ 演示场景','runRiskDemo()','🛡️','点击「演示场景」观看完整场景','数字员工不只识别热门方向，也会在拥挤交易、估值透支和基本面兑现错位时，提前给资产管理团队做风险路由。','风险预警','资管风控 / 研究 / 销售交易联动');
+}
+
+async function runRiskDemo(){
+  const cards=[
+    {icon:'sentiment',emoji:'💊',source:'赛道热度 · 创新药 ADC',text:'ADC 主题 15 个交易日内涨幅中位数达 <b>41%</b>，板块拥挤度接近年内高点',time:'16:04',conf:'市场',panelTitle:'ADC 主题 · 拥挤度',panelSub:'今日 16:04 · 风险模型',panelHtml:`<div class="dt-section">风险识别</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">价格先跑、验证滞后，是医药主题最典型的短期风险。风控最需要的不是“看空”，而是知道哪里已经过热。</div><div class="dt-section">模型提示</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">拥挤度、成交放大、换手异常已经同时触发，说明风险预警需要升档。</div>`},
+    {icon:'research',emoji:'🧬',source:'研究追踪 · 医药首席',text:'医药首席 <b>周志远</b> 提醒：部分公司临床与 BD 兑现节奏 <b>落后于股价反应</b>',time:'16:10',conf:'行为数据',panelTitle:'周志远 · 风险解读',panelSub:'今日 16:10 · 研究风险提示',panelHtml:`<div class="dt-section">研究提示</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">首席并非否定产业趋势，而是提醒短期估值与兑现错位，适合从单一个股暴露转向更均衡的篮子配置。</div><div class="dt-section">管理意义</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">有数字分身后，风控能即时调用研究逻辑，而不是等研报发布后再被动调整。</div>`},
+    {icon:'venture',emoji:'📉',source:'持仓监控 · 组合暴露',text:'资管两只主题产品对 ADC 相关标的合计暴露已达 <b>18.7%</b>，高于内部阈值',time:'16:16',conf:'内部',panelTitle:'组合暴露 · 阈值触发',panelSub:'今日 16:16 · 持仓监控',panelHtml:`<div class="dt-section">组合状态</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">暴露集中并不可怕，可怕的是集中在兑现节奏不清晰、交易拥挤的阶段。此时应考虑降单名、增篮子、配对冲。</div><div class="dt-section">动作空间</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">可以通过减仓高弹性标的、增加平台型龙头和医药指数对冲来平衡风险。</div>`},
+    {icon:'client',emoji:'🧾',source:'客户动态 · 康辰医药',text:'<b>康辰医药（600XXX）</b> 仍在评估外部 payload 与 linker 技术，并无绑定交易公告',time:'16:22',conf:'公开',panelTitle:'康辰医药 · 兑现节奏',panelSub:'今日 16:22 · 客户动态',panelHtml:`<div class="dt-section">节奏判断</div><div style="font-size:12.5px;color:var(--text2);line-height:1.8;">市场已按“马上有并购 / BD”在交易，但公司层面还停留在评估阶段。风险在于预期走得比事实更快。</div><div class="dt-section">协同价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">风控、研究、机构销售看到的是同一套事实，可以更统一地对内调整、对外沟通。</div>`}
+  ];
+  const summary={icon:'🛡️',text:'ADC 主题触发拥挤交易预警 · 建议从单名暴露切换到可控篮子',tag:'需处置',title:'风险预警 · 创新药 ADC',sub:'资管风控 / 研究 / 交易',html:`<div class="dt-section">处置建议</div><div class="deal-chain"><div class="deal-node"><div class="dn-role">第一步 · 降单名暴露</div><div class="dn-text">先把高波动个股仓位降回阈值以内，避免拥挤交易放大回撤。</div></div><div class="deal-node"><div class="dn-role">第二步 · 切换到篮子</div><div class="dn-text">用平台型龙头 + 细分龙头的均衡篮子替代单点押注。</div></div><div class="deal-node"><div class="dn-role">第三步 · 配交易工具</div><div class="dn-text">必要时用指数或相关对冲工具降低短期净暴露。</div></div><div class="deal-node"><div class="dn-role">第四步 · 对外统一话术</div><div class="dn-text">财富、机构销售与客户经理统一说明“不是看空赛道，而是优化风险收益比”。</div></div></div><div class="dt-section">高管价值</div><div style="font-size:12px;color:var(--text2);line-height:1.8;">数字员工让风险管理和商机发现共用同一套投研底座，集团既能抓机会，也能守住净值与回撤。</div>`,exec:{banner:'已生成风控执行单 · 组合调整与对外口径待同步',ready:['组合暴露明细与阈值预警','篮子替换建议与对冲测算','客户经理统一解释口径'],dispatch:[{role:'T+0 · 沈岩',text:'向 PM 下发降单名暴露指令，并确认当日可执行比例。'},{role:'T+0 · 交易团队',text:'准备指数 / 相关对冲工具方案，测算执行成本。'},{role:'T+1 · 财富与机构销售',text:'同步“优化风险收益比”统一话术，避免客户误解为看空赛道。'}],timeline:[{role:'T+1',text:'完成组合暴露回落与篮子切换。'},{role:'T+3',text:'复盘调整后回撤与跟踪误差，决定是否继续收缩。'},{role:'T+5',text:'若波动回落，重新评估是否恢复部分主题暴露。'}],result:'风控动作不再停在提示层，而是可直接转成 PM 调仓、交易执行和客户沟通三条同步动作。'}};
+  await runSignalScenario(cards, summary);
+}
+
+// ==================== 技能沉淀（已移至 digital-asset.js） ====================
+
+
+
+
+
+
+
+// ==================== 通用工具 ====================
+function setUser(char,name,role){
+  document.getElementById('sidebarFooter').innerHTML=`<div class="user-avatar">${char}</div><div><div class="user-name">${name}</div><div class="user-role">${role}</div></div>`;
+}
+function setHeader(icon,title,statusText,btnClass,btnText,btnAction){
+  document.getElementById('mainHeader').innerHTML=`<div class="main-title"><span style="font-size:14px;">${icon}</span><span>${title}</span></div><div class="main-actions"><button class="${btnClass}" onclick="${btnAction}">${btnText}</button></div>`;
+}
+async function playChat(chat, container){
+  for(let i=0;i<chat.length;i++){
+    const m=chat[i]; await wait(i===0?400:1200);
+    if(m.r==='system'){const d=document.createElement('div');d.className='chat-system';d.textContent=m.t;container.appendChild(d);}
+    else if(m.r==='system-card'){const d=document.createElement('div');d.className='chat-system-card';d.innerHTML=m.t;container.appendChild(d);}
+    else{
+      if(m.r==='assistant'){const typ=document.createElement('div');typ.className='chat-msg assistant';typ.style.opacity='1';typ.innerHTML=`<div class="chat-avatar ai">${m.a}</div><div class="chat-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;container.appendChild(typ);container.scrollTop=container.scrollHeight;await wait(1500);typ.remove();}
+      const d=document.createElement('div');d.className='chat-msg '+m.r;
+      const cls=m.r==='user'?'human':'ai';
+      d.innerHTML=`<div class="chat-avatar ${cls}">${m.a}</div><div class="chat-bubble">${m.t}</div>`;
+      container.appendChild(d);
+    }
+    container.scrollTop=container.scrollHeight;
+  }
+}
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+</script>
+<script src="digital-asset.js"></script>
+</body>
+</html>
