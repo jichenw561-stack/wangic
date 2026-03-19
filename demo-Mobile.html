@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AI RIS · 智能研究助手演示</title>
+<style>
+/* ─── CSS Variables · White + Huatai Blue ─── */
+:root {
+  --bg:         #f5f7fa;
+  --bg2:        #ffffff;
+  --bg3:        #f0f3f8;
+  --border:     #e2e7f0;
+  --border2:    #d0d8e8;
+
+  --ht-blue:    #0052cc;
+  --ht-blue2:   #1a6fe8;
+  --ht-blue-lt: #e8f0fc;
+  --ht-blue-md: #c5d8f8;
+
+  --green:      #0ea86a;
+  --green-lt:   #e6f7f0;
+  --red:        #e53935;
+  --red-lt:     #fdecea;
+  --orange:     #f57c00;
+  --orange-lt:  #fff3e0;
+  --yellow:     #f5a623;
+  --purple:     #7c3aed;
+  --teal:       #0891b2;
+
+  --text1:      #1a2340;
+  --text2:      #4a5875;
+  --text3:      #8e9bb8;
+  --text4:      #bcc5d8;
+
+  --radius:     8px;
+  --radius-lg:  14px;
+  --shadow-sm:  0 1px 4px rgba(0,40,120,.08);
+  --shadow-md:  0 4px 16px rgba(0,40,120,.12);
+  --shadow-lg:  0 12px 40px rgba(0,40,120,.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "PingFang SC", "SF Pro Text", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text1);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px 48px;
+}
+
+/* ─── Page Header ─── */
+.page-header {
+  width: 100%; max-width: 420px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2px 14px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 16px;
+}
+.ph-logo { display: flex; align-items: center; gap: 10px; }
+.ph-logo-mark {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--ht-blue), var(--ht-blue2));
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: #fff; letter-spacing: -0.5px;
+  box-shadow: 0 3px 8px rgba(0,82,204,.3);
+}
+.ph-title { font-size: 17px; font-weight: 800; color: var(--ht-blue); letter-spacing: 0.5px; }
+.ph-sub   { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.ph-badge {
+  background: var(--ht-blue-lt); color: var(--ht-blue);
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  border-radius: 6px; border: 1px solid var(--ht-blue-md); letter-spacing: 0.3px;
+}
+
+/* ─── Scenario Tabs ─── */
+.scenario-tabs {
+  width: 100%; max-width: 420px;
+  display: flex; gap: 7px; margin-bottom: 12px;
+}
+.stab {
+  flex: 1; padding: 9px 4px 8px;
+  border-radius: 12px; border: 1.5px solid var(--border);
+  background: var(--bg2); cursor: pointer; text-align: center;
+  transition: all .2s; box-shadow: var(--shadow-sm);
+}
+.stab-icon { font-size: 17px; margin-bottom: 3px; }
+.stab-label { font-size: 10px; color: var(--text3); line-height: 1.3; font-weight: 500; }
+.stab.active { box-shadow: 0 3px 12px rgba(0,82,204,.18); }
+.stab.active[data-s="1"] { border-color: var(--ht-blue); background: var(--ht-blue-lt); }
+.stab.active[data-s="2"] { border-color: var(--green);   background: var(--green-lt); }
+.stab.active[data-s="3"] { border-color: var(--orange);  background: var(--orange-lt); }
+.stab.active[data-s="1"] .stab-label { color: var(--ht-blue); font-weight: 700; }
+.stab.active[data-s="2"] .stab-label { color: var(--green);   font-weight: 700; }
+.stab.active[data-s="3"] .stab-label { color: var(--orange);  font-weight: 700; }
+
+/* ─── Scene Label ─── */
+.scene-label {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--ht-blue-lt); border: 1.5px solid var(--ht-blue-md);
+  border-radius: 9px; padding: 6px 12px;
+  font-size: 11px; font-weight: 600; color: var(--ht-blue);
+  margin-bottom: 10px; width: 100%; max-width: 420px;
+}
+.scene-label[data-s="2"] { background: var(--green-lt);  border-color: #9de0c4; color: var(--green); }
+.scene-label[data-s="3"] { background: var(--orange-lt); border-color: #ffc97a; color: var(--orange); }
+
+/* ─── Phone Shell ─── */
+.phone-shell {
+  width: 100%; max-width: 420px;
+  background: #111214; border: 1.5px solid #2a2d35;
+  border-radius: 28px; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,.55);
+  position: relative;
+}
+
+.status-bar {
+  background: #1a1c22; padding: 7px 20px 6px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10px; color: rgba(255,255,255,.6);
+}
+.sb-time { font-weight: 700; font-size: 11px; color: #fff; }
+.sb-icons { display: flex; gap: 5px; }
+
+.chat-header {
+  background: #1a1c22; padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid #2a2d35;
+  box-shadow: 0 1px 8px rgba(0,0,0,.3);
+}
+.ch-back { font-size: 20px; color: #e0e0e0; cursor: pointer; padding: 0 2px; }
+.ch-avatar-wrap { position: relative; }
+.ch-avatar {
+  width: 38px; height: 38px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.ch-avatar.single  { background: linear-gradient(135deg, var(--ht-blue), var(--ht-blue2)); }
+.ch-avatar.my-bot  { background: linear-gradient(135deg, var(--green), #059669); }
+.ch-avatar.group   { background: linear-gradient(135deg, var(--orange), #e65100); }
+.ch-online {
+  position: absolute; bottom: -1px; right: -1px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #4cd964; border: 2px solid #1a1c22;
+}
+.ch-info { flex: 1; min-width: 0; }
+.ch-name   { font-size: 14px; font-weight: 700; color: #f0f0f0; }
+.ch-status { font-size: 10px; color: #4cd964; font-weight: 500; }
+.ch-actions { display: flex; gap: 14px; color: #888; font-size: 17px; }
+
+/* ─── Robot Info Panel ─── */
+.robot-btn {
+  background: none; border: none; cursor: pointer;
+  color: #aaa; padding: 4px; display: flex; align-items: center;
+  border-radius: 6px; transition: color .2s, background .2s;
+}
+.robot-btn:hover { color: #6ea8fe; background: rgba(110,168,254,.1); }
+
+.robot-panel-overlay {
+  position: absolute; inset: 0; z-index: 50;
+  background: rgba(0,0,0,.5);
+  display: none; align-items: flex-end;
+}
+.robot-panel-overlay.open { display: flex; }
+
+.robot-panel {
+  width: 100%; background: #1e2028;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px 28px;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.rp-handle {
+  width: 36px; height: 4px; background: #444; border-radius: 2px;
+  margin: 0 auto 18px;
+}
+.rp-header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
+  padding-bottom: 16px; border-bottom: 1px solid #2a2d35;
+}
+.rp-avatar {
+  width: 56px; height: 56px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: #fff; font-size: 22px; font-weight: 800;
+}
+.rp-avatar.single { background: linear-gradient(135deg, var(--ht-blue), var(--ht-blue2)); }
+.rp-avatar.my-bot { background: linear-gradient(135deg, var(--green), #059669); }
+.rp-avatar.group  { background: linear-gradient(135deg, var(--orange), #e65100); }
+.rp-name { font-size: 17px; font-weight: 700; color: #f0f0f0; margin-bottom: 4px; }
+.rp-tag {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  background: rgba(110,168,254,.12); color: #6ea8fe;
+  border: 1px solid rgba(110,168,254,.25); border-radius: 5px;
+  padding: 2px 8px;
+}
+.rp-rows { display: flex; flex-direction: column; gap: 0; }
+.rp-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 11px 0; border-bottom: 1px solid #2a2d35; font-size: 12.5px;
+}
+.rp-row:last-child { border-bottom: none; }
+.rp-label { color: #666; font-weight: 500; flex-shrink: 0; margin-right: 12px; }
+.rp-val { color: #ccc; font-weight: 500; text-align: right; line-height: 1.5; }
+.rp-val.green { color: #4cd964; }
+.rp-close {
+  margin-top: 18px; width: 100%; padding: 12px;
+  background: #2d2f38; border: none; border-radius: 12px;
+  color: #aaa; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background .2s;
+}
+.rp-close:hover { background: #35383f; }
+
+/* ─── Chat Body ─── */
+.chat-body {
+  height: 480px; overflow-y: auto;
+  padding: 14px 12px 6px;
+  display: flex; flex-direction: column; gap: 0;
+  scroll-behavior: smooth; background: #111214;
+}
+.chat-body::-webkit-scrollbar { width: 3px; }
+.chat-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.date-divider {
+  text-align: center; font-size: 10px; color: #555;
+  padding: 4px 0 12px; font-weight: 500;
+}
+
+.msg-row {
+  display: flex; align-items: flex-end; gap: 8px;
+  margin-bottom: 10px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .3s, transform .3s;
+}
+.msg-row.visible { opacity: 1; transform: translateY(0); }
+.msg-row.user { flex-direction: row-reverse; }
+
+.msg-avatar {
+  width: 34px; height: 34px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; flex-shrink: 0;
+  align-self: flex-start; color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+.av-ryan   { background: linear-gradient(135deg, var(--ht-blue), var(--ht-blue2)); }
+.av-aria   { background: linear-gradient(135deg, var(--green), #059669); }
+.av-aaron  { background: linear-gradient(135deg, var(--orange), #e65100); }
+.av-daniel { background: linear-gradient(135deg, var(--teal), #0369a1); }
+.av-victor { background: linear-gradient(135deg, var(--purple), #5b21b6); }
+.av-kevin  { background: linear-gradient(135deg, #0891b2, #0e7490); }
+.av-jason  { background: linear-gradient(135deg, #059669, #047857); }
+.av-user   { background: linear-gradient(135deg, #64748b, #475569); }
+
+.msg-col { display: flex; flex-direction: column; max-width: 78%; gap: 3px; }
+.msg-row.user .msg-col { align-items: flex-end; }
+
+.msg-sender { font-size: 10px; color: #888; padding: 0 4px; font-weight: 600; }
+
+.bubble {
+  padding: 9px 13px; border-radius: 16px;
+  font-size: 12.5px; line-height: 1.6; word-break: break-word;
+}
+.bubble.user-bubble {
+  background: #1a4ba8; border-bottom-right-radius: 4px;
+  color: #fff; box-shadow: 0 2px 8px rgba(0,40,140,.35);
+}
+.bubble.bot-bubble {
+  background: #2d2f38; border-bottom-left-radius: 4px;
+  border: none; color: #e8e8e8; box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+.bubble.typing-bubble {
+  background: #2d2f38; border: none;
+  border-bottom-left-radius: 4px; padding: 11px 14px; box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+
+.typing-dots { display: flex; gap: 4px; align-items: center; height: 14px; }
+.typing-dots span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #888; animation: tdot 1.2s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: .2s; }
+.typing-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes tdot { 0%,80%,100%{transform:scale(.8);opacity:.4} 40%{transform:scale(1.1);opacity:1} }
+
+/* Cards */
+.bubble-card {
+  background: #24262e; border: 1px solid #35383f;
+  border-radius: 12px; padding: 10px 13px; margin-top: 5px; box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.bc-title {
+  font-size: 11px; font-weight: 700; color: #6ea8fe;
+  margin-bottom: 7px; display: flex; align-items: center; gap: 5px;
+  padding-bottom: 6px; border-bottom: 1px solid #35383f;
+}
+.bc-row {
+  display: flex; justify-content: space-between;
+  padding: 5px 0; border-bottom: 1px solid #2a2c34; font-size: 11px;
+}
+.bc-row:last-child { border-bottom: none; }
+.bc-label { color: #888; font-weight: 500; }
+.bc-val   { color: #e0e0e0; font-weight: 600; }
+.bc-val.red    { color: #ff6b6b; }
+.bc-val.green  { color: #4cd964; }
+.bc-val.orange { color: #ff9f43; }
+
+.flow-card {
+  background: #24262e; border: 1px solid #35383f;
+  border-radius: 12px; padding: 10px 13px; margin-top: 5px; box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.fc-title { font-size: 11px; color: #888; margin-bottom: 8px; font-weight: 600; }
+.fc-step { display: flex; align-items: center; gap: 9px; padding: 5px 0; font-size: 11.5px; color: #ccc; }
+.fc-step-icon {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; flex-shrink: 0;
+}
+.fc-step-icon.done    { background: rgba(76,217,100,.15); color: #4cd964; }
+.fc-step-icon.running { background: rgba(100,160,255,.15); color: #6ea8fe; animation: pulse 1.5s infinite; }
+.fc-step-icon.pending { background: #2a2c34; border: 1px solid #40434e; color: #555; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+
+.table-bubble {
+  overflow-x: auto; margin-top: 5px; border-radius: 10px;
+  border: 1px solid #35383f; background: #24262e; box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.table-bubble table { width: 100%; border-collapse: collapse; min-width: 290px; }
+.table-bubble th {
+  background: #1a3a7a; color: rgba(255,255,255,.9);
+  padding: 7px 9px; text-align: left; font-size: 10px; font-weight: 700; white-space: nowrap;
+}
+.table-bubble td {
+  padding: 6px 9px; border-top: 1px solid #2a2c34;
+  font-size: 11px; color: #b0b0b0; white-space: nowrap;
+}
+.table-bubble tr:hover td { background: #2d2f3a; }
+td.pos { color: #4cd964; font-weight: 600; }
+td.neg { color: #ff6b6b;  font-weight: 600; }
+td.hl  { color: #e8e8e8; font-weight: 700; }
+
+.skill-card {
+  background: #24262e; border: 1px solid #2a4a8a;
+  border-radius: 12px; padding: 12px 13px; margin-top: 5px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.3);
+}
+.skill-header { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.skill-icon-wrap {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: rgba(110,168,254,.12); display: flex; align-items: center;
+  justify-content: center; font-size: 19px; flex-shrink: 0;
+}
+.skill-name { font-size: 13px; font-weight: 700; color: #e8e8e8; }
+.skill-ver  { font-size: 10px; color: #666; margin-top: 1px; }
+.skill-desc { font-size: 11.5px; color: #aaa; line-height: 1.55; margin-bottom: 9px; }
+.skill-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 9px; }
+.skill-tag {
+  background: rgba(110,168,254,.1); color: #6ea8fe;
+  font-size: 10px; padding: 2px 8px; border-radius: 10px;
+  font-weight: 600; border: 1px solid rgba(110,168,254,.25);
+}
+.skill-btn {
+  width: 100%; padding: 8px; border-radius: 8px; border: none;
+  background: #1a4ba8; color: #fff; font-size: 12px;
+  font-weight: 700; cursor: pointer; transition: background .2s; letter-spacing: 0.3px;
+}
+.skill-btn:hover { background: #2558c4; }
+.skill-btn.installed { background: rgba(76,217,100,.12); color: #4cd964; border: 1.5px solid rgba(76,217,100,.3); }
+
+.cron-card {
+  background: #201e14; border: 1px solid #4a3c00;
+  border-radius: 12px; padding: 11px 13px; margin-top: 5px;
+}
+.cron-title { font-size: 11px; font-weight: 700; color: #ff9f43; display: flex; align-items: center; gap: 5px; margin-bottom: 7px; }
+.cron-row { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #aaa; padding: 3px 0; }
+.cron-dot { width: 5px; height: 5px; border-radius: 50%; background: #4cd964; flex-shrink: 0; }
+
+.task-card {
+  background: #24262e; border: 1px solid #4a3c00;
+  border-radius: 12px; padding: 11px 13px; margin-top: 5px; box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.task-title { font-size: 11px; font-weight: 700; color: #ff9f43; display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+.task-agent {
+  display: flex; align-items: center; gap: 9px;
+  padding: 6px 0; border-bottom: 1px solid #2a2c34; font-size: 11px;
+}
+.task-agent:last-child { border-bottom: none; }
+.ta-av {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.ta-name   { flex: 1; color: #ccc; font-weight: 600; }
+.ta-task   { font-size: 10px; color: #777; margin-top: 1px; font-weight: 400; }
+.ta-status { font-size: 10px; font-weight: 700; }
+.ta-status.running { color: #6ea8fe; }
+.ta-status.done    { color: #4cd964; }
+.ta-status.waiting { color: #555; }
+
+.mention { color: #6ea8fe; font-weight: 700; }
+
+.expert-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(110,168,254,.1); color: #6ea8fe;
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 10px; border: 1px solid rgba(110,168,254,.25);
+  margin: 2px 2px 2px 0;
+}
+
+/* ─── Input (WeChat dark style) ─── */
+.chat-input-area {
+  background: #1a1c22; border-top: 1px solid #2a2d35;
+  padding: 8px 10px 10px; display: flex; align-items: center; gap: 6px;
+}
+.cia-voice {
+  width: 34px; height: 34px; border-radius: 50%; border: none;
+  background: transparent; color: #aaa; font-size: 20px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: color .2s;
+}
+.cia-voice:hover { color: #fff; }
+.cia-input {
+  flex: 1; background: #2d2f38; border: 1px solid #3a3d48;
+  border-radius: 20px; padding: 8px 14px; font-size: 13px; color: #e8e8e8;
+  outline: none; resize: none; line-height: 1.4; max-height: 80px;
+  overflow-y: auto; font-family: inherit; transition: border-color .2s;
+}
+.cia-input::placeholder { color: #555; }
+.cia-input:focus { border-color: #4a6fa8; }
+.cia-emoji {
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: transparent; color: #aaa; font-size: 20px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: color .2s;
+}
+.cia-emoji:hover { color: #fff; }
+.cia-plus {
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: transparent; color: #aaa; font-size: 22px; font-weight: 300;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: color .2s; line-height: 1;
+}
+.cia-plus:hover { color: #fff; }
+
+/* ─── Control Panel ─── */
+.control-panel {
+  width: 100%; max-width: 420px; margin-top: 14px;
+  background: var(--bg2); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 13px 14px; box-shadow: var(--shadow-sm);
+}
+.cp-title { font-size: 10px; color: var(--text3); font-weight: 700; letter-spacing: 0.8px; margin-bottom: 10px; text-transform: uppercase; }
+.cp-row { display: flex; gap: 8px; }
+.cp-btn {
+  flex: 1; padding: 9px 6px; border-radius: 10px;
+  border: 1.5px solid var(--border); background: var(--bg3); color: var(--text2);
+  font-size: 11px; font-weight: 700; cursor: pointer; text-align: center;
+  transition: all .2s; display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.cp-btn span:first-child { font-size: 17px; }
+.cp-btn:hover { border-color: var(--ht-blue); color: var(--ht-blue); background: var(--ht-blue-lt); }
+.cp-btn.playing { border-color: var(--green); background: var(--green-lt); color: var(--green); }
+
+.cp-speed { margin-top: 10px; display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text3); font-weight: 500; }
+.speed-btn {
+  padding: 3px 9px; border-radius: 6px; border: 1.5px solid var(--border);
+  background: var(--bg3); color: var(--text3); font-size: 10px; font-weight: 600; cursor: pointer; transition: all .15s;
+}
+.speed-btn.active { border-color: var(--ht-blue); color: var(--ht-blue); background: var(--ht-blue-lt); }
+
+.play-progress { margin-top: 9px; background: var(--bg3); border-radius: 3px; height: 3px; overflow: hidden; display: none; }
+.play-progress.visible { display: block; }
+.pp-bar { height: 100%; background: linear-gradient(90deg, var(--ht-blue), var(--green)); border-radius: 3px; width: 0%; transition: width .3s; }
+
+/* ─── Theme Toggle Button ─── */
+.theme-toggle-btn {
+  background: none; border: none; cursor: pointer;
+  color: #aaa; padding: 4px; display: flex; align-items: center;
+  border-radius: 6px; transition: color .2s, background .2s;
+}
+.theme-toggle-btn:hover { color: #6ea8fe; background: rgba(110,168,254,.1); }
+
+/* ─── Light Theme Overrides ─── */
+.phone-shell.light { background: #f5f5f5; border-color: #ddd; box-shadow: 0 16px 48px rgba(0,0,0,.15); }
+.phone-shell.light .status-bar { background: #e8e8e8; color: #444; }
+.phone-shell.light .sb-time { color: #111; }
+.phone-shell.light .sb-icons { color: #333; }
+.phone-shell.light .chat-header { background: #efefef; border-bottom-color: #ddd; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.phone-shell.light .ch-back { color: #333; }
+.phone-shell.light .ch-name { color: #111; }
+.phone-shell.light .ch-status { color: #0a9a3a; }
+.phone-shell.light .ch-online { background: #0a9a3a; border-color: #efefef; }
+.phone-shell.light .robot-btn { color: #666; }
+.phone-shell.light .robot-btn:hover { color: var(--ht-blue); background: rgba(0,82,204,.08); }
+.phone-shell.light .theme-toggle-btn { color: #666; }
+.phone-shell.light .theme-toggle-btn:hover { color: var(--ht-blue); background: rgba(0,82,204,.08); }
+.phone-shell.light .chat-body { background: #e5e5ea; }
+.phone-shell.light .date-divider { color: #999; }
+.phone-shell.light .msg-sender { color: #888; }
+.phone-shell.light .bubble.user-bubble { background: #b2d4f5; color: #111; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+.phone-shell.light .bubble.bot-bubble { background: #fff; color: #111; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.phone-shell.light .bubble.typing-bubble { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.phone-shell.light .typing-dots span { background: #aaa; }
+.phone-shell.light .chat-input-area { background: #efefef; border-top-color: #ddd; }
+.phone-shell.light .cia-voice,
+.phone-shell.light .cia-emoji,
+.phone-shell.light .cia-plus { color: #555; }
+.phone-shell.light .cia-voice:hover,
+.phone-shell.light .cia-emoji:hover,
+.phone-shell.light .cia-plus:hover { color: #111; }
+.phone-shell.light .cia-input { background: #fff; border-color: #ccc; color: #111; }
+.phone-shell.light .cia-input::placeholder { color: #bbb; }
+.phone-shell.light .cia-input:focus { border-color: var(--ht-blue); }
+/* Light cards */
+.phone-shell.light .bubble-card { background: #fff; border-color: #ddd; }
+.phone-shell.light .bc-title { color: var(--ht-blue); border-bottom-color: #eee; }
+.phone-shell.light .bc-row { border-bottom-color: #f0f0f0; }
+.phone-shell.light .bc-label { color: #999; }
+.phone-shell.light .bc-val { color: #111; }
+.phone-shell.light .bc-val.red { color: var(--red); }
+.phone-shell.light .bc-val.green { color: var(--green); }
+.phone-shell.light .flow-card { background: #fff; border-color: #ddd; }
+.phone-shell.light .fc-title { color: #999; }
+.phone-shell.light .fc-step { color: #444; }
+.phone-shell.light .fc-step-icon.done { background: var(--green-lt); color: var(--green); }
+.phone-shell.light .fc-step-icon.running { background: var(--ht-blue-lt); color: var(--ht-blue); }
+.phone-shell.light .fc-step-icon.pending { background: #f0f0f0; border-color: #ccc; color: #bbb; }
+.phone-shell.light .table-bubble { background: #fff; border-color: #ddd; }
+.phone-shell.light .table-bubble th { background: var(--ht-blue); }
+.phone-shell.light .table-bubble td { color: #555; border-top-color: #f0f0f0; }
+.phone-shell.light .table-bubble tr:hover td { background: #f7f7f7; }
+.phone-shell.light td.pos { color: var(--green); }
+.phone-shell.light td.neg { color: var(--red); }
+.phone-shell.light td.hl { color: #111; }
+.phone-shell.light .skill-card { background: #fff; border-color: var(--ht-blue-md); }
+.phone-shell.light .skill-icon-wrap { background: var(--ht-blue-lt); }
+.phone-shell.light .skill-name { color: #111; }
+.phone-shell.light .skill-ver { color: #aaa; }
+.phone-shell.light .skill-desc { color: #555; }
+.phone-shell.light .skill-tag { background: var(--ht-blue-lt); color: var(--ht-blue); border-color: var(--ht-blue-md); }
+.phone-shell.light .skill-btn { background: var(--ht-blue); }
+.phone-shell.light .skill-btn.installed { background: var(--green-lt); color: var(--green); border-color: #9de0c4; }
+.phone-shell.light .cron-card { background: #fffbf0; border-color: #ffd97a; }
+.phone-shell.light .cron-title { color: var(--orange); }
+.phone-shell.light .cron-row { color: #555; }
+.phone-shell.light .task-card { background: #fff; border-color: #ffc97a; }
+.phone-shell.light .task-title { color: var(--orange); }
+.phone-shell.light .task-agent { border-bottom-color: #f0f0f0; }
+.phone-shell.light .ta-name { color: #555; }
+.phone-shell.light .ta-task { color: #aaa; }
+.phone-shell.light .ta-status.running { color: var(--ht-blue); }
+.phone-shell.light .ta-status.done { color: var(--green); }
+.phone-shell.light .ta-status.waiting { color: #ccc; }
+.phone-shell.light .mention { color: var(--ht-blue); }
+.phone-shell.light .expert-pill { background: var(--ht-blue-lt); color: var(--ht-blue); border-color: var(--ht-blue-md); }
+.phone-shell.light .robot-panel-overlay { background: rgba(0,0,0,.3); }
+.phone-shell.light .robot-panel { background: #f5f5f5; }
+.phone-shell.light .rp-handle { background: #ccc; }
+.phone-shell.light .rp-name { color: #111; }
+.phone-shell.light .rp-tag { background: var(--ht-blue-lt); color: var(--ht-blue); border-color: var(--ht-blue-md); }
+.phone-shell.light .rp-row { border-bottom-color: #e5e5e5; }
+.phone-shell.light .rp-label { color: #aaa; }
+.phone-shell.light .rp-val { color: #333; }
+.phone-shell.light .rp-val.green { color: var(--green); }
+.phone-shell.light .rp-close { background: #e5e5e5; color: #555; }
+.phone-shell.light .rp-close:hover { background: #d5d5d5; }
+
+* { scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="ph-logo">
+    <div class="ph-logo-mark">RIS</div>
+    <div>
+      <div class="ph-title">AI RIS</div>
+      <div class="ph-sub">Research Intelligence System · 华泰证券</div>
+    </div>
+  </div>
+  <div class="ph-badge">DEMO</div>
+</div>
+
+<div class="scenario-tabs">
+  <div class="stab active" data-s="1" onclick="switchScenario(1,this)">
+    <div class="stab-icon">🎯</div>
+    <div class="stab-label">专家<br>直聊</div>
+  </div>
+  <div class="stab" data-s="2" onclick="switchScenario(2,this)">
+    <div class="stab-icon">🤝</div>
+    <div class="stab-label">助手<br>协调</div>
+  </div>
+  <div class="stab" data-s="3" onclick="switchScenario(3,this)">
+    <div class="stab-icon">👥</div>
+    <div class="stab-label">群聊<br>协作</div>
+  </div>
+</div>
+
+<div class="scene-label" id="sceneLabel" data-s="1">
+  🎯 场景一：用户直接与新能源专家 Ryan 1v1 深度交互
+</div>
+
+<div class="phone-shell light">
+  <div class="status-bar">
+    <span class="sb-time" id="clockTime">09:41</span>
+    <div class="sb-icons">
+        <svg width="16" height="12" viewBox="0 0 24 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4.5C15.6 4.5 18.85 5.97 21.21 8.33L23 6.54C20.17 3.71 16.27 2 12 2C7.73 2 3.83 3.71 1 6.54L2.79 8.33C5.15 5.97 8.4 4.5 12 4.5Z" opacity="0.4"/>
+          <path d="M12 8.5C14.55 8.5 16.86 9.54 18.53 11.21L20.32 9.42C18.18 7.28 15.24 6 12 6C8.76 6 5.82 7.28 3.68 9.42L5.47 11.21C7.14 9.54 9.45 8.5 12 8.5Z" opacity="0.7"/>
+          <path d="M12 12.5C13.49 12.5 14.84 13.11 15.82 14.09L12 18L8.18 14.09C9.16 13.11 10.51 12.5 12 12.5Z"/>
+        </svg>
+        <svg width="22" height="12" viewBox="0 0 28 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0.5" y="0.5" width="24" height="13" rx="3.5" stroke="currentColor" stroke-opacity="0.6"/>
+          <rect x="2" y="2" width="19" height="10" rx="2" fill="currentColor"/>
+          <path d="M26 4.5V9.5C26.8 9.16 27.5 8.17 27.5 7C27.5 5.83 26.8 4.84 26 4.5Z" fill="currentColor" opacity="0.6"/>
+        </svg>
+      </div>
+  </div>
+  <div class="chat-header">
+    <span class="ch-back">‹</span>
+    <div class="ch-avatar-wrap">
+      <div class="ch-avatar single" id="chatAvatar">R</div>
+      <div class="ch-online"></div>
+    </div>
+    <div class="ch-info">
+      <div class="ch-name" id="chatName">Ryan · 新能源行业分析师</div>
+      <div class="ch-status" id="chatStatus">在线 · 专业模式</div>
+    </div>
+    <div class="ch-actions">
+      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="切换明暗主题">
+        <svg id="themeIconDark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg id="themeIconLight" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <button class="robot-btn" onclick="openRobotPanel()" title="机器人信息">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="9" width="18" height="12" rx="3"/>
+          <path d="M8 9V7a4 4 0 0 1 8 0v2"/>
+          <circle cx="9" cy="14" r="1.2" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="14" r="1.2" fill="currentColor" stroke="none"/>
+          <path d="M9.5 17.5c.7.7 1.3 1 2.5 1s1.8-.3 2.5-1"/>
+          <line x1="12" y1="3" x2="12" y2="5"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <!-- Robot Info Panel -->
+  <div class="robot-panel-overlay" id="robotOverlay" onclick="closeRobotPanel(event)">
+    <div class="robot-panel">
+      <div class="rp-handle"></div>
+      <div class="rp-header">
+        <div class="rp-avatar single" id="rpAvatar">R</div>
+        <div>
+          <div class="rp-name" id="rpName">Ryan · 新能源行业分析师</div>
+          <span class="rp-tag">AI 智能体</span>
+        </div>
+      </div>
+      <div class="rp-rows" id="rpRows"></div>
+      <button class="rp-close" onclick="closeRobotPanel()">关闭</button>
+    </div>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="date-divider">今天 09:41</div>
+  </div>
+  <div class="chat-input-area">
+    <button class="cia-voice" title="语音">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="2" width="6" height="12" rx="3"/>
+        <path d="M5 10a7 7 0 0 0 14 0"/>
+        <line x1="12" y1="17" x2="12" y2="22"/>
+        <line x1="9" y1="22" x2="15" y2="22"/>
+      </svg>
+    </button>
+    <textarea class="cia-input" placeholder="输入消息…" rows="1" id="userInput"></textarea>
+    <button class="cia-emoji" title="表情">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+        <line x1="9" y1="9" x2="9.01" y2="9" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="15" y1="9" x2="15.01" y2="9" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button class="cia-plus" title="更多" onclick="sendUserMsg()">＋</button>
+  </div>
+</div>
+
+<div class="control-panel">
+  <div class="cp-title">演示控制台</div>
+  <div class="cp-row">
+    <button class="cp-btn" id="playBtn" onclick="togglePlay()"><span>▶</span><span>一键播放</span></button>
+    <button class="cp-btn" onclick="resetDemo()"><span>↺</span><span>重置</span></button>
+    <button class="cp-btn" onclick="skipToEnd()"><span>⏭</span><span>跳至结尾</span></button>
+  </div>
+  <div class="cp-speed">
+    速度：
+    <button class="speed-btn" onclick="setSpeed(0.5,this)">0.5×</button>
+    <button class="speed-btn active" onclick="setSpeed(1,this)">1×</button>
+    <button class="speed-btn" onclick="setSpeed(2,this)">2×</button>
+    <button class="speed-btn" onclick="setSpeed(3,this)">3×</button>
+  </div>
+  <div class="play-progress" id="playProgress"><div class="pp-bar" id="ppBar"></div></div>
+</div>
+
+<script>
+let currentScenario=1,isPlaying=false,playSpeed=1,playTimer=null,stepIndex=0,totalSteps=0;
+
+function updateClock(){const n=new Date();document.getElementById('clockTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
+updateClock();setInterval(updateClock,30000);
+
+const scenarioConfig={
+  1:{label:'🎯 场景一：用户直接与新能源专家 Ryan 1v1 深度交互',ds:'1',chatName:'Ryan · 新能源行业分析师',chatStatus:'在线 · 专业模式',avatarClass:'single',avatarLetter:'R',
+     robot:{name:'Ryan · 新能源行业分析师',avatarClass:'single',avatarLetter:'R',rows:[
+       {label:'模型',val:'华泰 AI-RIS v3.2'},
+       {label:'专业领域',val:'新能源产业链\n盈利驱动拆解'},
+       {label:'数据接入',val:'东方财富 · 中汽协\n乘联会 · Wind'},
+       {label:'技能',val:'销量分析 · 竞品对比\n研报生成 · 定时推送'},
+       {label:'响应速度',val:'< 2s（专业模式）', cls:'green'},
+       {label:'状态',val:'在线 · 就绪', cls:'green'},
+     ]}},
+  2:{label:'🤝 场景二：AI RIS助理协调 Ryan / Aaron / Daniel 协同作答',ds:'2',chatName:'AI RIS 专属助理',chatStatus:'在线 · 已连接3位专家',avatarClass:'my-bot',avatarLetter:'助',
+     robot:{name:'AI RIS 专属助理',avatarClass:'my-bot',avatarLetter:'助',rows:[
+       {label:'模型',val:'华泰 AI-RIS 协调器 v2.1'},
+       {label:'角色',val:'多专家任务拆解与协调'},
+       {label:'已连接专家',val:'Ryan（新能源）\nAaron（主题投资）\nDaniel（海外市场）'},
+       {label:'能力',val:'任务分发 · 结果整合\n研报生成 · 定时任务'},
+       {label:'并发处理',val:'最多 8 路专家并行', cls:'green'},
+       {label:'状态',val:'在线 · 已就绪', cls:'green'},
+     ]}},
+  3:{label:'👥 场景三：群聊 —— Ryan / Victor / Kevin / Daniel / Jason 并行协作',ds:'3',chatName:'比亚迪深度研究协作群',chatStatus:'5位专家在线',avatarClass:'group',avatarLetter:'群',
+     robot:{name:'比亚迪深度研究协作群',avatarClass:'group',avatarLetter:'群',rows:[
+       {label:'群类型',val:'AI 多智能体协作群'},
+       {label:'群成员',val:'Ryan · Victor · Kevin\nDaniel · Jason（AI RIS助理）'},
+       {label:'覆盖维度',val:'新能源 · 宏观政策 · 量化\n海外市场 · 估值建模'},
+       {label:'协作模式',val:'5路并行 · 实时汇总'},
+       {label:'预计完成',val:'约 3 分钟全流程', cls:'green'},
+       {label:'状态',val:'5 位专家在线', cls:'green'},
+     ]}},
+};
+
+function openRobotPanel(){
+  const cfg=scenarioConfig[currentScenario].robot;
+  document.getElementById('rpName').textContent=cfg.name;
+  const av=document.getElementById('rpAvatar');
+  av.className='rp-avatar '+cfg.avatarClass;
+  av.textContent=cfg.avatarLetter;
+  const rows=document.getElementById('rpRows');
+  rows.innerHTML=cfg.rows.map(r=>`<div class="rp-row"><span class="rp-label">${r.label}</span><span class="rp-val ${r.cls||''}">${r.val.replace(/\n/g,'<br>')}</span></div>`).join('');
+  document.getElementById('robotOverlay').classList.add('open');
+}
+function closeRobotPanel(e){
+  if(e&&e.target!==document.getElementById('robotOverlay'))return;
+  document.getElementById('robotOverlay').classList.remove('open');
+}
+
+let isLightTheme = true;
+function toggleTheme(){
+  isLightTheme = !isLightTheme;
+  document.querySelector('.phone-shell').classList.toggle('light', isLightTheme);
+  document.getElementById('themeIconDark').style.display = isLightTheme ? 'none' : '';
+  document.getElementById('themeIconLight').style.display = isLightTheme ? '' : 'none';
+}
+
+const SCRIPTS={
+1:[
+  {delay:500,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'您好！我是华泰证券新能源行业分析师 Ryan，专注新能源产业链跟踪与盈利驱动拆解。\n\n收到您的研究任务，正式启动前有几个问题需要确认：'},
+  {delay:600,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',card:{title:'📋 任务信息确认',rows:[{label:'报告用途',val:'投研报告 / 内部参考？',color:''},{label:'数据范围',val:'1月单月 or 近6个月趋势？',color:''},{label:'报告格式',val:'结构化研报 or 摘要快评？',color:''},{label:'邮件收件人',val:'请确认接收邮箱',color:''}]}},
+  {delay:900,type:'user',text:'投研报告，分析1月数据，生成结构化研报，邮件发至 analyst@htsc.com，先帮我安装数据查询 Skill。'},
+  {delay:1000,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'好的！检测到您当前未安装「汽车销量数据查询」Skill，为您从 Skill 市场推送：'},
+  {delay:500,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',skill:{name:'汽车销量数据查询',ver:'v2.3.1',desc:'整合东方财富、中汽协、乘联会数据，支持实时销量查询、同/环比计算及竞品对比分析。',tags:['东方财富','中汽协','乘联会','MCP接口'],installed:false}},
+  {delay:400,type:'user',text:'确认安装'},
+  {delay:900,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',flow:{title:'⚙️ Skill 安装进度',steps:[{icon:'✓',status:'done',text:'身份权限验证通过'},{icon:'✓',status:'done',text:'依赖 Tool 检测：股票基本面取数 v2.1 ✓'},{icon:'▶',status:'running',text:'加载数据源配置…'},{icon:'○',status:'pending',text:'绑定定时任务模块'},{icon:'○',status:'pending',text:'安装完成'}]}},
+  {delay:1600,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',skill:{name:'汽车销量数据查询',ver:'v2.3.1',desc:'整合东方财富、中汽协、乘联会数据，支持实时销量查询、同/环比计算及竞品对比分析。',tags:['东方财富','中汽协','乘联会','MCP接口'],installed:true}},
+  {delay:500,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'✅ Skill 安装完成！正在调取 2026年1月 比亚迪及竞争对手新能源汽车销量数据…'},
+  {delay:1800,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'📊 数据获取完成，1月竞品销量对比如下：'},
+  {delay:400,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',table:{headers:['品牌','1月销量','同比','环比'],rows:[['比亚迪','31.2万','-8.3%','-21.4%','neg','neg','neg','hl'],['吉利','18.7万','+5.1%','-12.3%','','pos','neg',''],['长安','15.4万','+3.2%','-9.8%','','pos','neg',''],['理想','4.8万','+18.5%','-6.2%','','pos','neg',''],['小鹏','3.2万','+42.1%','+8.7%','','pos','pos',''],['小米','2.9万','+155%','+24.3%','','pos','pos',''],['长城','12.1万','-2.4%','-15.7%','','neg','neg',''],['特斯拉','5.6万','-12.8%','-18.2%','','neg','neg','']]}},
+  {delay:700,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'⚠️ 核心发现：比亚迪1月同比下滑8.3%，为近18个月首次同比负增长，小米/小鹏高速增长，格局加速分化。\n\n现为您配置月度定时推送：'},
+  {delay:700,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',cron:{name:'月度销量数据定时推送',rules:['触发时间：每月10日 08:00（数据披露后自动执行）','推送内容：8大品牌销量 + 同/环比 + 快评摘要','格式：Excel附件 + 正文摘要','收件人：analyst@htsc.com','首次推送：2026-02-10 08:00']}},
+  {delay:900,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'✅ 定时任务已创建！\n\n下面从行业政策、车型周期、竞争力三维度分析下滑原因：'},
+  {delay:700,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',card:{title:'📌 销量下滑归因 · 正反方观点汇总',rows:[{label:'政策端 🔴 空方',val:'补贴退坡+年底透支，1月为消化期',color:'red'},{label:'政策端 🟢 多方',val:'以旧换新3.0预计Q2落地，提供支撑',color:'green'},{label:'车型周期 🔴',val:'汉/唐换代空窗期，新车阶段性断档',color:'red'},{label:'车型周期 🟢',val:'海豹07/仰望U7 Q1密集上市，有望回暖',color:'green'},{label:'竞争格局 🔴',val:'小米SU7U、小鹏X9持续分流中高端',color:'red'},{label:'竞争格局 🟢',val:'DM5.0技术护城河稳固，10-20万段优势显著',color:'green'}]}},
+  {delay:1000,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'📈 正在整合新能源、智驾、出海维度，生成2026年全年展望研报…（预计15秒完成）'},
+  {delay:2000,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',card:{title:'📄 比亚迪2026年度深度研报（Ryan 摘要版）',rows:[{label:'2026销量预测',val:'380~420万辆（同比+5%~+15%）',color:'green'},{label:'净利润展望',val:'420~470亿，同比+15%~+20%',color:'green'},{label:'核心驱动',val:'DM5.0下沉 + 智驾落地 + 出海加速',color:''},{label:'股价目标价',val:'310~345元（现价267元，空间+16%~+29%）',color:'green'},{label:'主要风险',val:'关税壁垒升级、竞争格局恶化',color:'red'},{label:'Ryan评级',val:'增持 ⭐⭐⭐⭐',color:'green'}]}},
+  {delay:600,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'✉️ 完整研报（PDF + Excel数据包）已发送至 analyst@htsc.com\n\n如需路演材料、调整假设或深入出海/智驾板块，随时告知！'},
+],
+2:[
+  {delay:400,type:'bot',av:'av-aria',name:'AI RIS 专属助理',text:'您好！我是您的 AI RIS 专属助理，已连接华泰AI专家库中的 Ryan（新能源）、Aaron（主题投资）、Daniel（海外市场）三位专家。\n\n请告诉我您的研究需求。'},
+  {delay:700,type:'user',text:'我注意到比亚迪26年以来销量下滑，帮我完成竞品数据对比、下滑原因分析、出海专项及全年展望，生成研报并设置定时推送，邮箱 analyst@htsc.com。'},
+  {delay:900,type:'bot',av:'av-aria',name:'AI RIS 专属助理',text:'收到！这是跨板块综合研究，在任务分发前我确认几个问题：\n\n① 竞品需要包含特斯拉吗？\n② 出海需要欧洲和东南亚都覆盖吗？\n③ 研报偏正式研报体还是快评简报？'},
+  {delay:800,type:'user',text:'特斯拉要加，出海欧洲+东南亚都要，正式研报体。'},
+  {delay:700,type:'bot',av:'av-aria',name:'AI RIS 专属助理',text:'明白，拆解任务并同步分发给三位专家：'},
+  {delay:500,type:'bot',av:'av-aria',name:'AI RIS 专属助理',task:{title:'任务拆解与分发',agents:[{emoji:'R',bg:'#0052cc',name:'Ryan（新能源）',task:'T1：销量数据 + 竞品对比 + 下滑归因分析',status:'running'},{emoji:'A',bg:'#f57c00',name:'Aaron（主题投资）',task:'T2：智能驾驶/AI主题催化梳理',status:'waiting'},{emoji:'D',bg:'#0891b2',name:'Daniel（海外市场）',task:'T3：出海专项 · 欧洲+东南亚',status:'waiting'}]}},
+  {delay:800,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'<span class="mention">@AI RIS助理</span> T1开始！未检测到数据查询 Skill，已推送安装请求：'},
+  {delay:400,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',skill:{name:'汽车销量数据查询',ver:'v2.3.1',desc:'整合东方财富、中汽协、乘联会数据，支持实时查询与竞品对比。',tags:['东方财富','中汽协','MCP'],installed:false}},
+  {delay:400,type:'user',text:'确认安装'},
+  {delay:900,type:'bot',av:'av-aria',name:'AI RIS 专属助理',text:'✅ 已代您完成安装，Ryan 正在拉取数据…'},
+  {delay:1300,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'<span class="mention">@AI RIS助理</span> T1数据就绪，1月竞品对比：'},
+  {delay:400,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',table:{headers:['品牌','销量','同比','环比'],rows:[['比亚迪','31.2万','-8.3%','-21.4%','neg','neg','neg','hl'],['小米','2.9万','+155%','+24.3%','','pos','pos',''],['小鹏','3.2万','+42.1%','+8.7%','','pos','pos',''],['理想','4.8万','+18.5%','-6.2%','','pos','neg',''],['特斯拉','5.6万','-12.8%','-18.2%','','neg','neg','']]}},
+  {delay:700,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'<span class="mention">@AI RIS助理</span> T1归因：\n\n🔴 车型空窗（汉/唐换代断档）+ 补贴退坡消化是主因\n🟢 DM5.0矩阵Q1上市、以旧换新3.0预期是正向催化\n结论：1月为阶段性低点，Q2有望边际修复。'},
+  {delay:900,type:'bot',av:'av-aaron',name:'Aaron · 主题投资专家',text:'<span class="mention">@AI RIS助理</span> T2完成：\n\n智驾催化方面，比亚迪与华为联合智驾方案Q2推送，覆盖30万以上车型，有望激活高端市场关注。AI算力+端到端方案是今年比亚迪股价最大主题弹性。'},
+  {delay:900,type:'bot',av:'av-daniel',name:'Daniel · 海外市场策略师',text:'<span class="mention">@AI RIS助理</span> T3出海专项：\n\n• 欧洲：1月交付2.3万辆，同比+67%，Atto3领跑；本地化进程加速\n• 东南亚：泰国工厂Q2月产达8,000辆；出海收入占比26年预计9%→14%\n\n出海是26年最确定性增量逻辑。'},
+  {delay:800,type:'bot',av:'av-aria',name:'AI RIS 专属助理',text:'三位专家分析全部完成 ✅ 整合研报并配置定时任务…'},
+  {delay:1000,type:'bot',av:'av-aria',name:'AI RIS 专属助理',cron:{name:'月度定时推送（AI RIS助理托管）',rules:['触发：每月10日 08:00（数据披露后）','内容：Ryan销量 + Aaron主题 + Daniel出海更新','格式：研报PDF + 摘要正文','收件人：analyst@htsc.com']}},
+  {delay:1000,type:'bot',av:'av-aria',name:'AI RIS 专属助理',card:{title:'📄 比亚迪研报摘要（Ryan × Aaron × Daniel 协作版）',rows:[{label:'参与专家',val:'Ryan · Aaron · Daniel（华泰AI专家库）',color:''},{label:'2026销量',val:'385~425万辆（出海贡献约50万增量）',color:'green'},{label:'核心逻辑',val:'DM5.0下沉 + 智驾弹性 + 出海加速',color:''},{label:'股价目标',val:'320~350元，评级：增持',color:'green'},{label:'下行风险',val:'关税壁垒、竞争格局持续恶化',color:'red'}]}},
+  {delay:600,type:'bot',av:'av-aria',name:'AI RIS 专属助理',text:'✉️ 完整研报已发送至 analyst@htsc.com\n\n三位专家分析模块均已注明来源归属。如需深入任一模块或追加估值建模，告诉我即可！'},
+],
+3:[
+  {delay:400,type:'bot',av:'av-aria',name:'AI RIS助理（群主）',text:'欢迎进入「比亚迪深度研究」协作群 👋\n\n当前在线专家：\n<span class="expert-pill">Ryan · 新能源</span><span class="expert-pill">Victor · 宏观</span><span class="expert-pill">Kevin · 量化</span><span class="expert-pill">Daniel · 海外</span><span class="expert-pill">Jason · 估值</span>\n\n请发布研究任务，我将并行分发给各位专家。'},
+  {delay:800,type:'user',text:'各位，本次任务：分析比亚迪26年1月销量下滑——含竞品数据对比、多维归因、出海专项、全年展望与估值建模，生成正式研报，月度定时推送至 analyst@htsc.com，开始！'},
+  {delay:600,type:'bot',av:'av-aria',name:'AI RIS助理（群主）',text:'已收到任务书，按专业能力并行分发，预计3分钟完成：'},
+  {delay:400,type:'bot',av:'av-aria',name:'AI RIS助理（群主）',task:{title:'并行任务分发 · 5路同步启动',agents:[{emoji:'R',bg:'#0052cc',name:'Ryan（新能源）',task:'T1：销量数据拉取 + 竞品表格 + 归因分析',status:'running'},{emoji:'V',bg:'#7c3aed',name:'Victor（宏观）',task:'T2：宏观+政策端正反方观点',status:'running'},{emoji:'K',bg:'#0891b2',name:'Kevin（量化）',task:'T3：量化因子拆解 + 景气周期判断',status:'running'},{emoji:'D',bg:'#f57c00',name:'Daniel（海外）',task:'T4：出海专项 · 欧洲+东南亚',status:'running'},{emoji:'J',bg:'#059669',name:'Jason（估值）',task:'T5：DCF/可比公司估值建模',status:'waiting'}]}},
+  {delay:700,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'<span class="mention">@群组</span> T1开始，检测到「汽车销量数据查询」Skill 未安装，<span class="mention">@用户</span> 是否授权？'},
+  {delay:400,type:'user',text:'授权安装'},
+  {delay:900,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',flow:{title:'⚙️ Skill安装 & 数据拉取',steps:[{icon:'✓',status:'done',text:'Skill v2.3.1 安装完成'},{icon:'✓',status:'done',text:'连接东方财富 + 中汽协数据源'},{icon:'▶',status:'running',text:'拉取8品牌1月销量数据…'},{icon:'○',status:'pending',text:'生成竞品对比表格'}]}},
+  {delay:1300,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',text:'<span class="mention">@群组</span> T1完成 ✅'},
+  {delay:400,type:'bot',av:'av-ryan',name:'Ryan · 新能源行业分析师',table:{headers:['品牌','销量','同比','环比'],rows:[['比亚迪','31.2万','-8.3%','-21.4%','neg','neg','neg','hl'],['吉利','18.7万','+5.1%','-12.3%','','pos','neg',''],['小米','2.9万','+155%','+24.3%','','pos','pos',''],['小鹏','3.2万','+42.1%','+8.7%','','pos','pos',''],['特斯拉','5.6万','-12.8%','-18.2%','','neg','neg',''],['长城','12.1万','-2.4%','-15.7%','','neg','neg','']]}},
+  {delay:600,type:'bot',av:'av-victor',name:'Victor · 宏观经济专家',text:'<span class="mention">@群组</span> T2完成 ✅\n\n🔴 补贴退坡致年底需求透支，1月是消化期\n🔴 地方补贴退出尾声，整体补贴减少\n🟢 以旧换新3.0预计Q2落地，销量有底部支撑\n🟢 央行降息预期改善消费信贷，有利中低价位车型去化'},
+  {delay:700,type:'bot',av:'av-kevin',name:'Kevin · 量化策略研究员',text:'<span class="mention">@群组</span> T3完成 ✅\n\n基于景气度因子模型，比亚迪处于产业周期底部区间（评分4.2/10），领先指标显示Q2预计回升至6.1。订单因子近2周已出现边际改善，判断1月为阶段性低点。'},
+  {delay:800,type:'bot',av:'av-daniel',name:'Daniel · 海外市场策略师',text:'<span class="mention">@群组</span> T4出海专项完成 ✅\n\n• 欧洲：1月交付2.3万辆，同比+67%；Atto3领跑，关税压力推动本地化提速\n• 东南亚：泰国工厂Q2产能达8,000辆/月；东盟渗透率快速提升\n• 出海收入占比从25年9%升至26年14%，是全年最确定性增量'},
+  {delay:800,type:'bot',av:'av-jason',name:'Jason · 估值建模专家',text:'<span class="mention">@群组</span> T5估值建模完成 ✅\n\nDCF核心假设：26年销量395万辆 / 净利率6.2% / WACC=9.5%\n→ 内在价值：308~342元\n\n可比公司（EV/Sales法）：\n→ 对标宁德+特斯拉均值，目标价320~355元\n\n综合目标价：315~350元（现价267元，上行空间18%~31%）'},
+  {delay:600,type:'bot',av:'av-aria',name:'AI RIS助理（群主）',text:'五路任务全部完成 🎉 正在合并五份分析生成完整研报，配置月度定时任务…'},
+  {delay:1100,type:'bot',av:'av-aria',name:'AI RIS助理（群主）',cron:{name:'月度群协作报告定时推送',rules:['触发：每月10日 08:00','内容：5大模块同步更新 + AI综合摘要','格式：PDF研报 + Excel数据包','收件人：analyst@htsc.com']}},
+  {delay:1000,type:'bot',av:'av-aria',name:'AI RIS助理（群主）',card:{title:'📄 比亚迪研报（五专家群协作版）',rows:[{label:'参与专家',val:'Ryan · Victor · Kevin · Daniel · Jason',color:''},{label:'2026销量',val:'390~430万辆（出海贡献+50万）',color:'green'},{label:'净利润',val:'435~480亿，同比+15%~+25%',color:'green'},{label:'目标价',val:'315~350元（现价267元，空间+18%~+31%）',color:'green'},{label:'核心催化',val:'DM5.0 + 出海 + 智驾弹性 + Q2政策底',color:''},{label:'综合评级',val:'增持 ⭐⭐⭐⭐⭐',color:'green'}]}},
+  {delay:600,type:'bot',av:'av-aria',name:'AI RIS助理（群主）',text:'✉️ 研报已发送至 analyst@htsc.com\n\n本次群协作约3分钟，五位专家并行覆盖宏观·行业·量化·海外·估值全维度。如需单独深入某模块，继续在群内 @ 对应专家即可！'},
+]
+};
+
+// ─── Rendering ────────────────────────────────────
+const chatBody=document.getElementById('chatBody');
+
+const avLabels={'av-ryan':'R','av-aria':'助','av-aaron':'A','av-daniel':'D','av-victor':'V','av-kevin':'K','av-jason':'J','av-user':'我'};
+
+function makeBubble(msg){
+  const isUser=msg.type==='user';
+  const row=document.createElement('div');
+  row.className='msg-row'+(isUser?' user':'');
+  if(!isUser){const av=document.createElement('div');av.className='msg-avatar '+(msg.av||'av-ryan');av.textContent=avLabels[msg.av]||'?';row.appendChild(av);}
+  const col=document.createElement('div');col.className='msg-col';
+  if(!isUser&&msg.name){const s=document.createElement('div');s.className='msg-sender';s.textContent=msg.name;col.appendChild(s);}
+  if(msg.text){const b=document.createElement('div');b.className='bubble '+(isUser?'user-bubble':'bot-bubble');b.innerHTML=msg.text.replace(/\n/g,'<br>');col.appendChild(b);}
+  if(msg.card) col.appendChild(makeCard(msg.card));
+  if(msg.skill) col.appendChild(makeSkillCard(msg.skill));
+  if(msg.flow) col.appendChild(makeFlowCard(msg.flow));
+  if(msg.table) col.appendChild(makeTableEl(msg.table));
+  if(msg.cron) col.appendChild(makeCronCard(msg.cron));
+  if(msg.task) col.appendChild(makeTaskCard(msg.task));
+  row.appendChild(col);
+  if(isUser){const av=document.createElement('div');av.className='msg-avatar av-user';av.textContent='我';row.appendChild(av);}
+  return row;
+}
+function makeCard(c){
+  const el=document.createElement('div');el.className='bubble-card';
+  el.innerHTML=`<div class="bc-title">${c.title}</div>`;
+  c.rows.forEach(r=>{const d=document.createElement('div');d.className='bc-row';d.innerHTML=`<span class="bc-label">${r.label}</span><span class="bc-val ${r.color||''}">${r.val}</span>`;el.appendChild(d);});
+  return el;
+}
+function makeSkillCard(s){
+  const el=document.createElement('div');el.className='skill-card';
+  el.innerHTML=`<div class="skill-header"><div class="skill-icon-wrap">⚡</div><div><div class="skill-name">${s.name}</div><div class="skill-ver">${s.ver}</div></div></div><div class="skill-desc">${s.desc}</div><div class="skill-tags">${s.tags.map(t=>`<span class="skill-tag">${t}</span>`).join('')}</div><button class="skill-btn ${s.installed?'installed':''}">${s.installed?'✅ 已安装':'⚡ 立即安装'}</button>`;
+  return el;
+}
+function makeFlowCard(f){
+  const el=document.createElement('div');el.className='flow-card';
+  el.innerHTML=`<div class="fc-title">${f.title}</div>`;
+  f.steps.forEach(s=>{const d=document.createElement('div');d.className='fc-step';d.innerHTML=`<div class="fc-step-icon ${s.status}">${s.icon}</div><span>${s.text}</span>`;el.appendChild(d);});
+  return el;
+}
+function makeTableEl(t){
+  const w=document.createElement('div');w.className='table-bubble';
+  const tb=document.createElement('table');
+  const hr=document.createElement('tr');
+  t.headers.forEach(h=>{const th=document.createElement('th');th.textContent=h;hr.appendChild(th);});
+  tb.appendChild(hr);
+  t.rows.forEach(r=>{const tr=document.createElement('tr');r.slice(0,4).forEach((c,i)=>{const td=document.createElement('td');td.textContent=c;const cls=r[4+i]||'';if(cls)td.className=cls;tr.appendChild(td);});tb.appendChild(tr);});
+  w.appendChild(tb);return w;
+}
+function makeCronCard(c){
+  const el=document.createElement('div');el.className='cron-card';
+  el.innerHTML=`<div class="cron-title">⏰ ${c.name}</div>`;
+  c.rules.forEach(r=>{el.innerHTML+=`<div class="cron-row"><span class="cron-dot"></span>${r}</div>`;});
+  return el;
+}
+function makeTaskCard(t){
+  const el=document.createElement('div');el.className='task-card';
+  el.innerHTML=`<div class="task-title">📤 ${t.title}</div>`;
+  t.agents.forEach(a=>{const d=document.createElement('div');d.className='task-agent';d.innerHTML=`<div class="ta-av" style="background:${a.bg}">${a.emoji}</div><div class="ta-name">${a.name}<div class="ta-task">${a.task}</div></div><div class="ta-status ${a.status}">${a.status==='running'?'执行中…':a.status==='done'?'✅完成':'等待中'}</div>`;el.appendChild(d);});
+  return el;
+}
+function makeTyping(av,name){
+  const row=document.createElement('div');row.className='msg-row';row.id='typingRow';
+  const a=document.createElement('div');a.className='msg-avatar '+(av||'av-ryan');a.textContent=avLabels[av]||'?';
+  const col=document.createElement('div');col.className='msg-col';
+  if(name){const s=document.createElement('div');s.className='msg-sender';s.textContent=name;col.appendChild(s);}
+  const b=document.createElement('div');b.className='bubble typing-bubble';b.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';
+  col.appendChild(b);row.appendChild(a);row.appendChild(col);return row;
+}
+function appendMsg(msg){
+  const t=document.getElementById('typingRow');if(t)t.remove();
+  const row=makeBubble(msg);chatBody.appendChild(row);
+  setTimeout(()=>row.classList.add('visible'),30);
+  chatBody.scrollTop=chatBody.scrollHeight;
+}
+function showTyping(av,name){
+  const t=document.getElementById('typingRow');if(t)t.remove();
+  const row=makeTyping(av,name);chatBody.appendChild(row);
+  setTimeout(()=>row.classList.add('visible'),30);
+  chatBody.scrollTop=chatBody.scrollHeight;
+}
+
+// ─── Scenario switching ─────────────
+function switchScenario(n,el){
+  if(isPlaying)stopPlay();
+  currentScenario=n;stepIndex=0;
+  document.getElementById('robotOverlay').classList.remove('open');
+  document.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const cfg=scenarioConfig[n];
+  const lbl=document.getElementById('sceneLabel');lbl.textContent=cfg.label;lbl.dataset.s=cfg.ds;
+  document.getElementById('chatName').textContent=cfg.chatName;
+  document.getElementById('chatStatus').textContent=cfg.chatStatus;
+  const av=document.getElementById('chatAvatar');av.className='ch-avatar '+cfg.avatarClass;av.textContent=cfg.avatarLetter;
+  document.getElementById('ppBar').style.width='0%';
+  document.getElementById('playProgress').classList.remove('visible');
+  document.getElementById('playBtn').innerHTML='<span>▶</span><span>一键播放</span>';
+  chatBody.innerHTML='<div class="date-divider">今天 '+document.getElementById('clockTime').textContent+'</div>';
+}
+
+// ─── Playback ────────────────────────
+function togglePlay(){if(isPlaying){stopPlay();return;}startPlay();}
+function startPlay(){
+  const script=SCRIPTS[currentScenario];if(!script)return;
+  isPlaying=true;totalSteps=script.length;
+  const btn=document.getElementById('playBtn');btn.classList.add('playing');btn.innerHTML='<span>⏸</span><span>暂停</span>';
+  document.getElementById('playProgress').classList.add('visible');
+  playNextStep();
+}
+function playNextStep(){
+  if(!isPlaying)return;
+  const script=SCRIPTS[currentScenario];
+  if(stepIndex>=script.length){stopPlay();return;}
+  const msg=script[stepIndex];
+  const scaled=(msg.delay||600)/playSpeed;
+  if(msg.type!=='user'){
+    showTyping(msg.av,msg.name);
+    playTimer=setTimeout(()=>{if(!isPlaying)return;appendMsg(msg);updateProgress();stepIndex++;const next=(script[stepIndex]?.delay||600)/playSpeed;playTimer=setTimeout(playNextStep,Math.max(250,next*0.55));},scaled);
+  }else{
+    playTimer=setTimeout(()=>{if(!isPlaying)return;appendMsg(msg);updateProgress();stepIndex++;const next=(script[stepIndex]?.delay||600)/playSpeed;playTimer=setTimeout(playNextStep,Math.max(180,next*0.35));},Math.max(180,scaled*0.5));
+  }
+}
+function updateProgress(){document.getElementById('ppBar').style.width=(stepIndex/totalSteps*100)+'%';}
+function stopPlay(){
+  isPlaying=false;clearTimeout(playTimer);
+  const btn=document.getElementById('playBtn');btn.classList.remove('playing');
+  const done=stepIndex>=(SCRIPTS[currentScenario]?.length||1);
+  btn.innerHTML=done?'<span>▶</span><span>一键播放</span>':'<span>▶</span><span>继续播放</span>';
+  const t=document.getElementById('typingRow');if(t)t.remove();
+}
+function resetDemo(){
+  stopPlay();stepIndex=0;
+  document.getElementById('ppBar').style.width='0%';
+  document.getElementById('playProgress').classList.remove('visible');
+  document.getElementById('playBtn').innerHTML='<span>▶</span><span>一键播放</span>';
+  chatBody.innerHTML='<div class="date-divider">今天 '+document.getElementById('clockTime').textContent+'</div>';
+}
+function skipToEnd(){
+  stopPlay();
+  const script=SCRIPTS[currentScenario];
+  chatBody.innerHTML='<div class="date-divider">今天 '+document.getElementById('clockTime').textContent+'</div>';
+  script.forEach(m=>appendMsg(m));
+  stepIndex=script.length;updateProgress();
+  document.getElementById('playProgress').classList.add('visible');
+  setTimeout(()=>{chatBody.scrollTop=chatBody.scrollHeight;},100);
+}
+function setSpeed(s,btn){playSpeed=s;document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function sendUserMsg(){const input=document.getElementById('userInput');const text=input.value.trim();if(!text)return;input.value='';appendMsg({type:'user',text});}
+document.getElementById('userInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendUserMsg();}});
+</script>
+</body>
+</html>

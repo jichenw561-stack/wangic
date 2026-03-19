@@ -1,0 +1,117 @@
+/* ========== Digital Asset Dashboard ========== */
+.da-role-bar{display:flex;gap:0;background:var(--bg2);border-radius:10px;padding:3px;margin-bottom:14px;border:1px solid var(--border);}
+.da-role-tab{flex:1;padding:8px 10px;border-radius:8px;text-align:center;cursor:pointer;font-size:12px;color:var(--text2);font-weight:500;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.da-role-tab:hover{color:var(--text);}
+.da-role-tab.active{background:white;color:var(--blue);font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.da-role-tab .da-role-icon{font-size:13px;}
+
+/* KPI strip */
+.da-kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.da-kpi{padding:12px 10px;border-radius:8px;background:white;border:1px solid var(--border);text-align:center;transition:all .2s;cursor:default;position:relative;overflow:hidden;}
+.da-kpi:hover{border-color:rgba(41,82,163,.25);transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.da-kpi-val{font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.2;}
+.da-kpi-label{font-size:10px;color:var(--text3);margin-top:3px;font-weight:500;}
+.da-kpi-trend{font-size:9px;margin-top:2px;font-weight:600;}
+.da-kpi-trend.up{color:var(--green);}
+.da-kpi-trend.down{color:var(--red);}
+
+/* People table */
+.da-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;}
+.da-table thead th{text-align:left;padding:8px 10px;color:var(--text3);font-size:10px;font-weight:600;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:1;}
+.da-table thead th:first-child{border-radius:8px 0 0 0;}
+.da-table thead th:last-child{border-radius:0 8px 0 0;}
+.da-table tbody tr{transition:all .15s;cursor:pointer;}
+.da-table tbody tr:hover{background:rgba(41,82,163,.03);}
+.da-table tbody tr.selected{background:rgba(41,82,163,.06);}
+.da-table tbody td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle;}
+.da-table tbody tr:last-child td{border-bottom:none;}
+
+/* Person cell */
+.da-person{display:flex;align-items:center;gap:8px;}
+.da-avatar{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0;}
+.da-person-info{min-width:0;}
+.da-person-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;}
+.da-person-role{font-size:10px;color:var(--text3);white-space:nowrap;}
+
+/* Mini bar chart */
+.da-bar-wrap{display:flex;align-items:center;gap:6px;}
+.da-bar{height:6px;border-radius:3px;background:var(--bg3);flex:1;overflow:hidden;min-width:40px;}
+.da-bar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.da-bar-val{font-size:11px;font-weight:600;white-space:nowrap;min-width:28px;text-align:right;}
+
+/* Tags */
+.da-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;white-space:nowrap;}
+.da-tag.green{background:rgba(18,183,106,.08);color:var(--green);}
+.da-tag.blue{background:rgba(41,82,163,.06);color:var(--blue);}
+.da-tag.purple{background:rgba(123,97,255,.08);color:var(--purple);}
+.da-tag.red{background:rgba(240,68,56,.08);color:var(--red);}
+.da-tag.gold{background:rgba(245,166,35,.08);color:#b8860b;}
+
+/* Detail profile card */
+.da-profile{padding:14px;background:white;border-radius:10px;border:1px solid var(--border);margin-bottom:12px;}
+.da-profile-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.da-profile-avatar{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;}
+.da-profile-name{font-size:15px;font-weight:700;color:var(--text);}
+.da-profile-title{font-size:11px;color:var(--text2);}
+
+/* Mini stat row */
+.da-stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px;}
+.da-stat{padding:8px;border-radius:6px;background:var(--bg2);text-align:center;}
+.da-stat-val{font-size:16px;font-weight:800;line-height:1.2;}
+.da-stat-label{font-size:9px;color:var(--text3);margin-top:2px;}
+
+/* Funnel / pipeline */
+.da-funnel{display:flex;align-items:center;gap:0;margin:10px 0;}
+.da-funnel-step{flex:1;text-align:center;position:relative;}
+.da-funnel-num{font-size:18px;font-weight:800;line-height:1;}
+.da-funnel-text{font-size:9px;color:var(--text3);margin-top:3px;}
+.da-funnel-arrow{width:20px;color:var(--text3);text-align:center;font-size:10px;flex-shrink:0;}
+
+/* Progress ring placeholder */
+.da-ring{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;position:relative;}
+.da-ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:4px solid var(--bg3);}
+.da-ring::after{content:'';position:absolute;inset:0;border-radius:50%;border:4px solid transparent;border-top-color:var(--blue);border-right-color:var(--blue);}
+
+/* Section divider in detail panel */
+.da-section{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.5px;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--border);text-transform:uppercase;}
+.da-section:first-child{margin-top:0;}
+
+/* Skill list in detail */
+.da-skill-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.da-skill-row:last-child{border-bottom:none;}
+.da-skill-icon{font-size:14px;width:20px;text-align:center;}
+.da-skill-name{flex:1;color:var(--text);font-weight:500;}
+.da-skill-calls{color:var(--blue);font-weight:600;font-size:11px;}
+.da-skill-rating{color:var(--green);font-size:11px;font-weight:600;}
+
+/* IB comparison card */
+.da-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0;}
+.da-compare-col{padding:10px;border-radius:8px;border:1px solid var(--border);background:white;}
+.da-compare-title{font-size:10px;color:var(--text3);font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:4px;}
+.da-compare-val{font-size:20px;font-weight:800;line-height:1;}
+.da-compare-sub{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* Activity timeline in detail */
+.da-timeline{display:flex;flex-direction:column;gap:0;}
+.da-tl-item{display:flex;gap:8px;padding:6px 0;font-size:11px;position:relative;}
+.da-tl-item::before{content:'';position:absolute;left:11px;top:20px;bottom:-6px;width:1px;background:var(--border);}
+.da-tl-item:last-child::before{display:none;}
+.da-tl-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0;border:3px solid var(--bg2);box-sizing:content-box;}
+.da-tl-text{color:var(--text2);line-height:1.5;}
+.da-tl-time{color:var(--text3);font-size:10px;margin-left:auto;white-space:nowrap;flex-shrink:0;}
+
+/* Scrollable table wrapper */
+.da-table-wrap{flex:1;overflow-y:auto;border-radius:10px;border:1px solid var(--border);background:white;}
+
+/* Animate rows */
+.da-table tbody tr{opacity:0;animation:sigIn .35s ease forwards;}
+.da-table tbody tr:nth-child(1){animation-delay:.05s;}
+.da-table tbody tr:nth-child(2){animation-delay:.1s;}
+.da-table tbody tr:nth-child(3){animation-delay:.15s;}
+.da-table tbody tr:nth-child(4){animation-delay:.2s;}
+.da-table tbody tr:nth-child(5){animation-delay:.25s;}
+.da-table tbody tr:nth-child(6){animation-delay:.3s;}
+.da-table tbody tr:nth-child(7){animation-delay:.35s;}
+.da-table tbody tr:nth-child(8){animation-delay:.4s;}
+.da-table tbody tr:nth-child(9){animation-delay:.45s;}
+.da-table tbody tr:nth-child(10){animation-delay:.5s;}
